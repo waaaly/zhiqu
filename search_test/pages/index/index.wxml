@@ -1,7 +1,17 @@
-<view class='page'>
-  <view     class='currentLocation'bindtap="chooseLocation">
+<!-- <import src="../../template/orderDetail/orderDetail.wxml"/>
+<block wx:for="{{orderData}}" >
+<template is="orderDetail" data="{{...item}}"> </template>
+</block> -->
+<import src="../../template/loginDialog/loginDialog.wxml" />
+<template is="dialog" data="{{...myDialog}}" />
+<import src="../../template/shopTabs/shopTabs.wxml"/>
+<import src="../../template/shopSort/shopSort.wxml"/>
+
+
+<view class='hear'>
+  <view class='currentLocation'bindtap="chooseLocation">
        <image class='Icon' src="../../image/weizhi.png"></image>
-    <view class='postionText'>{{currentLocation}}          </view>
+    <view class='postionText'>{{currentLocation}}</view>
   </view>
 
   <navigator class='search'
@@ -9,12 +19,38 @@
     hover-class='none'>
       <image class='Icon'
         src='../../image/sousuo.png'></image>
-      <view style='margin-top:6rpx'>输入关键字进行搜索          </view>
+      输入关键字进行搜索          
   </navigator> 
+
+  </view>
+
+  <view class='bannerWrap'>
+    <swiper class='swiper-box' previous-margin="54rpx" next-margin='54rpx'
+            indicator-dots="true" indicator-color='#B5B5B5'
+            indicator-active-color='rgb(19, 18, 114)' interval='3000' duration='500'
+            bindchange='swiperChange' circular='true' autoplay="true">
+        <block wx:for="{{swiper.swiperImgList}}">
+            <swiper-item>
+                <image class="{{index==swiperIndex?'imageBanner':'imageBanner_small'}}"
+                       src="{{item}}" id='{{item.url}}' bindtap='imageClick'></image>
+            </swiper-item>
+        </block>
+    </swiper>
 </view>
-<!-- <form name='pushMsgFm' report-submit='true' bindsubmit='getFormID'>
-      <button form-type="submit" class="zan-btn zan-btn--large zan-btn--danger payButton">表单提交</button>
-    </form> -->
+<view class="header-title">附近商家</view>
+<template is="shopSort"/>
+<block wx:for="{{shangjiaList}}" wx:for-item="item">
+  <template is="test" data="{{...item}}"/>
+</block>
+  <view class="footerView">
+    <view class="footer">
+      <view class='line'></view>
+      我也是有底线的
+      <view class='line'></view>
+    </view>
+  </view>
+
+
 
 
 

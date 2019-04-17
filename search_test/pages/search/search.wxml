@@ -1,4 +1,4 @@
-<import src="../../template/wxSearch.wxml"/>
+<import src="../../template/wxSearch/wxSearch.wxml"/>
 
 <view class="wxSearch-section">
   <view class="wxSearch-pancel">

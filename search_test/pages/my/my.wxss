@@ -1,0 +1,87 @@
+@import "../../libs/style/weui.wxss";
+
+page{
+  background: #eee;
+} 
+
+.wrapper {
+  background: #eee;
+}
+
+.wrapperItem {
+  position: relative;
+  background-color: #fff;
+  line-height: 1.41176471;
+  font-size: 17px;
+  top: 10rpx;
+  border-top-left-radius: 15rpx;
+  border-top-right-radius: 15rpx;
+  border-bottom-left-radius: 15rpx;
+  border-bottom-right-radius: 15rpx;
+  margin-bottom:20rpx;
+  padding-top:10rpx;
+  padding-bottom: 10rpx; 
+}
+.weui-cell_hd .image{
+  height:50rpx;
+  width:50rpx;
+}
+.itemtext{
+  display: flex;
+  align-items: center;
+}
+.itemtext image{
+  margin-right: 30rpx;
+  width: 45rpx;
+  height: 45rpx;
+}
+.tips{
+  position:absolute;
+  right: 20rpx;
+  font-size:25rpx;
+  display: flex;
+  color:#bbb;
+  align-items: center;
+}
+.tips image{
+  margin-left: 10rpx;
+  width: 30rpx;
+  height: 30rpx;
+}
+.avatar-wrapper {
+  background: #1b82d1;
+  padding: 25px 0;
+  border-bottom-left-radius: 15rpx;
+  border-bottom-right-radius: 15rpx;
+}
+
+.avatar-wrapper .avatar {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.avatar-wrapper .avatar image {
+  width: 100px;
+  height: 100px;
+}
+
+.avatar-wrapper .text {
+  text-align: center;
+  color: #fff;
+}
+
+.weui-cell__hd image {
+  margin-right: 5px;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+}
+
+.weui-cells::after {
+  content: none;
+  border-bottom: none;
+}
+
+.weui-cells::before {
+  border-top: none;
+}

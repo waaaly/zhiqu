@@ -1,4 +1,4 @@
-var WxSearch=require("../../template/wxSearch.js");
+var WxSearch=require("../../template/wxSearch/wxSearch.js");
 Page({
   //初始化
   onLoad: function () {

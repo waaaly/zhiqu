@@ -1,0 +1,31 @@
+<!--pages/test.wxml-->
+<template name="test">
+<!-- <view class="header-title">附近商家</view> -->
+<!-- <block wx:for="{{restaurant}}"> -->
+    <navigator url="/pages/menu/menu">
+        <view class="restaurants-list">
+            <view class="restaurants-info-image">
+                <image src="{{src}}" class="restaurants-image"/>
+            </view>
+            <view class="restaurants-info">
+                <view class="restaurants-info-name">{{name}}</view>
+                <view class="restaurants-info-rating">
+                    <view class="restaurants-info-rating-stars">★ ★ ★ ★</view>
+                    <view class="restaurants-info-rating-sales">月售 {{sales}}单</view>
+                </view>
+                <view class="restaurants-info-price">
+                    起送 {{initial_price}}¥ | 配送 {{ distribution_price}}¥
+                </view>
+            </view>
+            <view class="restaurants-distribution">
+                <view class="restaurants-distribution-distance">
+                    {{distance}}
+                </view>
+                <view class="restaurants-distribution-time">
+                    {{time}} 分钟
+                </view>
+            </view>
+        </view>
+    </navigator>
+<!-- </block> -->
+</template>

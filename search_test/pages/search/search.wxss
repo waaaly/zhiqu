@@ -1,4 +1,4 @@
-@import "../../template/wxSearch.wxss";
+@import "../../template/wxSearch/wxSearch.wxss";
 /**index.wxss**/
 .contentView{
   width: 100%

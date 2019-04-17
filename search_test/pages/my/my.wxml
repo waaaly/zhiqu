@@ -1,0 +1,126 @@
+<import src="../../template/loginDialog/loginDialog.wxml"/>
+<template is="dialog" data="{{...myDialog}}"/>
+<view class="mine-wrapper">
+  <view class="avatar-wrapper">
+    <view>
+      <view class="avatar">
+        <image style="border-radius:50%;" src="{{userinfo.avatarUrl ? userinfo.avatarUrl:'../../image/iampic.jpeg'}}"></image>
+      </view>
+      <view class="text">
+        <text wx:if="{{userinfo.nickName}}">{{userinfo.nickName}}</text>
+        <text wx:else bindtap="toLogin">注册 / 登录</text>
+      </view>
+      <view class="text">
+        <text wx:if="{{userSign==2}}">{{"您还没有填写真实信息，暂不能使用"}}</text>
+        <text wx:elif="{{userSign==1}}">{{"会员用户"}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <view class="wrapper">
+    <block wx:for="{{menuItems}}">
+      <view class="wrapperItem">
+        <navigator url="{{item.url}}" class="weui-cell weui-cell_access" hover-class="none">
+          <view class="itemtext">
+            <image src="{{item.icon}}" class="image"></image>
+            {{item.text}}
+          </view>
+          <view class="tips">{{item.tips}}
+            <image src="../../image/xiangyou.png" ></image>
+          </view>
+        </navigator>
+        
+        <view class="weui-flex" >
+          <block wx:for="{{item.items}}" wx:for-item="items">
+            <navigator url="{{items.url}}" class="weui-flex_item" hover-class="none" style="flex-grow: 1">
+              <view class="weui-cell_hd" style="text-align:center;">
+                <image src="{{items.icon}}" class="image"></image>
+              </view>
+              <view  style="font-size:28rpx;text-align: center;">{{items.text}}</view>
+            </navigator>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
+<!--
+  <view class="list-wrapper">
+    <view  class= "wrapper">
+      <block wx:for="{{menuitems}}" wx:key="menu_for">
+        <navigator url="{{item.url}}" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+          <view class="weui-cell__hd">
+            <image src="{{item.icon}}"></image>
+          </view>
+          <view class="weui-cell__bd">{{item.text}}</view>
+          <view class="weui-cell__ft weui-cell__ft_in-access" style='font-size:25rpx'>{{item.tips}}</view>
+        </navigator>
+        <!-- 我的订单 --
+         <block wx:if="{{item.text=='我的订单'}}">
+            <view class="weui-flex">
+              <block wx:for="{{orderItems}}" wx:for-item="orderItem">
+                <navigator url="{{orderItem.url}}" class='weui-flex__item' hover-class='none'>
+                    <view class="weui-cell__hd" style="text-align:center">
+                        <image src="{{orderItem.icon}}"></image>
+                    </view>
+                    <view class="weui-grid__label">{{orderItem.text}}</view>
+                </navigator>
+              </block>
+            </view>
+         </block>
+          <!-- 消息中心 --
+          <block wx:if="{{item.text=='消息中心'}}">
+              <view class="weui-flex">
+                  <block wx:for="{{newsItems}}" wx:for-item="newsItem">
+                      <navigator url="{{newsItem.url}}" class='weui-flex__item' hover-class='none'>
+                          <view class="weui-cell__hd" style="text-align:center">
+                              <image src="{{newsItem.icon}}"></image>
+                          </view>
+                          <view class="weui-grid__label">{{newsItem.text}}</view>
+                      </navigator>
+                  </block>
+              </view>
+          </block>
+          <!-- 我的资产 --
+          <block wx:if="{{item.text=='我的资产'}}">
+              <view class="weui-flex">
+                  <block wx:for="{{propertyItems}}" wx:for-item="propertyItem">
+                      <navigator url="{{propertyItem.url}}" class='weui-flex__item' hover-class='none'>
+                          <view class="weui-cell__hd" style="text-align:center">
+                              <image src="{{propertyItem.icon}}"></image>
+                          </view>
+                          <view class="weui-grid__label">{{propertyItem.text}}</view>
+                      </navigator>
+                  </block>
+              </view>
+          </block>
+          <!-- 常用功能 --
+          <block wx:if="{{item.text=='常用功能'}}">
+            <view class="weui-flex">
+              <block wx:for="{{functionItems}}" wx:for-item="funcItem">
+                <navigator url="{{funcItem.url}}" class='weui-flex__item' hover-class='none'>
+                    <view class="weui-cell__hd" style="text-align:center">
+                        <image src="{{funcItem.icon}}"></image>
+                    </view>
+                    <view class="weui-grid__label">{{funcItem.text}}</view>
+                </navigator>
+                </block>
+            </view>
+          </block>
+          <!-- 系统设置 --
+          <block wx:if="{{item.text=='系统设置'}}">
+              <view class="weui-flex">
+                  <block wx:for="{{settingItems}}" wx:for-item="settingItem">
+                      <navigator url="{{settingItem.url}}" class='weui-flex__item' hover-class='none'>
+                          <view class="weui-cell__hd" style="text-align:center">
+                              <image src="{{settingItem.icon}}"></image>
+                          </view>
+                          <view class="weui-grid__label">{{settingItem.text}}</view>
+                      </navigator>
+                  </block>
+              </view>
+          </block>
+      </block>
+    </view>
+  </view>
+-->

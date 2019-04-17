@@ -1,8 +1,16 @@
 {
   "pages": [
     "pages/index/index",
+    
+
+    "pages/car/car",
+    
     "pages/search/search",
-    "pages/order/order"
+    "pages/order/order",
+    "pages/my/my",
+    
+    "pages/classify/classify"
+  
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -16,23 +24,35 @@
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
     }
   },
-    "tabBar": {
-         "color": "#a9b7b7",
-         "selectedColor": "#11cd6e",
-         "borderStyle": "black",
-         "list": [
-        {
-              "selectedIconPath": "",
-               "iconPath": "",
-               "pagePath": "pages/index/index",
-                "text": "首页"  
-
-        },
-        {
-                "selectedIconPath": "",
-                "iconPath": "",
-                "pagePath": "pages/order/order",
-                "text": "订单"  
-        }]
-    }
+  "tabBar": {
+    "color": "#a9b7b7",
+    "selectedColor": "#1b82d1",
+    "borderStyle": "black",
+    "list": [
+      {
+        "selectedIconPath": "/image/shouye.png",
+        "iconPath": "/image/shouye-2.png",
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "selectedIconPath": "/image/fenlei.png",
+        "iconPath": "/image/fenlei-2.png",
+        "pagePath": "pages/classify/classify",
+        "text": "分类"
+      },
+      {
+        "selectedIconPath": "/image/gouwuche.png",
+        "iconPath": "/image/gouwuche-2.png",
+        "pagePath": "pages/car/car",
+        "text": "购物车"
+      },
+      {
+        "selectedIconPath": "/image/wode.png",
+        "iconPath": "/image/wode-2.png",
+        "pagePath": "pages/my/my",
+        "text": "我的"
+      }
+    ]
+  }
 }

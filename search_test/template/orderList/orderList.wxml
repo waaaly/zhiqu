@@ -1,0 +1,33 @@
+
+<template name="orderList">
+  <view class="page">
+    <view class='mainView'>
+        <navigator class='firsetCol'>
+            <image class='shangjiaIcon'
+                    src="../../image/search.png"></image>
+            <view class='shangpuming'>
+              <text>{{shopName}}</text>
+              <image style='width:25rpx;height:25rpx'
+                      src="../../image/xiangyou.png"></image>  
+            </view>                       
+            <view class='dingtaizhuangtai'> 
+              <text>{{orderStatus}}</text>
+              <text>{{orderTime}}</text>           
+           </view>   
+        </navigator>
+        <view class='line'></view>
+        <navigator class='secondCol'>
+            <view style="margin:18px;font-size:35rpx;">
+              {{goodName}}</view>
+            <view style="font-size:25rpx;margin-left:300rpx;margin-top:120rpx;">
+              共计：{{totialPrice}}</view>
+        </navigator>
+        <view class='line'></view>
+        <view class="thirdCol ">
+            <block wx:for="{{['确认收货','再来一单','售后/退款','相似商家','评价']}}">
+              <navigator class='forItem'>{{item}}</navigator>
+            </block>
+        </view>
+    </view>
+  </view>
+</template>

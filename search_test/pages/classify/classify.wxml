@@ -1,10 +1,13 @@
-<view style='background:#fff'>
-        <view class="heard-search">
+<view style='background:#fff;text-align:center;align-items: center; justify-content: center;display:flex'>
+        <navigator url="../../pages/search/search" class="heard-search">
             <image src="../../image/search.png"     class="heard-search-icon"/>
-        鸡排
-        </view>
+        搜索商品或商铺
+        </navigator>
 </view>
-    <view class="classifycontainer">
+
+  <view style='background:#fff;width:100%;height:10rpx;'></view>
+
+<view class="classifycontainer">
   <!--左侧栏-->
   <view class="nav_left">
     <block wx:for="{{cateItems}}">

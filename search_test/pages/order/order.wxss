@@ -1,3 +1,4 @@
+@import "../../template/orderList/orderList.wxss";
 .stv-container {
   position: fixed;
   top: 0;
@@ -46,12 +47,12 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: #fafafa;
+  background: #f0f0f0;
 }
 .stv-container .scroll-view .scroll-view-wrapper {
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: 30px;
   display: flex;
 }
 .stv-container .scroll-view .scroll-view-wrapper .one-scene {
@@ -60,5 +61,5 @@
 .one-scene text {
   display: flex;
   justify-content: center;
-  padding-top: 200rpx;
+  /* padding-top: 200rpx; */
 }

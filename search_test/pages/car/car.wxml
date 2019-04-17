@@ -1,0 +1,66 @@
+<!-- 最外层视图pages -->
+<view class="pages">
+ 
+  <view wx:if="{{hasList}}">
+  <!-- 编辑 -->
+  <view class='edit'>
+  <label class='edit_btn' bindtap='btn_edit'>{{edit_name}}</label>
+  </view>
+      <!-- 列表 -->
+      <view class="list" wx:for="{{list}}" wx:key="{{index}}">
+        <!-- radio选择IOCN -->
+        <!-- <icon wx:if="{{item.selected}}"   type="success" color="#405A8F;" data-index="{{index}}" class="radio_chek" bindtap="selectList" /> -->
+        <image class='dele_edit' bindtap='deletes' data-index='{{index}}' style='display:{{edit_show}}' src='../../image/shanchu.png'></image>
+        <image  wx:if="{{item.selected}}"  data-index="{{index}}" class="radio_chek" bindtap="selectList" src='../../image/dagou.png'></image>
+        <!-- <icon wx:else type="circle" class="radio_chek" data-index="{{index}}" bindtap="selectList" /> -->
+<!-- else -->
+                <image wx:else src='../../image/dagou-off.png'  class="radio_chek" data-index="{{index}}" bindtap="selectList"></image>
+        <!-- 列表标题 -->
+        <text class="list_name">{{item.title}}</text>
+        <!-- 列表商品图片 -->
+        <image class="list_img" src="{{item.image}}"></image>
+        <!-- 规格 -->
+        <text class="cart_g_name">规格 : {{item.pro_name}}</text>
+        <!-- 收藏 -->
+        <label class='collert' bindtap='btn_collert'>
+          <image class='collert_img'src='../../image/aixin.png'></image> 收藏</label>
+        <!-- 价格 -->
+        <text class="list_price">￥{{item.price}}</text>
+        <!-- 商品数量加减  style='display:{{show_edit}}'-->
+        <view style='display:{{show_edit}}'>
+        <view class="carts-num">
+          <!--减按钮  -->
+          <lable class="minus" bindtap="btn_minus" data-obj="{{obj}}" data-index="{{index}}">-</lable>
+          <!-- 文本框值 -->
+          <!-- <input class="view_text_center" disabled='disabled' value="{{item.num}}" bindinput='input_num' data-index="{{index}}"></input> -->
+          <label class="view_text_center"  bindinput='input_num' data-index="{{index}}">{{item.num}}</label>
+          <!-- <text class="cart-count-num">{{item.num}}</text> -->
+          <!-- 加按钮-->
+          <lable class="plus" bindtap="btn_add" data-index="{{index}}">+</lable>
+        </view></view>
+        <!-- 删除 -->
+        <!-- <text class="list_del" bindtap="deleteList" data-index="{{index}}">×</text> -->
+    </view>
+<!-- 固定底部 -->
+    <view class="cont_bot">
+    <!-- 全选ICON -->
+    <image wx:if="{{selectAllStatus}}"  class="total-select" bindtap="selectAll" src='../../image/dagou.png'></image>
+ 
+      <!-- <icon wx:if="{{selectAllStatus}}" type="success_circle" color="#999" class="total-select" bindtap="selectAll" /> -->
+      <!-- else -->
+          <image  wx:else  class="total-select" bindtap="selectAll"src='../../image/dagou-off.png'></image>
+      <!-- <icon wx:else type="circle" color="#999" class="total-select" bindtap="selectAll" /> -->
+         <!-- 全选标题 -->
+      <text class='sel_count_name'>全选</text>
+      <!-- 合计金额 -->
+      <lable class="count_price">合计：<text>￥{{totalPrice}}</text></lable>
+      <!-- 提交订单 -->
+      <label class='submit' bindtap='btn_submit_order'>提交订单</label>
+      </view>
+     
+  </view>
+  <view wx:else>
+    <view class="list_none">购物车是空的哦~</view>
+  </view>
+ 
+</view>

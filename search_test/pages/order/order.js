@@ -1,6 +1,39 @@
 Page({
   data:{
-    tabs: ['收入', '支出', '通知','我的','代付款'],
+    tabs: ['全部订单','待付款','待送货','待收货','待评价'],
+    orderListData: [
+      {
+        shopName: "王大拿的饺子管",
+        orderStatus: "正在配送",
+        orderTime: "10:11:23",
+        goodName: "黄瓜两个",
+        totialPrice: "90.80"
+      }, 
+      {
+        shopName: "王大拿的饺子管",
+        orderStatus: "正在配送",
+        orderTime: "10:11:23",
+        goodName: "黄瓜两个",
+        totialPrice: "90.80"
+      }, {
+      shopName: "王大拿的饺子管",
+      orderStatus: "正在配送",
+      orderTime: "10:11:23",
+      goodName: "黄瓜两个",
+      totialPrice: "90.80"
+    }, {
+      shopName: "小姐姐的混沌点",
+      orderStatus: "正在配送",
+      orderTime: "10:11:23",
+      goodName: "泥鳅三只",
+      totialPrice: "90.80"
+    }, {
+      shopName: "德玛西亚的小商家",
+      orderStatus: "已完成",
+      orderTime: "10:11:23",
+      goodName: "西红柿炒蛋",
+      totialPrice: "90.80"
+    }],
     stv: {
       windowWidth: 0,
       lineWidth: 0,
@@ -10,6 +43,7 @@ Page({
     activeTab: 0
   },
   onLoad:function(options){
+    
    try {
       let {tabs} = this.data; 
       var res = wx.getSystemInfoSync()
@@ -20,6 +54,7 @@ Page({
       this.tabsCount = tabs.length;
     } catch (e) {
     }
+    this._updateSelectedPage(options.id);
   },
   handlerStart(e) {
     let {clientX, clientY} = e.touches[0];
