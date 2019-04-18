@@ -1,20 +1,17 @@
 {
   "pages": [
+    "pages/news/news",
     "pages/index/index",
-    
-
     "pages/car/car",
-    
     "pages/search/search",
     "pages/order/order",
     "pages/my/my",
-    
     "pages/classify/classify"
-  
+    
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
+    "navigationBarBackgroundColor": "#1b82d1",
     "navigationBarTitleText": "WeChat",
     "navigationBarTextStyle": "black"
   },
@@ -40,6 +37,12 @@
         "iconPath": "/image/fenlei-2.png",
         "pagePath": "pages/classify/classify",
         "text": "分类"
+      },
+      {
+        "selectedIconPath": "/image/xiaoxi.png",
+        "iconPath": "/image/xiaoxi-2.png",
+        "pagePath": "pages/news/news",
+        "text": "消息"
       },
       {
         "selectedIconPath": "/image/gouwuche.png",
