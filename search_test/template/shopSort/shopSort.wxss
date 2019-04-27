@@ -20,6 +20,6 @@
   flex: 1;
 }
 .sort-active{
-  color: black;
+  color: #e97a13c7;
   font-weight: 800;
 }

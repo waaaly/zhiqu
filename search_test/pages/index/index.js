@@ -9,11 +9,6 @@ var util=require('../../utils/util.js')
 var app = getApp();
 Page({
   data: {
-    marqueePace: 1,//滚动速度
-    marqueeDistance: 0,//初始滚动距离
-    marquee_margin: 30,
-    size: 14,
-    interval: 20, // 时间间隔
     shangjiaList: [
       {
         "name": "正新鸡排",
@@ -91,80 +86,35 @@ Page({
     latitude: 23.099994,
     longitude: 113.324520,
     appsecret:"ea426ca5cd19b98868d73d5a6a22cbae",
-access_token:"20_19nlbyRFRqHAt76W7WwTX2ES1X2zQst5yq2u1C5bswpKZv-qUda63pQyixrFDMBO6G49APOpgrIRFzAUxHvihFV38GyyaHFkADvFu-5Ny84ZVRTkxjhmvPe2CRvJ1bOftSZgvFLHJhf_QLTEENRfAIAHQU",
-  openid:"",
-  form_id:"",
-  swiper:{
-    swiperBackground:"../../image/swiperBackground.png",
-    swiperIndex: 0,
-    swiperImgList: [
-      "../../image/swiper-1.jpg",
-      "../../image/swiper-2.jpg",
-      "../../image/swiper-3.jpg",
-      "../../image/swiper-4.jpg",
-      "../../image/swiper-5.jpg",
-    ],
-  },
+    access_token:"20_19nlbyRFRqHAt76W7WwTX2ES1X2zQst5yq2u1C5bswpKZv-qUda63pQyixrFDMBO6G49APOpgrIRFzAUxHvihFV38GyyaHFkADvFu-5Ny84ZVRTkxjhmvPe2CRvJ1bOftSZgvFLHJhf_QLTEENRfAIAHQU",
+    openid:"",
+    form_id:"",
+    swiper:{
+      swiperBackground:"../../image/swiperBackground.png",
+      swiperIndex: 0,
+      swiperImgList: [
+        "../../image/swiper-1.jpg",
+        "../../image/swiper-2.jpg",
+        "../../image/swiper-3.jpg",
+        "../../image/swiper-4.jpg",
+        "../../image/swiper-5.jpg",
+      ],
+    },
+    marqueePace: 1,//滚动速度
+    marqueeDistance: 0,//初始滚动距离
+    marquee_margin: 30,
+    size: 14,
+    interval: 20, // 时间间隔
+    sortSelected:0,//商家排序方式
+},
   
-
-  },
-  //初始化地图
   onReady: function (e) {
-    console.log(app.globalData.userInfo);
-    if (app.globalData.userInfo==null){
-      myDialog.showModal({
-        title: "提示",
-        content: "确定使用当前微信号登录小程序？",
-        confirmOpenType: "getUserInfo",  //如果不设置就是普通弹框
-        success: (e) => {
-          console.log("e", e);
-          let userInfo = e.detail.userInfo;
-          // wx.setStorageSync("userInfo", userInfo);
-          getApp().globalData.userInfo = userInfo;
-          console.log(app.globalData.userInfo)
-        },
-        fail: (err) => {
-          // 用户不小必点到拒绝,提示登录失败
-          wx.showToast({
-            title: "登录失败",
-            icon: "none"
-          });
-        }
-      });
-    }
-  },
-  
-  onLoad: function () {
-    var that = this;
-//获取用户当前位置
-    wx.login({
-      //获取code
-      success: function (res) {
-        var code = res.code; //返回code
-        console.log(code);
-        var appId = 'wx5000fdec864c14f2';
-        var secret = that.data.appsecret;
-        wx.request({
-          url: 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appId + '&secret=' + secret + '&js_code=' + code + '&grant_type=authorization_code',
-          data: {},
-          header: {
-            'content-type': 'json'
-          },
-          success: function (res) {
-            that.setData({
-              openid: res.data.openid
-            })
-
-            console.log('openid为' + that.data.openid);
-          }
-        })
-      }
-    });
- 
-    qqmapsdk = new QQMapWX({
+   //引入TX地图SDK
+   var that=this;
+   qqmapsdk = new QQMapWX({
       key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
     });
-
+    //根据当前的经纬度获取用户当前地址信息
     var postion = that.data.currentLocation;
     qqmapsdk.reverseGeocoder({
       //位置坐标，不填为为默认当前位置，非必须参数
@@ -176,23 +126,70 @@ access_token:"20_19nlbyRFRqHAt76W7WwTX2ES1X2zQst5yq2u1C5bswpKZv-qUda63pQyixrFDMB
           longitude: 116.307520
         },
       */
-      /**
-       *
-       //String格式
-        location: '39.984060,116.307520',
-      *///获取表单传入的位置坐标,不填默认当前位置,示例为string格式
+      //String格式
+      // location: '39.984060,116.307520',
+      ///获取表单传入的位置坐标,不填默认当前位置,示例为string格式
       //get_poi: 1, //是否返回周边POI列表：1.返回；0不返回(默认),非必须参数
-      success: function (res) {//成功后的回调
-
+      success: function (res) {
+        //成功后显示当前的地址信息
         var res = res.result;
         postion = postion + res.address_component.district + res.address_component.street_number;
-        console.log(res);
-        console.log(postion);
+        // console.log(res);
+        // console.log(postion);
         that.setData({
           currentLocation: postion
         })
       }
     });
+  },
+  
+  onLoad: function () {
+    var that = this;
+    console.log(app.globalData.userInfo);
+    if (app.globalData.userInfo==null){
+      myDialog.showModal({
+        title: "提示",
+        content: "确定使用当前微信号登录小程序？",
+        confirmOpenType: "getUserInfo",  //如果不设置就是普通弹框
+        success: (e) => {
+          console.log("e", e);
+          //获取到用户信息
+          let userInfo = e.detail.userInfo;
+          // wx.setStorageSync("userInfo", userInfo);
+          app.globalData.userInfo = userInfo;
+          console.log(app.globalData.userInfo)
+          wx.login({
+            success: function (res) {
+              var code = res.code; //返回code
+              console.log(code);
+              var appId = 'wx5000fdec864c14f2';
+              var secret = that.data.appsecret;
+              wx.request({
+                url: 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appId + '&secret=' + secret + '&js_code=' + code + '&grant_type=authorization_code',
+                data: {},
+                header: {
+                  'content-type': 'json'
+                },
+                //获取opid
+                success: function (res) {
+                  that.setData({
+                    openid: res.data.openid
+                  })     
+                  console.log('openid为' + that.data.openid);
+                }
+              })
+            }
+          });
+        },
+        fail: (err) => {
+          // 用户不小必点到拒绝,提示登录失败
+          wx.showToast({
+            title: "用户未登录",
+            icon: "none"
+          });
+        }
+      });
+    }
   },
   //swiper页面切换事件
   swiperChange: function (e) {
@@ -202,121 +199,35 @@ access_token:"20_19nlbyRFRqHAt76W7WwTX2ES1X2zQst5yq2u1C5bswpKZv-qUda63pQyixrFDMB
       swiperIndex: e.detail.current
     })
   },
-  //获取位置
-  getCenterLocation: function () {
-    var that = this
-    that.mapCtx.getCenterLocation({
-      success: function (res) {
-        console.log('经度', res.longitude)
-        console.log('纬度', res.latitude)
-        that.setData({
-          location: '经度:' + res.longitude + '纬度:' + res.latitude
-        })
-
-      }
-    })
-
-  },
-  scaleClick: function () {
-    this.setData({
-      scale: 10,
+  //swiper点击事件
+  gotoHotFood:function(e){
+    console.log(e);
+    wx.navigateTo({
+      url: '../foodDetail/foodDetail',
     })
   },
-  // 移动位置
-  moveToLocation: function () {
-    this.mapCtx.moveToLocation()
-  },
-  // 移动标注
-  translateMarker: function () {
-    this.mapCtx.translateMarker({
-      markerId: 1,
-      autoRotate: true,
-      duration: 1000,
-      destination: {
-        latitude: 23.10229,
-        longitude: 113.3345211,
-      },
-      animationEnd() {
-        console.log('动画结束')
-      }
-    })
-  },
-  //缩放视野展示所有经纬度
-  includePoints: function () {
-    this.mapCtx.includePoints({
-      padding: [10],
-      points: [{
-        latitude: 23.10229,
-        longitude: 113.3345211,
-      }, {
-        latitude: 23.00229,
-        longitude: 113.3345211,
-      }]
-    })
-  },
-
+  // 用户手动选择地址
   chooseLocation:function(){
-   // 用户手动选择地址
    var that=this;
     wx.chooseLocation({
       type: 'gcj02',//'wgs84',
       success: function (res) {
-        console.log(res.latitude)
-        console.log(res.longitude)
+        // console.log(res.latitude)
+        // console.log(res.longitude)
         console.log(res)
-        console.log(res.address)
+        // console.log(res.address)
         that.setData({
           currentLocation:"您当前的位置："+res.name
         })
       }
     })
   },
-  getFormID: function (e) {
-    var that = this;
+  //切换附近商家排序条件
+  onTapTag:function(e){
     console.log(e)
-    console.log("formid=",e.detail.formId)
+    var that=this;
     that.setData({
-      form_id:e.detail.formId
+      sortSelected:e.currentTarget.dataset.index,
     })
-    wx.request({
-      url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5000fdec864c14f2&secret=ea426ca5cd19b98868d73d5a6a22cbae',
-      success(a) {
-        console.log(a)
-        console.log("token=",a.data.access_token)
-        that.setData({
-          access_token: a.data.access_token
-        })
-
-        let url = 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + that.data.access_token;
-        let _jsonData = {
-          access_token: that.data.access_token,
-          touser: "o4Vuf4tmsIjXCmdi4PTTXvEKQHWU",//that.data.openid,
-          template_id: '7_9wNAhHrjwRnEOANNRf9yZDLVFdzKJTurHLBgRMhko',
-          form_id: that.data.form_id,
-          page: "pages/index/index",
-          data: {
-            "keyword1": { "value": "测试数据一", "color": "#173177" },
-            "keyword2": { "value": "测试数据二", "color": "#173177" },
-            "keyword3": { "value": "测试数据三", "color": "#173177" },
-            "keyword4": { "value": "测试数据四", "color": "#173177" },
-          }
-        }
-        wx.request({
-          url: url,
-          data: _jsonData,
-          method:"POST",
-          success: function (res) {
-            console.log("sent succes!", res)
-          },
-          fail: function (err) {
-            console.log('request fail ', err);
-          },
-          complete: function (res) {
-            console.log("request completed!", res);
-          }
-        })
-        console.log(that.data.access_token)
-      }
-    });
   }
 })

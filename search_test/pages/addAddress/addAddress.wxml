@@ -1,0 +1,69 @@
+<view class="container">
+    <form bindsubmit="bindSave">
+    <view class="form-box">
+        <view class="row-wrap">
+            <view class="label">联系人</view>
+            <view class="label-right">
+                <input id="1" name="linkMan" class="input" type="text" placeholder="姓名" value="{{addressObj.linkMan}}" bindinput="getInput"/>
+            </view>
+        </view>
+        <view class="row-wrap">
+            <view class="label">联系手机</view>
+            <view class="label-right">
+                <input id="2" name="mobile" class="input" maxlength="11" type="number" placeholder="11位手机号码" value="{{addressObj.mobile}}" bindinput="getInput"/>
+            </view>
+        </view>
+        <view class="row-wrap" bindtap="selectCity">
+            <view class="label">所在地区</view>
+              <view bindtap='selectDistrict' class="picker hui" wx:if="{{addressObj.areaInfo===''}}">点击选择所在地区</view>
+              <view bindtap="selectDistrict" class="picker" wx:esle>
+                {{addressObj.areaInfo}}
+              </view>
+
+        </view>
+        <view class="addr-details">
+            <view class="label">详细地址</view>
+            <view class="label-right">
+                <!--<input class="input" type="text" placeholder="街道门牌信息"/>-->
+                <textarea name="address" auto-height placeholder="更详细的地址小趣能更好的服务哦～"  value="{{addressObj.address}}" id="3" bindinput="getInput"/>
+            </view>
+        </view>
+        <view class="row-wrap">
+            <view class="label">设为默认地址</view>
+            <view style='position:fixed;left:100px;'>
+              <checkbox-group bindchange="checkboxChange">
+                <checkbox value="flase" checked="{{addressObj.defaultAddress}}" ></checkbox>
+              </checkbox-group>
+            </view>
+        </view>
+    </view>
+    <button type="warn" class="save-btn" formType="submit">保存</button>
+    <button type="default" class="save-btn" bindtap="deleteAddress" data-id="{{addressData.id}}" wx:if="{{addressData}}">删除该地址</button>
+    <button type="default" class="cancel-btn" bindtap="bindCancel">取消</button>
+    </form>
+</view>
+
+
+
+
+  <view class="picker-view" animation="{{animationAddressMenu}}" style="visibility:{{addressMenuIsShow ? 'visible':'hidden'}}">
+  <view style="height:10% ;width:95%;margin-top:10rpx">
+    <text catchtap="cityCancel">取消</text>
+    <text style="float: right; color:#09bb07;" catchtap="citySure">确定</text>
+  </view>
+  <!--"可以显示默认的城市，使用后级联选择城市反应很慢就不使用了-->
+  <picker-view style="width: 100%; height: 300px;" bindchange="cityChange" value="{{value}}" wx:key="">
+    <picker-view-column>
+      <view wx:for="{{provinces}}" class="picker-item">
+        {{item.name}}</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view wx:for="{{citys}}" class="picker-item" wx:key="">
+        {{item.name}}</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view wx:for="{{areas}}" class="picker-item" wx:key="">
+        {{item.name}}</view>
+    </picker-view-column>
+  </picker-view>
+</view>

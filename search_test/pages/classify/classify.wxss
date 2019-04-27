@@ -6,7 +6,14 @@ page{
   /* font-family:-apple-system-font; */
   /* font-family:Helvetica Neue; */
 } 
-
+.searchBar{
+  padding: 20rpx 0rpx;
+  background:#fff;
+  text-align:center;
+  align-items: center; 
+  justify-content: center;
+  display:flex;
+}
 .heard-search{
   color: #666666;
   font-size: 25rpx; 
@@ -59,8 +66,8 @@ page{
 .nav_left .nav_left_items.active{  
   /*背景色变成白色*/  
   background: #fff;  
-  color: #f0145a; 
-  border-left: 1rpx solid #f0145a;
+  color: #1b82d1; 
+  border-left: 1rpx solid #1b82d1;
 }  
 /*右侧栏主盒子*/  
 .nav_right{  
@@ -74,7 +81,7 @@ page{
   height: 1000px;  
   padding: 10px;  
   box-sizing: border-box;  
-  background: #eee;  
+  background: #fff;  
   font-size: 25rpx;
 }  
 /*右侧栏list的item*/  

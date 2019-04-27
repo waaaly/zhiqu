@@ -319,7 +319,10 @@ Page({
     //   })
     wx.showModal({
       title: '提示',
-      content: '合计金额-' + that.data.totalPrice + "暂未开发",
+      content: '合计金额-' + that.data.totalPrice,
+    })
+    wx.navigateTo({
+      url: '../../pages/comfireOrder/comfireOrder',
     })
   },
   // 收藏

@@ -1,31 +1,64 @@
 <!--pages/news/news.wxml-->
-<view class='flex'>
-  <view class='time'>2019-01-04 13:30</view>
-  <view class='newsDetail'>
-    <view class='hear'>
-      <image src="../../image/Z.png"></image>
-      <text>新的订单状态变化通知</text>
+<view class="stv-container">
+  <view class="tab-bar">
+    <view wx:for="{{tabs}}" 
+          wx:key="unique" 
+          data-index="{{index}}" 
+          bindtap="handlerTabTap" 
+          class="tab {{activeTab==index?'tab-active':''}}" 
+          style="width: {{stv.windowWidth/tabs.length}}px">
+      <text>{{item}}</text>
     </view>
-
-    <view class='order_process'>
-      <view class='process_wrap' wx:for="{{processData}}" wx:key="">
-        <view class='process'>
-          <view class='process_line' style="background:{{item.start}}"></view>
-          <image class='process_icon' src="{{item.icon}}"></image>
-          <view class='process_line' style="background:{{item.end}}"></view>
-        </view>
-        <text class='process_name'>{{item.name}}</text>
+  </view>
+  <view class="scroll-view">
+    <view bindtouchstart="handlerStart" 
+          catchtouchmove="handlerMove" 
+          bindtouchcancel="handlerCancel" 
+          bindtouchend="handlerEnd"  
+          class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" 
+          style="left: -{{stv.offset}}px">
+      <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
+        <scroll-view style="height:100%" scroll-y>
+          <black wx:if="{{item=='订单消息'}}">
+            <!-- <black wx:for="{{orderListData}}">
+              <template is="orderList" data="{{...item}}"/>
+            </black> -->
+            <view class='flex' bindtap='gotoDetail'>
+              <view class='time'>2019-01-04 13:30</view>
+              <view class='newsDetail'>
+                <view class='hear'>
+                  <image src="../../image/Z.png"></image>
+                  <text>新的订单状态变化通知</text>
+                </view>
+                <view class='order_process'>
+                  <view class='process_wrap' wx:for="{{processData}}" wx:key="">
+                    <view class='process'>
+                      <view class='process_line' style="background:{{item.start}}"></view>
+                      <image class='process_icon' src="{{item.icon}}"></image>
+                      <view class='process_line' style="background:{{item.end}}"></view>
+                    </view>
+                    <text class='process_name'>{{item.name}}</text>
+                  </view>
+                </view>
+                <block wx:for="{{[1,2,3,4,5]}}">
+                  <view class='colunmProcessItem'>
+                    <view 
+                      class="colunmProcessItemTime">19:30:34</view>
+                    <view class="colunmProcessItemDot"></view>      
+                    <view class="colunmProcessItemContent">用户提交表单</view>
+                  </view>
+                  <block wx:if="{{index!=4}}">
+                    <view class="colunmProcessItemLine"></view>
+                  </block>
+                </block>
+              </view>
+            </view> 
+          </black>
+          <block wx:else>
+            <view style='height:100%;display:flex;justify-content:center;align-items:center;'>该模块暂未开发</view>
+            </block>
+        </scroll-view>
       </view>
     </view>
-    <block wx:for="{{[1,2,3,4,5]}}">
-      <view class='colunmProcessItem'>
-        <view class="colunmProcessItemTime">19:30:34</view>
-        <view class="colunmProcessItemDot"></view>        
-        <view class="colunmProcessItemContent">用户提交表单</view>
-      </view>
-      <block wx:if="{{index!=4}}">
-        <view class="colunmProcessItemLine"></view>
-      </block>
-    </block>
   </view>
 </view>

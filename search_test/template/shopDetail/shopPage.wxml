@@ -1,0 +1,11 @@
+<template name="shopPage">
+<view class="shopContainer">
+  <view class='shopInfo'>
+    <view >商家信息</view>
+    <view class='infoItem'>{{shopName}}</view>
+  </view>
+  <view class='peisongInfo'>
+  
+  </view>
+</view>
+</template>

@@ -42,6 +42,53 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    requstUrl: "https://test.mingrui-gz.com",
+    defaultAddress:{},
+    userAddress:[
+      {
+        areaInfo: "北京市-市辖区-东城区", 
+        address: "南京中路十八乡星光小区十九栋1024室", 
+        mobile: "13567678989", 
+        linkMan: "rocky", 
+        defaultAddress: true,
+      },
+      { 
+        areaInfo: "北京市-市辖区-东城区", 
+        address: "safefv", 
+        mobile: "18978004262", 
+        linkMan: "tanghauf", 
+        defaultAddress: false 
+      },
+      { 
+        areaInfo: "北京市-市辖区-东城区", 
+        address: "南京中路十八乡星光小区十九栋1024室", 
+        mobile: "13567678989", 
+        linkMan: "rocky", 
+        defaultAddress: false 
+      },
+      {
+        areaInfo: "北京市-市辖区-东城区",
+        address: "南京中路十八乡星光小区十九栋1024室",
+        mobile: "13567678989",
+        linkMan: "rocky",
+        defaultAddress: false
+      },
+      {
+        areaInfo: "北京市-市辖区-东城区",
+        address: "南京中路十八乡星光小区十九栋1024室",
+        mobile: "13567678989",
+        linkMan: "rocky",
+        defaultAddress: false
+      },
+      {
+        areaInfo: "北京市-市辖区-东城区",
+        address: "南京中路十八乡星光小区十九栋1024室",
+        mobile: "13567678989",
+        linkMan: "rocky",
+        defaultAddress: false
+      }
+
+],
   }
 })

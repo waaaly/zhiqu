@@ -1,121 +1,28 @@
+var app=getApp();
+var classifyUrl ="https://test.mingrui-gz.com/api/goods-category";
+
 Page({
   data: {
-    cateItems: [
-      {
-        cate_id: 1,
-        cate_name: "护肤",
-        ishaveChild: true,
-        children:
-          [
-            {
-              child_id: 1,
-              name: '洁面皂',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 2,
-              name: '卸妆',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 3,
-              name: '洁面乳',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 4,
-              name: '面部祛角质',
-              image: "../../image/iampic.jpeg"
-            }
-          ]
-      },
-      {
-        cate_id: 2,
-        cate_name: "彩妆",
-        ishaveChild: true,
-        children:
-          [
-            {
-              child_id: 1,
-              name: '气垫bb',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 2,
-              name: '修容/高光',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 3,
-              name: '遮瑕',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 4,
-              name: '腮红',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 5,
-              name: '粉饼',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 6,
-              name: '粉底',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 7,
-              name: '蜜粉/散粉',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 8,
-              name: '隔离霜',
-              image: "../../image/iampic.jpeg"
-            }
-          ]
-      },
-      {
-        cate_id: 3,
-        cate_name: "香水/香氛",
-        ishaveChild: true,
-        children:
-          [
-            {
-              child_id: 1,
-              name: '淡香水EDT',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 2,
-              name: '浓香水EDP',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 3,
-              name: '香体走珠',
-              image: "../../image/iampic.jpeg"
-            },
-            {
-              child_id: 4,
-              name: '古龙香水男士的最爱',
-              image: "../../image/iampic.jpeg"
-            }
-          ]
-      },
-      {
-        cate_id: 4,
-        cate_name: "个人护理",
-        ishaveChild: false,
-        children: []
-      }
-    ],
-    curNav: 1,
-    curIndex: 0
+    cateItems: [],
+    curNav: 0,
+    curIndex: 1,
+    appRequst:"https://mingrui-static.oss-cn-shenzhen.aliyuncs.com//"
   },
-
+  onLoad:function(e){
+    var that=this;
+    wx.request({
+      url: classifyUrl,
+      success:function(e){
+        console.log(e)
+        that.setData({
+          cateItems:e.data.data,
+        })
+        console.log(that.data.cateItems)
+      }
+      
+    });
+    
+  },
   //事件处理函数  
   switchRightTab: function (e) {
     // 获取item项的id，和数组的下标值  
@@ -126,5 +33,13 @@ Page({
       curNav: id,
       curIndex: index
     })
+  },
+  gotoFoodDetail:function(e){
+    console.log(e);
+    var foodName=
+    wx.navigateTo({
+      url: '../foodDetail/foodDetail?foodObj='+JSON.stringify(this.data.testData),
+    })
   }
+
 }) 

@@ -7,6 +7,7 @@ Page({
   data: {
     shangjia: {
       name: "正新鸡排",
+      url:"/template/shopDetail/index?shopName=正新鸡排",
       star: 5,
       sales: 1161,
       src: "http://i4.piimg.com/601998/a88338a6d392a569.jpg",
@@ -21,7 +22,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    
   },
 
   /**

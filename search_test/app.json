@@ -1,13 +1,26 @@
 {
   "pages": [
-    "pages/news/news",
     "pages/index/index",
+    "pages/comfireOrder/comfireOrder",
+    "pages/my/my",
+    "pages/myList/myList",
+    "pages/addAddress/addAddress",
+    
+    "pages/classify/classify",
+    
+    
+    "pages/news/news",
+    
+    
+    
     "pages/car/car",
     "pages/search/search",
-    "pages/order/order",
-    "pages/my/my",
-    "pages/classify/classify"
     
+    
+    "template/shopDetail/index",
+    "pages/personSet/setting",
+    "pages/foodDetail/foodDetail",
+    "pages/useGuide/useGuide"
   ],
   "window": {
     "backgroundTextStyle": "light",

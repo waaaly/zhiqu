@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 20rpx;
 }
 .withAnimate {
   transition: all 100ms ease;
@@ -29,6 +29,7 @@
 }
 .stv-container .tab-bar .tab-active {
   color: #2d80ff;
+  border-bottom: 6rpx solid #2d80ff;
 }
 .stv-container .tab-bar .tab {
   display: flex;
@@ -62,4 +63,30 @@
   display: flex;
   justify-content: center;
   /* padding-top: 200rpx; */
+}
+
+.add_wrap {
+display:block;
+width:95%;
+left:0;
+right:0;
+/* position:absolute; */
+bottom:20rpx;
+margin:0 auto;
+
+}
+
+.button {
+font-size:36rpx;
+height:95rpx;
+line-height:95rpx;
+text-align:center;
+margin:0 auto;
+width:100%;
+-moz-border-radius:10rpx;
+-webkit-border-radius:10rpx;
+border-radius:10rpx;
+background:#ea4a3a;
+color:#fff;
+
 }

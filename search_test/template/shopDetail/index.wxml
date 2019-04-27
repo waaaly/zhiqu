@@ -1,0 +1,37 @@
+
+<import src = "orderPage.wxml"/>
+<import src = "commentPage.wxml"/>
+<import src = "shopPage.wxml"/>
+
+<view class="header-container">
+  <image class='header-bg' src = '../../image/backpic.jpg'></image>
+  <view class='userContent'>
+    <image bindtap='changePhotoImg' class="header-avatar" src="{{userInfo.headUrl}}" ></image>
+    <text class="header-nickname">{{shopName}}</text>
+    <view class='header-userInfo'>
+      <image></image>
+      <text class='header-centertext'></text>
+    </view>
+  </view>
+</view>
+
+<view class="shopcontainer" disable-scroll="true">
+  <view class="header">
+    <block wx:for="{{swiperTitle}}" wx:key="">
+      <view class="title {{index==currentPage?'selected':''}}" data-index="{{index}}"
+      bindtap="turnPage">{{item.text}}</view>
+    </block> 
+  </view>
+  <swiper class="swiper" current="{{currentPage}} 
+  bindchange="turnTitle">
+    <swiper-item id="orderPage">
+      <template is="orderPage" data="{{menu,selected,howMuch,cost,pullBar}}"/>
+    </swiper-item>
+    <swiper-item id="commentPage">
+      <template is="commentPage" data="{{categoryList}}"/>
+    </swiper-item>
+    <swiper-item id="shopPage">
+      <template is="shopPage" data="{{shopName:shopName}}"/>
+    </swiper-item>
+  </swiper>
+</view>

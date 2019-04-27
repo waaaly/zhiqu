@@ -25,12 +25,19 @@
   </view>
 
   <view class='bannerWrap'>
-    <swiper class='swiper-box' previous-margin="54rpx" next-margin='54rpx'
-            indicator-dots="true" indicator-color='#B5B5B5'
-            indicator-active-color='rgb(19, 18, 114)' interval='3000' duration='500'
-            bindchange='swiperChange' circular='true' autoplay="true">
+    <swiper class='swiper-box' 
+            previous-margin="54rpx" 
+            next-margin='54rpx'
+            indicator-dots="true" 
+            indicator-color='#B5B5B5'
+            indicator-active-color='rgb(19, 18, 114)'     
+            interval='3000' 
+            duration='500'
+            bindchange='swiperChange' 
+            circular='true' 
+            autoplay="true">
         <block wx:for="{{swiper.swiperImgList}}">
-            <swiper-item>
+            <swiper-item bindtap= "gotoHotFood">
                 <image class="{{index==swiperIndex?'imageBanner':'imageBanner_small'}}"
                        src="{{item}}" id='{{item.url}}' bindtap='imageClick'></image>
             </swiper-item>
@@ -38,7 +45,7 @@
     </swiper>
 </view>
 <view class="header-title">附近商家</view>
-<template is="shopSort"/>
+<template is='shopSort' data="{{sortSelected:sortSelected}}"/>
 <block wx:for="{{shangjiaList}}" wx:for-item="item">
   <template is="test" data="{{...item}}"/>
 </block>

@@ -6,6 +6,7 @@
   line-height: 80rpx;
   font-size: 31rpx;
   font-weight: 600;
+  color: #1b82d1;
 }
 .restaurants-list{
   font-size: 25rpx;

@@ -7,12 +7,12 @@
       </view> -->
       <view data-index="0"
             bindtap="onTapTag" 
-            class="sort {{selected == 0?'sort-active':''}}">
+            class="sort {{sortSelected == 0?'sort-active':''}}">
             服务排名
       </view>
       <view data-index="1"
             bindtap="onTapTag" 
-            class="sort {{selected == 1?'sort-active':''}}">
+            class="sort {{sortSelected == 1?'sort-active':''}}">
             距离排名
       </view>
       <!-- <view class="sort"

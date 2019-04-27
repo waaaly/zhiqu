@@ -1,0 +1,62 @@
+<import src="../../template/orderList/orderList.wxml"/>
+<view class="stv-container">
+  <view class="tab-bar">
+    <view wx:for="{{tabs}}" wx:key="unique" data-index=
+    "{{index}}" bindtap="handlerTabTap" class="tab {{activeTab==index?'tab-active':''}}" style="width: {{stv.windowWidth/tabs.length}}px">
+      <text>{{item}}</text>
+    </view>
+    <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
+  </view>
+  <view class="scroll-view">
+    <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
+      <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
+        <scroll-view style="height:100%" scroll-y>
+          <black wx:if="{{item=='全部订单'}}">
+            <black wx:for="{{orderListData}}">
+              <template is="orderList" data="{{...item}}"/>
+            </black>
+          </black>
+
+          <black wx:if="{{item=='我的地址'}}">
+            <view style='align-items: center;margin:30rpx 20rpx;display:flex;flex-direction:colunm;justify-content:center;color:#666;' wx:if="{{userAddress.length==0}}">
+              <text >当前没有默认地址
+              去添加一个详细的收货地址
+              让小趣更好的服务你吧～</text>
+            </view>
+            <view wx:else>
+              
+                <block wx:for="{{userAddress}}" >
+                  <view style='display: flex;flex-direction: column;background: #fff;border-radius: 10rpx;padding: 20rpx 5rpx;margin: 20rpx;'>
+                    <view style="margin-left:12rpx;color:blue;font-size:28rpx;" wx:if="{{item.defaultAddress==true}}">[默认地址]</view>
+                    <view style='margin-left:15rpx;display:flex;flex-direction:row'>
+                      <view style='display: flex;flex-direction: column;width:75%;border-right: 2rpx solid #eee;'>
+                        <view style="">{{item.linkMan}}</view>
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.mobile}}</view>
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.areaInfo}}  {{item.address}}</view>   
+                      </view>
+                      <view style="font-size:13px;display: flex;flex-direction: column;padding:10rpx 0rpx;color:#666;justify-content: space-between;align-items:center;width:25%;">
+                        <view data-index="{{index}}" 
+                              bindtap='delAddress'
+                              style='color:red;'>删除</view>
+                        <view data-index="{{index}}" 
+                              bindtap='editAddress'>修改</view>
+                        <view data-index="{{index}}" 
+                              bindtap='setDefaultAddress'>设为默认</view>
+                      </view> 
+                    </view>                                 
+                  </view>
+                </block>
+              </view>  
+            <view class="add_wrap">
+              <view class="button type_red" style="position:"bindtap="gotoAddress">新增地址</view>
+             </view>
+          </black>
+
+          <block wx:else>
+            <view style='height:100%;display:flex;justify-content:center;align-items:center;'>亲亲～，该模块暂未开发，sorry啦～~</view>
+            </block>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</view>

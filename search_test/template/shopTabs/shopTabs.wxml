@@ -1,8 +1,8 @@
-<!--pages/test.wxml-->
+
 <template name="test">
 <!-- <view class="header-title">附近商家</view> -->
 <!-- <block wx:for="{{restaurant}}"> -->
-    <navigator url="/pages/menu/menu">
+    <navigator url="/template/shopDetail/index?shopName={{name}}">
         <view class="restaurants-list">
             <view class="restaurants-info-image">
                 <image src="{{src}}" class="restaurants-image"/>
