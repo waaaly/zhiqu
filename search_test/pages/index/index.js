@@ -4,12 +4,12 @@ import myDialog from "../../template/loginDialog/loginDialog"
 var QQMapWX = require('../../libs/sdk/qqmap-wx-jssdk.js');
 //实例化api核心类
 var qqmapsdk;
-var util = require('../../utils/util.js')
+var util = require('../../utils/util.js');
     //关联app。js
 var app = getApp();
 Page({
     data: {
-        shangjiaList: [{
+        shangjiaList:[{
                 "name": "正新鸡排",
                 "star": 5,
                 "sales": 1161,

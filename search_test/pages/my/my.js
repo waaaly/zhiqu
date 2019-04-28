@@ -1,5 +1,5 @@
 var app = getApp();
-import loginDialog from "../../template/loginDialog/loginDialog";
+import myDialog from "../../template/loginDialog/loginDialog";
 Page({
     /**
      * 页面的初始数据
@@ -110,6 +110,9 @@ Page({
                                         console.log(res);
                                         //保存后台登录返回的数据
                                         var loginReturnData = res.data.data;
+                                        that.setData({
+                                          userInfo: loginReturnData.userInfo
+                                        })
                                         wx.setStorage({
                                             key: 'userToken',
                                             data: loginReturnData.token,
@@ -303,14 +306,7 @@ Page({
      */
     onShow: function() {
         let that = this
-            // app.getUserInfo(function (userinfo) {
-            //   console.log(userinfo)
-            //   console.log(getApp().globalData.userSign)
-            //   that.setData({
-            //     userinfo: userinfo,
-            //     userSign: getApp().globalData.userSign,
-            //   })
-            // })
+
     },
 
     /**

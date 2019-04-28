@@ -145,7 +145,7 @@ page {
 }
 
 .swiper-box .wx-swiper-dots.wx-swiper-dots-horizontal{
-     margin-bottom: 2rpx;
+     margin-bottom: 10rpx;
 }
 .swiper-box .wx-swiper-dot{
     width:40rpx;
@@ -157,7 +157,7 @@ page {
 .swiper-box .wx-swiper-dot::before{
     content: '';
     flex-grow: 1; 
-    background: rgba(255,255,255,0.8);
+    background: rgba(87, 83, 83, 0.8);
     border-radius: 8rpx
 }
 .swiper-box .wx-swiper-dot-active::before{
@@ -177,8 +177,10 @@ page {
   margin-right: 20rpx;
   position: absolute;
   bottom: 0;
-  border-top-left-radius: 15rpx;
-  border-top-right-radius: 15rpx;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
+  border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx;
 }
 
 .footerView {

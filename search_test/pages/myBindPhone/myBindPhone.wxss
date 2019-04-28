@@ -1,0 +1,3 @@
+/* pages/myBindPhone/myBindPhone.wxss */
+@import "../my/my.wxss";
+@import "../../libs/style/weui.wxss";

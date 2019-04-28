@@ -41,18 +41,40 @@
         </block>
     </swiper>
 </view>
+<view class="header-title" >活动专区</view>
+  <view style='display:flex;height:300rpx;padding:30rpx;'>
+    <view style='background:red;width:50%;height:300rpx;'>
+
+    </view>
+    <view style='background:blue;width:50%;height:300rpx;'>
+
+    </view>
+  </view>
+
+
+
+<view class="header-title">优秀商家</view>
+  <scroll-view scroll-x="true" style=" padding:20rpx;white-space: nowrap; display: flex" >
+
+  <view style="background: red; width: 200px; height: 100px; display: inline-block" ></view>
+  <view style="background: green; width: 200px; height: 100px; display: inline-block"></view>
+  <view style="background: blue; width: 200px; height: 100px; display: inline-block"></view>
+  <view style="background: yellow; width: 200px; height: 100px; display: inline-block"></view>
+</scroll-view>
+
+
 <view class="header-title">附近商家</view>
 <template is='shopSort' data="{{sortSelected:sortSelected}}"/>
 <block wx:for="{{shangjiaList}}" wx:for-item="item">
   <template is="test" data="{{...item}}"/>
 </block>
-  <view class="footerView">
-    <view class="footer">
-      <view class='line'></view>
-      我也是有底线的
-      <view class='line'></view>
-    </view>
+<view class="footerView">
+  <view class="footer">
+    <view class='line'></view>
+    我也是有底线的
+    <view class='line'></view>
   </view>
+</view>
 
 
 

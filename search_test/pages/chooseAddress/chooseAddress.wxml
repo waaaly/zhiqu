@@ -1,0 +1,11 @@
+<!--pages/chooseAddress/chooseAddress.wxml-->
+<view class='hear'>
+  <view class='currentLocation'>
+    <image class='Icon' src="../../image/weizhi.png"></image>
+    <view class='postionText'>广州市番禺区钟敷广场有用俱乐部</view>   
+  </view>
+    <view class='currentLocation' style='align-items:certen;'>
+    <image class='Icon' src="../../image/weizhi.png"></image>
+    <view class='postionText'>点击重新定位</view>   
+  </view>
+</view>

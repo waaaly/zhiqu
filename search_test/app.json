@@ -1,69 +1,70 @@
 {
-    "pages": [
-        "pages/index/index",
-        "pages/my/my",
-        "pages/bindNum/bindNum",
-
-        "pages/comfireOrder/comfireOrder",
-
-        "pages/myList/myList",
-        "pages/addAddress/addAddress",
-        "pages/classify/classify",
-        "pages/news/news",
-        "pages/car/car",
-        "pages/search/search",
-        "template/shopDetail/index",
-        "pages/personSet/setting",
-        "pages/foodDetail/foodDetail",
-        "pages/useGuide/useGuide"
-
-    ],
-    "window": {
-        "backgroundTextStyle": "light",
-        "navigationBarBackgroundColor": "#1b82d1",
-        "navigationBarTitleText": "WeChat",
-        "navigationBarTextStyle": "black"
-    },
-    "tabBar": {
-        "color": "#a9b7b7",
-        "selectedColor": "#1b82d1",
-        "borderStyle": "black",
-        "list": [{
-                "selectedIconPath": "/image/shouye.png",
-                "iconPath": "/image/shouye-2.png",
-                "pagePath": "pages/index/index",
-                "text": "首页"
-            },
-            {
-                "selectedIconPath": "/image/fenlei.png",
-                "iconPath": "/image/fenlei-2.png",
-                "pagePath": "pages/classify/classify",
-                "text": "分类"
-            },
-            {
-                "selectedIconPath": "/image/xiaoxi.png",
-                "iconPath": "/image/xiaoxi-2.png",
-                "pagePath": "pages/news/news",
-                "text": "消息"
-            },
-            {
-                "selectedIconPath": "/image/gouwuche.png",
-                "iconPath": "/image/gouwuche-2.png",
-                "pagePath": "pages/car/car",
-                "text": "购物车"
-            },
-            {
-                "selectedIconPath": "/image/wode.png",
-                "iconPath": "/image/wode-2.png",
-                "pagePath": "pages/my/my",
-                "text": "我的"
-            }
-        ]
-    },
-    "permission": {
-        "scope.userLocation": {
-            "desc": "您的位置信息将用于小程序位置信息的效果展示"
-        }
+  "pages": [
+    
+    "pages/chooseAddress/chooseAddress",
+    "pages/index/index",
+    "pages/my/my",
+    "pages/myBindPhone/myBindPhone",
+    "pages/foodDetail/foodDetail",
+    "pages/bindNum/bindNum",
+    "pages/comfireOrder/comfireOrder",
+    "pages/myList/myList",
+    "pages/addAddress/addAddress",
+    "pages/classify/classify",
+    "pages/news/news",
+    "pages/car/car",
+    "pages/search/search",
+    "template/shopDetail/index",
+    "pages/personSet/setting",
+    "pages/useGuide/useGuide"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1b82d1",
+    "navigationBarTitleText": "WeChat",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#a9b7b7",
+    "selectedColor": "#1b82d1",
+    "borderStyle": "black",
+    "list": [
+      {
+        "selectedIconPath": "/image/shouye.png",
+        "iconPath": "/image/shouye-2.png",
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "selectedIconPath": "/image/fenlei.png",
+        "iconPath": "/image/fenlei-2.png",
+        "pagePath": "pages/classify/classify",
+        "text": "分类"
+      },
+      {
+        "selectedIconPath": "/image/xiaoxi.png",
+        "iconPath": "/image/xiaoxi-2.png",
+        "pagePath": "pages/news/news",
+        "text": "消息"
+      },
+      {
+        "selectedIconPath": "/image/gouwuche.png",
+        "iconPath": "/image/gouwuche-2.png",
+        "pagePath": "pages/car/car",
+        "text": "购物车"
+      },
+      {
+        "selectedIconPath": "/image/wode.png",
+        "iconPath": "/image/wode-2.png",
+        "pagePath": "pages/my/my",
+        "text": "我的"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "您的位置信息将用于小程序位置信息的效果展示"
     }
-
+  },
+  "sitemapLocation": "sitemap.json"
 }

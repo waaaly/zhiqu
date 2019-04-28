@@ -1,0 +1,33 @@
+/* pages/chooseAddress/chooseAddress.wxss */
+.hear {
+  z-index: 99;
+  position: fixed;
+  background:#eee; 
+  top: 0;
+  width: 100%;
+  /* border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx; */
+  padding-bottom: 30rpx;
+  padding-top: 20rpx;
+
+}
+.currentLocation {
+  display: flex;
+  margin: 5rpx 5rpx 10rpx 2rpx;
+  color: #666;
+}
+
+.Icon {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.postionText {
+  font-size: 30rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 500rpx;
+  display: flex;
+  /* justify-content: center; */
+}
