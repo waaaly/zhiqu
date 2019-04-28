@@ -90,7 +90,7 @@ page {
   text-overflow: ellipsis;
   width: 500rpx;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .search {

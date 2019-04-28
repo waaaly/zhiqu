@@ -10,7 +10,7 @@
           <view class="title">所在城市</view>
           <view class="item_content">{{userInfo.city}}</view>
         </view>
-        <view class="item_bock">
+        <view class="item_bock" bindtap="bindPhone">
           <view class="title">我的手机</view>
           <view class="item_content">{{userInfo.mobile}}</view>
         </view>

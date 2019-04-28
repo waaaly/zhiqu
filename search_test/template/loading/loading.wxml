@@ -1,0 +1,9 @@
+<template name="Loading">
+  <view class="loading_box" wx:if="{{Loading}}" style='background: {{Class==="show"?"rgba(0, 0, 0, 0)":"rgba(255, 255, 255, .7)"}};'>
+    <view class="loading_items">
+      <view class="loading3 loading3_1"></view>
+      <view class="loading3 loading3_2"></view>
+      <view class="loading3 loading3_3"></view>
+    </view>
+  </view>
+</template>

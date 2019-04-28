@@ -1,7 +1,4 @@
-<!-- <import src="../../template/orderDetail/orderDetail.wxml"/>
-<block wx:for="{{orderData}}" >
-<template is="orderDetail" data="{{...item}}"> </template>
-</block> -->
+
 <import src="../../template/loginDialog/loginDialog.wxml" />
 <template is="dialog" data="{{...myDialog}}" />
 <import src="../../template/shopTabs/shopTabs.wxml"/>
@@ -9,7 +6,7 @@
 
 
 <view class='hear'>
-  <view class='currentLocation'bindtap="chooseLocation">
+  <view class='currentLocation'bindtap="userChooseLocation">
        <image class='Icon' src="../../image/weizhi.png"></image>
     <view class='postionText'>{{currentLocation}}</view>
   </view>
