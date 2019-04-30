@@ -14,7 +14,7 @@
         </view>
     </view>
     <!-- //引导用户绑定手机号 -->
-    <view class="wrapper">
+    <view wx:if="{{!userInfo.phone}}" class="wrapper">
         <view bindtap="gotoBindPhone" class="weui-cell" style='font-size:30rpx;color:#666;background:#fff;padding:10rpx 0 10rpx 10rpx;border-radius:10rpx'>
             <view class="itemtext">
                 前往绑定手机号获取更优质的服务吧~

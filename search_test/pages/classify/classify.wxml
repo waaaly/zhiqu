@@ -19,7 +19,7 @@
   <!--右侧栏-->
   <view class="nav_right">
     <view class='childBanner'>
-      <image src="{{appRequst+cateItems[curNav].banner_url}}"></image>
+      <image src="{{imageUrl+cateItems[curNav].banner_url}}"></image>
     </view>
     <!--如果有数据，才遍历项-->
     <view wx:if="{{cateItems[curIndex].ishaveChild}}">

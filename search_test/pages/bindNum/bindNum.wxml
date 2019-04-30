@@ -19,6 +19,6 @@
     <text class='code_toast' wx:else>{{countDown}}s</text>
   </view>
  
-  <button class='formBtn {{formData.phone&&formData.code?"active":""}}'
+  <button class='formBtn {{formData.phone&&formData.code?"active":""}}'         
           formType="submit">确定</button>
 </form>

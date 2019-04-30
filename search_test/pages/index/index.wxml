@@ -8,7 +8,7 @@
 <view class='hear'>
   <view class='currentLocation'bindtap="userChooseLocation">
        <image class='Icon' src="../../image/weizhi.png"></image>
-    <view class='postionText'>{{currentLocation}}</view>
+    <view class='postionText' style="padding-top:5rpx">{{currentAddress}}</view>
   </view>
 
   <navigator class='search'
@@ -25,9 +25,7 @@
     <swiper class='swiper-box' 
             previous-margin="54rpx" 
             next-margin='54rpx'
-            indicator-dots="true" 
-            indicator-color='#B5B5B5'
-            indicator-active-color='rgb(19, 18, 114)'     
+            indicator-dots="{{false}}"      
             interval='3000' 
             duration='500'
             bindchange='swiperChange' 
@@ -40,34 +38,44 @@
             </swiper-item>
         </block>
     </swiper>
+    <view class='banner-dot'>
+      <view class='item-dot {{index == swiperIndex ? "active-dot": ""}}' wx:for="{{swiper.swiperImgList}}" wx:key="{{index}}">
+      </view>
+    </view>
 </view>
-<view class="header-title" >活动专区</view>
-  <view style='display:flex;height:300rpx;padding:30rpx;'>
-    <view style='background:red;width:50%;height:300rpx;'>
 
+ <view class="header-title" >活动专区</view> 
+ <view style='display:flex;height:200rpx;padding:30rpx;'>
+    <view style='width:50%;height:200rpx;'>
+      <image style="width:340rpx;height:180rpx;display:inline-block;overflow;"src="http://pic0.one1tree.com.cn/brand/2019/0415/4810704796482540265"></image>
     </view>
-    <view style='background:blue;width:50%;height:300rpx;'>
+    <view style='width:50%;height:200rpx;'>
+       <image style="width:340rpx;height:180rpx;display:inline-block;overflow;"src="http://pic0.one1tree.com.cn/brand/2019/0410/5614624099129098497.jpg"></image>
+    </view> 
+</view>
 
-    </view>
+ <view class="header-title">优秀商家</view> 
+ <scroll-view scroll-x="true" scroll-left="" class="scrollX" >
+  <view style=" margin:20rpx;width: 150px; height: 100rpx; display: inline-block"wx:for="{{shangjiaList}}" >
+  <image style="width:340rpx;height:180rpx;display:inline-block;overflow;"src="http://pic0.one1tree.com.cn/brand/2019/0410/5614624099129098497.jpg"></image>
   </view>
-
-
-
-<view class="header-title">优秀商家</view>
-  <scroll-view scroll-x="true" style=" padding:20rpx;white-space: nowrap; display: flex" >
-
-  <view style="background: red; width: 200px; height: 100px; display: inline-block" ></view>
-  <view style="background: green; width: 200px; height: 100px; display: inline-block"></view>
-  <view style="background: blue; width: 200px; height: 100px; display: inline-block"></view>
-  <view style="background: yellow; width: 200px; height: 100px; display: inline-block"></view>
+  
 </scroll-view>
 
+<view  class="slide">
+  <view class='slide-bar' >
+     <view class="slide-show" style="width:{{slideWidth}}rpx; margin-left:{{slideLeft<=1 ? 0 : slideLeft+'rpx'}};">
+     </view>
+  </view>
+</view>
 
 <view class="header-title">附近商家</view>
 <template is='shopSort' data="{{sortSelected:sortSelected}}"/>
 <block wx:for="{{shangjiaList}}" wx:for-item="item">
   <template is="test" data="{{...item}}"/>
-</block>
+</block> 
+
+
 <view class="footerView">
   <view class="footer">
     <view class='line'></view>

@@ -2,10 +2,26 @@
 <view class='hear'>
   <view class='currentLocation'>
     <image class='Icon' src="../../image/weizhi.png"></image>
-    <view class='postionText'>广州市番禺区钟敷广场有用俱乐部</view>   
+    <view class='postionText'>{{currentAddress}}</view>   
   </view>
-    <view class='currentLocation' style='align-items:certen;'>
-    <image class='Icon' src="../../image/weizhi.png"></image>
-    <view class='postionText'>点击重新定位</view>   
+    <view class='relocation'>
+    <image class='Icon' src="../../image/relocation.png"></image>
+    <view  bindtap="userChooseAddress" class='postionText'style="font-size:33rpx;">点击重新定位</view>   
   </view>
 </view>
+<view class='body'>
+  <view class='bodyTitle'> 
+    <image class='dizhiIcon' src="../../image/shouye.png"></image>
+    <view class='dizhiFont'>我的收货地址</view>   
+  </view>
+  <scroll-view scroll-y="true" class="addressScroll" >
+      <view class="item" >
+          <view style="">唐华夫
+            <text style="margin-left:30rpx;font-size:30rpx;margin-right:10rpx;color:#666;">15078541727</text>
+          </view>
+          <view style="font-size:30rpx;margin-right:10rpx;color:#666;">广州黄浦区贾庄心存新冻结刘翔1👌</view>   
+      </view>
+  </scroll-view>
+</view>
+
+<button bindtap="gotoAddress" class='footButtom'>新增收货地址</button>

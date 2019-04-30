@@ -1,19 +1,30 @@
 /* pages/chooseAddress/chooseAddress.wxss */
+/*隐藏滚动栏*/
+::-webkit-scrollbar{
+width: 0;
+height: 0;
+color: transparent;
+}
+page{
+  background: #eee;
+  display: flex;
+  flex-direction: column;
+}
 .hear {
   z-index: 99;
   position: fixed;
-  background:#eee; 
+  background:#fff; 
   top: 0;
   width: 100%;
-  /* border-bottom-left-radius: 20rpx;
-  border-bottom-right-radius: 20rpx; */
-  padding-bottom: 30rpx;
+  border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx; 
+  padding-bottom: 15rpx;
   padding-top: 20rpx;
-
+  height: 12%;
 }
 .currentLocation {
   display: flex;
-  margin: 5rpx 5rpx 10rpx 2rpx;
+  margin: 5rpx 5rpx 3rpx 2rpx;
   color: #666;
 }
 
@@ -27,7 +38,70 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 500rpx;
+  width: 100%;
   display: flex;
   /* justify-content: center; */
+}
+.relocation{
+  display: flex;
+  margin: 5rpx;
+  color: #666;
+  border-top:0.5px solid #ddd;
+  padding:20rpx 0 0 240rpx;
+}
+.body{
+  margin-top: 3rpx;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
+  border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx;  
+  height: 75%;
+  background:#fff;
+  position: absolute;
+  top: 15%;
+  width: 100%;
+}
+.bodyTitle{
+  display: flex;
+  flex-direction: row;
+  padding: 5rpx 10rpx;
+}
+.dizhiIcon{
+  height: 30rpx;
+  width:30rpx;
+}
+.dizhiFont{
+  font-size: 28rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 500rpx;
+  display: flex;
+  color: #666;
+}
+.addressScroll{
+  z-index: -999;
+  height:95%; 
+  display: flex;
+  flex-direction:column;
+  }
+.item{
+  /* background: green;  */
+  width: 80%; 
+  
+  border-bottom: 1rpx solid #666;
+  padding-bottom: 10rpx;
+  margin: 20rpx 0 20rpx 70rpx;
+}
+.footButtom{
+  height: 8%;
+  justify-content: center;
+  display: flex;
+  background: #1b82d1;
+  color: #fff;
+  position: absolute;
+  bottom: 10rpx;
+  left: 0;
+  right: 0;
+  margin: 0 5rpx;
 }

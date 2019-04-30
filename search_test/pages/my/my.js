@@ -70,82 +70,14 @@ Page({
         var that = this;
         //查看本地缓存的用户信息
         wx.getStorage({
-            key: "userInfo",
+            key: "userInfoInServer",
             success: function(e) {
                 console.log(e);
                 that.setData({
                     userInfo: e.data
                 });
             },
-            fail: function(res) {
-                myDialog.showModal({
-                    title: "提示",
-                    content: "小程序需要使用您当前的微信号进行登录",
-                    confirmOpenType: "getUserInfo", //如果不设置就是普通弹框
-                    success: (e) => {
-                        console.log("e", e);
-                        //获取到用户信息
-                        let userInfo = e.detail.userInfo;
-                        let rawData = e.detail.rawData;
-
-                        app.globalData.userInfo = userInfo;
-                        wx.login({
-                            success: function(res) {
-                                var code = res.code; //返回code
-                                console.log(code);
-
-                                wx.request({
-                                    url: "https://test.mingrui-gz.com/api/login",
-                                    method: "GET",
-                                    data: {
-                                        code: code,
-                                        rawData: rawData,
-                                    },
-                                    //请求头
-                                    header: {
-                                        "Content-Type": "applciation/json",
-
-                                    },
-                                    success: function(res) {
-                                        console.log(res);
-                                        //保存后台登录返回的数据
-                                        var loginReturnData = res.data.data;
-                                        that.setData({
-                                          userInfo: loginReturnData.userInfo
-                                        })
-                                        wx.setStorage({
-                                            key: 'userToken',
-                                            data: loginReturnData.token,
-                                            success: function(res) {
-                                                console.log('异步保存成功')
-                                            }
-                                        });
-                                        wx.setStorage({
-                                            key: 'userInfo',
-                                            data: loginReturnData.userInfo,
-                                            success: function(res) {
-                                                console.log('异步保存成功')
-                                            }
-                                        });
-                                    },
-                                    fail: function(e) {
-                                        console.log(e);
-                                    }
-                                })
-                            }
-                        });
-                    },
-                    fail: (err) => {
-                        // 用户不小必点到拒绝,提示登录失败
-                        wx.showToast({
-                            title: "用户未登录",
-                            icon: "none"
-                        });
-                    }
-                });
-            }
-        })
-
+        });
     },
     toLogin: function(e) {
         let that = this;

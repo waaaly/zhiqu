@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "智趣商城",
+  "usingComponents": {
+    "skeleton": "/component/skeleton/skeleton"
+}
+}

@@ -92,6 +92,7 @@ Page({
     this._updateSelectedPage(e.currentTarget.dataset.index);
   },
   gotoAddress:function(e){
+    
     wx.navigateTo({
       url: '../addAddress/addAddress',
     })

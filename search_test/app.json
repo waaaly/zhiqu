@@ -1,12 +1,12 @@
 {
   "pages": [
-    
-    "pages/chooseAddress/chooseAddress",
+    "pages/login/login",
     "pages/index/index",
+    "pages/bindNum/bindNum",
+    "pages/chooseAddress/chooseAddress",
     "pages/my/my",
     "pages/myBindPhone/myBindPhone",
     "pages/foodDetail/foodDetail",
-    "pages/bindNum/bindNum",
     "pages/comfireOrder/comfireOrder",
     "pages/myList/myList",
     "pages/addAddress/addAddress",

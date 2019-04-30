@@ -1,7 +1,10 @@
 const ApiRootUrl = 'https://test.mingrui-gz.com/api/';
 
 module.exports = {
-    AuthLoginByWeixin: ApiRootUrl + '/login', //登录接口
+    AuthLoginByWeixin: ApiRootUrl + 'login', //登录接口
+
+    GetPhoneCode: ApiRootUrl+'phone-bind',//获取手机验证码
+    CheckPhoneCode: ApiRootUrl + 'phone-verification',//校验手机验证码
 
     IndexUrl: ApiRootUrl + 'index/index', //首页数据接口
     CatalogList: ApiRootUrl + 'catalog/index', //分类目录全部分类数据接口
