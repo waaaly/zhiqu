@@ -13,22 +13,24 @@
     <block wx:for="{{cateItems}}">
       <!--当前项的id等于item项的id，那个就是当前状态-->
       <!--用data-index记录这个数据在数组的下标位置，使用data-id设置每个item的id值，供打开2级页面使用-->
-      <view class="nav_left_items {{curNav == index ? 'active' : ''}}" bindtap="switchRightTab" data-index="{{index}}" data-id="{{index}}">{{item.keywords}}</view>
+      <view class="nav_left_items {{curNav == index ? 'active' : ''}}" bindtap="switchRightTab" data-index="{{index}}" data-id="{{index}}">{{item.name}}</view>
     </block>
   </view>
   <!--右侧栏-->
   <view class="nav_right">
     <view class='childBanner'>
-      <image src="{{imageUrl+cateItems[curNav].banner_url}}"></image>
+      <image style="height:150px;width:220px;"src="{{cateItems[curNav].banner_url}}" mode="scaleToFill" ></image>
     </view>
     <!--如果有数据，才遍历项-->
-    <view wx:if="{{cateItems[curIndex].ishaveChild}}">
-      <block wx:for="{{cateItems[curIndex].children}}" wx:for-item="foodItem">
+    <view wx:if="{{foodList.length!=0}}">
+      <block wx:for="{{foodList}}" wx:for-item="foodItem">
         <view class="nav_right_items">
         <!--界面跳转 -->
-          <view bindtap='gotoFoodDetail' data-foodId="{{foodItem}}">
-            <image src="{{foodItem.image}}"></image>
-            <text>{{foodItem.name}}</text>
+          <view style="position:relative;" bindtap='gotoFoodDetail' data-food="{{foodItem}}">
+            <image wx:if="{{foodItem.is_new}}" style="position: absolute;left: 0rpx;top: 0rpx;width:40rpx;height:40rpx;" src='../../image/new.png'></image>
+            <image wx:elif="{{foodItem.is_hot}}" style="position: absolute;left: 0rpx;top: 0rpx;width:40rpx;height:40rpx;" src='../../image/hot.png'></image>
+            <image src="{{imageUrl+foodItem.primary_pic_url}}"></image>
+            <text>{{foodItem.goods_name}}</text>
           </view>
         </view>
       </block>

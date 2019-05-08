@@ -1,9 +1,9 @@
 <!-- 最外层视图pages -->
 <view class="pages">
  
-  <view wx:if="{{hasList}}">
+  <scroll-view scroll-y="true" style="margin-top:34px;margin-bottom:100rpx" wx:if="{{hasList}}">
   <!-- 编辑 -->
-  <view class='edit'>
+  <view style="position:fixed;top:0rpx;z-index:999;"class='edit'>
   <label class='edit_btn' bindtap='btn_edit'>{{edit_name}}</label>
   </view>
       <!-- 列表 -->
@@ -58,7 +58,7 @@
       <label class='submit' bindtap='btn_submit_order'>提交订单</label>
       </view>
      
-  </view>
+  </scroll-view>
   <view wx:else>
     <view class="list_none">购物车是空的哦~</view>
   </view>

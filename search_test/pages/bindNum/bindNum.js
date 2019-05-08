@@ -12,7 +12,7 @@ Page({
             code: ''
         },
         token:'',
-        userInfo:{},
+      userInfoInServer:{},
     },
     onLoad(options) {
       var that =this;
@@ -29,14 +29,14 @@ Page({
           console.log(e)
         }
       }),
-      //读缓存userInfo
+      //读缓存userInfoInServer
       wx.getStorage({
-        key: 'userInfo',
+        key: 'userInfoInServer',
         success: function(res) {
           console.log(res);
           
           that.setData({
-            userInfo:res.data,
+            userInfoInServer:res.data,
           })
         },
       })
@@ -58,7 +58,7 @@ getPhoneCode() {
     that.timer();
     //连接服务器进行获取验证码操作
   console.log(that.data.token);
-  console.log(that.data.userId);
+  console.log(that.data.userInfoInServer.id);
   console.log(formData.phone);
     wx.request({
       url: APIURL.GetPhoneCode,
@@ -67,7 +67,7 @@ getPhoneCode() {
         'Authorization': 'Bearer ' + that.data.token
       },
       data:{
-        userId: that.data.userInfo.id,
+        userId: that.data.userInfoInServer.id,
         phone: formData.phone,
       },
       success:function(e){
@@ -109,6 +109,7 @@ getPhoneCode() {
       return false;
     }
     //连接服务器进行验证码手机号验证操作
+    console.log(formData.code);
     wx.request({
       url: APIURL.CheckPhoneCode,
       header: {//请求头
@@ -116,31 +117,34 @@ getPhoneCode() {
         'Authorization': 'Bearer ' + that.data.token
       },
       data: {
-        userId: that.data.userId,
+        userId: that.data.userInfoInServer.id,
         phone: formData.phone,
         verificationCode: formData.code 
       },
       success:function(e){
         var msg = e.data.msg;
+        console.log(e);
         wx.showToast({
           title: msg,
         });
-        if(msg==="绑定成功"){
-          var str="userInfo.phone"
+        if(msg=="绑定成功"){
+          var temp = that.data.userInfoInServer;
+          console.log(temp);
+          temp.phone = formData.phone;
           that.setData({
-            [str]:phone,
+            userInfoInServer:temp,
           })
           //绑定成功后更新到本地缓存
           wx.setStorage({
-            key: 'userInfo',
-            data: that.userInfo,
+            key: 'userInfoInServer',
+            data: that.userInfoInServer,
           })
           //返回上一级
           wx.navigateBack({
             
           })
         }
-        console.log(e);
+        
       }
     });
     setTimeout(() => {

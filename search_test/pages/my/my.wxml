@@ -5,16 +5,16 @@
     <view class="avatar-wrapper">
         <view>
             <view class="avatar" bindtap="gotoSetting">
-                <image style="border-radius:50%;" src="{{userInfo.avatar ? userInfo.avatar:'../../image/iampic.jpeg'}}"></image>
+                <image style="border-radius:50%;" src="{{userInfoInServer.avatar ? userInfoInServer.avatar:'../../image/bangzhufankui.png'}}"></image>
             </view>
             <view class="text">
-                <text wx:if="{{userInfo.nickname}}">{{userInfo.nickname}}</text>
+                <text wx:if="{{userInfoInServer.nickname}}">{{userInfoInServer.nickname}}</text>
                 <text wx:else bindtap="toLogin">使用微信登录</text>
             </view>
         </view>
     </view>
     <!-- //引导用户绑定手机号 -->
-    <view wx:if="{{!userInfo.phone}}" class="wrapper">
+    <view wx:if="{{!userInfoInServer.phone}}" class="wrapper">
         <view bindtap="gotoBindPhone" class="weui-cell" style='font-size:30rpx;color:#666;background:#fff;padding:10rpx 0 10rpx 10rpx;border-radius:10rpx'>
             <view class="itemtext">
                 前往绑定手机号获取更优质的服务吧~
@@ -25,7 +25,7 @@
         </view>
     </view>
     <!-- 个人中心展示 -->
-    <block wx:if="{{userInfo}}" wx:for="{{menuItems}}" wx:for-index="itemIndex">
+    <block wx:if="{{userInfoInServer}}" wx:for="{{menuItems}}" wx:for-index="itemIndex">
         <view class="wrapperItem">
             <view bindtap="naviTo" data-item="{{itemIndex}}" data-childId="0" class="weui-cell weui-cell_access" hover-class="none">
                 <view class="itemtext">

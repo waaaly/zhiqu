@@ -1,11 +1,13 @@
 // pages/chooseAddress/chooseAddress.js
+var app=getApp();
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    currentAddress:""
+    currentAddress:"",
+    userAddressInServer:[]
   },
 
   /**
@@ -13,9 +15,44 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-    that.setData({
-      currentAddress:options.currentAddress,
-    })
+    if(!wx.getStorageSync("userAddressInServer")){
+      //读取后台的地址数据
+      wx.request({
+        url: APIURL.AddressList,
+        data: {
+          code: wx.getStorageSync("userCode"),
+          rawData: wx.getStorageSync("userInfoInServer"),
+          userId: wx.getStorageSync("userInfoInServer").id,
+        },
+        method: "GET",
+        //请求头
+        header: {
+          "Content-Type": "applciation/json",
+          'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+        },
+        success: function (e) {
+          console.log(e)
+          wx.setStorage({
+            key: 'userAddressInServer',
+            data: e.data,
+            success:function(res){
+              that.setData({
+                userAddressInServer:e.data,
+                currentAddress: options.currentAddress
+              })
+            }
+          })
+        },
+        fail: function (e) {
+          console.log(e);
+        }
+      }); 
+    }else{
+      that.setData({
+        userAddressInServer: wx.getStorageSync("userAddressInServer"),
+        currentAddress: options.currentAddress
+      })
+    } 
   },
   userChooseAddress:function(e){
     var that = this;
@@ -34,7 +71,20 @@ Page({
     })
   },
   gotoAddress:function(e){
-    
+    wx.navigateTo({
+      url: '../addAddress/addAddress?currentAddress=' + this.data.currentAddress,
+    })
+  },
+  gotoBack:function(e){
+    var clickAddressObj = this.data.userAddressInServer[e.currentTarget.dataset.id];
+    // console.log(clickAddressObj);
+    wx.setStorage({
+      key: 'userClickAddressObj',
+      data: clickAddressObj,
+    })
+    wx.navigateBack({
+      
+    })
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -46,8 +96,12 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: function (e) {
+    var that = this;
 
+    that.setData({
+      userAddressInServer: wx.getStorageSync("userAddressInServer"),
+    })
   },
 
   /**

@@ -11,7 +11,7 @@ module.exports = {
     CatalogCurrent: ApiRootUrl + 'catalog/current', //分类目录当前分类数据接口
 
     GoodsCount: ApiRootUrl + 'goods/count', //统计商品总数
-    GoodsList: ApiRootUrl + 'goods/list', //获得商品列表
+    GoodsList: ApiRootUrl + 'goods-list', //获得商品列表
     GoodsCategory: ApiRootUrl + 'goods-category', //获得分类数据
     GoodsDetail: ApiRootUrl + 'goods-detail', //获得商品的详情
     GoodsNew: ApiRootUrl + 'goods/new', //新品
@@ -48,10 +48,11 @@ module.exports = {
     SearchHelper: ApiRootUrl + 'search/helper', //搜索帮助
     SearchClearHistory: ApiRootUrl + 'search/clearhistory', //搜索帮助
 
-    AddressList: ApiRootUrl + 'address/list', //收货地址列表
+    AddressList: ApiRootUrl + 'address-list', //收货地址列表
     AddressDetail: ApiRootUrl + 'address/detail', //收货地址详情
-    AddressSave: ApiRootUrl + 'address/save', //保存收货地址
-    AddressDelete: ApiRootUrl + 'address/delete', //保存收货地址
+    AddressSave: ApiRootUrl + 'address-save', //保存收货地址
+    AddressUpdate: ApiRootUrl + 'address-update', //修改收货地址
+    AddressDelete: ApiRootUrl + 'address-delete', //删除地址
 
     RegionList: ApiRootUrl + 'region/list', //获取区域列表
 

@@ -1,7 +1,8 @@
 
 //获取应用实例 
 var app = getApp();
-// var userInfo = app.get_user_info();
+const APIURL = require("../../../utils/api.js");
+var userInfoInServer = wx.getStorageSync("userInfoInServer");
 // console.log(userInfo);
 //引入这个插件，使html内容自动转换成wxml内容
 // var WxParse = require('../../wxParse/wxParse.js');
@@ -48,10 +49,10 @@ Page({
     console.log("11111");
     console.log(e);
     console.log("1111111");
-    var userInfo = app.get_user_info();
-    if ((!userInfo) || (!userInfo.userid)) {
+   
+    if (!userInfoInServer.phone) {
       wx.navigateTo({
-        url: '/pages/login/login',
+        url: '/pages/bindNum/bindNum',
       })
       return;
     }
@@ -119,36 +120,63 @@ Page({
   },
   // 传值
   onLoad: function (option) {
+    wx.showToast({
+      title: "加载中",
+      icon: 'loading',
+      duration: 1000
+    })
     console.log(option);
+    wx.request({
+      url: APIURL.GoodsDetail,
+      data: {
+        code: wx.getStorageSync("userCode"),
+        rawData: wx.getStorageSync("userInfo"),
+        gid:option.foodId,
+      },
+      method: "GET",
+      //请求头
+      header: {
+        "Content-Type": "applciation/json",
+        'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+      },
+      success: function (e) {
+        console.log(e)
+
+      },
+      fail: function (e) {
+        console.log(e);
+      }
+    }); 
     //this.initNavHeight();
-    var that = this;
-    that.setData({
-      price_type: option.price_type,
-      is_sharekanjia: option.sharekanjia,
-      productid: option.productid,
-      jiantuanid: option.jiantuanid
-    });
-    console.log(that.data.is_sharekanjia);
-    that.loadProductDetail();
-    that.loadCataXiangqing();
+    //var that = this;
+    // 上一层传过来的商品属性
+    // that.setData({
+    //   price_type: option.price_type,
+    //   is_sharekanjia: option.sharekanjia,
+    //   productid: option.productid,
+    //   jiantuanid: option.jiantuanid
+    // });
+    // console.log(that.data.is_sharekanjia);
+    // that.loadProductDetail();
+    // that.loadCataXiangqing();
 
 
-    //从本地读取
-    var option_list_str = wx.getStorageSync("option_list_str");
+    // //从本地读取
+    // var option_list_str = wx.getStorageSync("option_list_str");
 
-    console.log("获取商城选项数据：" + option_list_str + '333333333');
+    // console.log("获取商城选项数据：" + option_list_str + '333333333');
 
-    if (!option_list_str) {
-      return null;
-    }
+    // if (!option_list_str) {
+    //   return null;
+    // }
 
-    var option_list = JSON.parse(option_list_str);
+    // var option_list = JSON.parse(option_list_str);
 
-    if (option_list.wxa_show_kucun_xiaoliang) {
-      that.setData({
-        wxa_show_kucun_xiaoliang: option_list.wxa_show_kucun_xiaoliang
-      });
-    }
+    // if (option_list.wxa_show_kucun_xiaoliang) {
+    //   that.setData({
+    //     wxa_show_kucun_xiaoliang: option_list.wxa_show_kucun_xiaoliang
+    //   });
+    // }
 
 
   },
@@ -612,10 +640,10 @@ Page({
   //添加到收藏
   addFavorites: function (e) {
     var that = this;
-    var userInfo = app.get_user_info();
-    if ((!userInfo) || (!userInfo.userid)) {
+    
+    if (!userInfoInServer.phone) {
       wx.navigateTo({
-        url: '/pages/login/login',
+        url: '/pages/bindNum/bindNum',
       })
       return;
     }
@@ -655,16 +683,13 @@ Page({
       },
     });
   },
-
-  addShopCart: function (e) { //添加到购物车
-
+  //添加到购物车
+  addShopCart: function (e) { 
+    var that =this ;
     console.log("xxxxxxxxxx");
-    var that = this;
-    var userInfo = app.get_user_info();
-    if ((!userInfo) || (!userInfo.userid)) {
-      console.log("xxxxxxxxxx1");
+    if (!userInfoInServer.phone) {
       wx.navigateTo({
-        url: '/pages/login/login',
+        url: '/pages/bindNum/bindNum',
       })
       return;
     }

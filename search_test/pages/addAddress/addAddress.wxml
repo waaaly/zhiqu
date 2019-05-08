@@ -4,20 +4,20 @@
         <view class="row-wrap">
             <view class="label">联系人</view>
             <view class="label-right">
-                <input id="1" name="linkMan" class="input" type="text" placeholder="姓名" value="{{addressObj.linkMan}}" bindinput="getInput"/>
+                <input id="1" name="contact" class="input" type="text" placeholder="姓名" value="{{addressEdit.contact}}" bindinput="getInput"/>
             </view>
         </view>
         <view class="row-wrap">
             <view class="label">联系手机</view>
             <view class="label-right">
-                <input id="2" name="mobile" class="input" maxlength="11" type="number" placeholder="11位手机号码" value="{{addressObj.mobile}}" bindinput="getInput"/>
+                <input id="2" name="mobile" class="input" maxlength="11" type="number" placeholder="11位手机号码" value="{{addressEdit.phone}}" bindinput="getInput"/>
             </view>
         </view>
         <view class="row-wrap" bindtap="selectCity">
             <view class="label">所在地区</view>
-              <view bindtap='selectDistrict' class="picker hui" wx:if="{{addressObj.areaInfo===''}}">点击选择所在地区</view>
+              <view bindtap='selectDistrict' class="picker hui" wx:if="{{addressEdit.area_info===''}}">点击选择所在地区</view>
               <view bindtap="selectDistrict" class="picker" wx:esle>
-                {{addressObj.areaInfo}}
+                {{addressEdit.area_info}}
               </view>
 
         </view>
@@ -25,14 +25,14 @@
             <view class="label">详细地址</view>
             <view class="label-right">
                 <!--<input class="input" type="text" placeholder="街道门牌信息"/>-->
-                <textarea name="address" auto-height placeholder="更详细的地址小趣能更好的服务哦～"  value="{{addressObj.address}}" id="3" bindinput="getInput"/>
+                <textarea name="address" auto-height placeholder="更详细的地址小趣能更好的服务哦～"  value="{{addressEdit.address}}" id="3" bindinput="getInput"/>
             </view>
         </view>
         <view class="row-wrap">
             <view class="label">设为默认地址</view>
             <view style='position:fixed;left:100px;'>
               <checkbox-group bindchange="checkboxChange">
-                <checkbox value="flase" checked="{{addressObj.defaultAddress}}" ></checkbox>
+                <checkbox value="flase" checked="{{addressEdit.default_address}}" ></checkbox>
               </checkbox-group>
             </view>
         </view>

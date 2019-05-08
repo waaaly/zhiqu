@@ -6,13 +6,21 @@
           <view class="title">昵称</view>
           <view class="item_content">{{userInfo.nickName}}</view>
         </view>
+         <view class="item_bock">
+          <view class="title">性别</view>
+          <view class="item_content">{{userInfo.gender}}</view>
+        </view>
         <view class="item_bock">
           <view class="title">所在城市</view>
           <view class="item_content">{{userInfo.city}}</view>
         </view>
         <view class="item_bock" bindtap="bindPhone">
-          <view class="title">我的手机</view>
-          <view class="item_content">{{userInfo.mobile}}</view>
+          <view class="title">绑定手机</view>
+          <view class="item_content">{{userInfoInServer.phone}}</view>
+        </view>
+        <view class="item_bock" bindtap="bindPhone">
+          <view class="title">创建时间</view>
+          <view class="item_content">{{userInfoInServer.created_at}}</view>
         </view>
         <!-- <view class="item_bock">
           <view class="title">收货地址</view>
@@ -22,7 +30,7 @@
     
   </scroll-view>
   </view>
-  <button class='btn1' open-type='openSetting'>
+  <button class='btn1' bindtap='loginOut'>
     <image class='btnImg' src='../../image/wechat.png'></image>
     <view>退出当前账号</view>
  </button>

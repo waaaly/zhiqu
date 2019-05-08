@@ -109,8 +109,8 @@
 <!--图文详情头部-->
 <view>
 <view class="swiper-tab">
-  <view class="bre swiper-tab-list {{currentTab==0 ? 'on' : ''}}" data-current="0" bindtap="swichNav">图文详情</view>
-  <view class="swiper-tab-list {{currentTab==1 ? 'on' : ''}}" data-current="1" bindtap="swichNav">产品参数</view>
+  <view class="bre swiper-tab-list {{currentTab==0 ? 'on' : ''}}" data-current="0" bindtap="swichNav">产品详情</view>
+  <view class="swiper-tab-list {{currentTab==1 ? 'on' : ''}}" data-current="1" bindtap="swichNav">商品评价</view>
 </view>
   <!-- 图文详情 -->
   <view style='padding-bottom:100rpx;' wx:if="{{currentTab==0}}">

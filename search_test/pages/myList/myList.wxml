@@ -11,50 +11,91 @@
     <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
       <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
         <scroll-view style="height:100%" scroll-y>
+
           <black wx:if="{{item=='全部订单'}}">
             <black wx:for="{{orderListData}}">
               <template is="orderList" data="{{...item}}"/>
             </black>
           </black>
 
-          <black wx:if="{{item=='我的地址'}}">
+          <black wx:elif="{{item=='我的地址'}}">
             <view style='align-items: center;margin:30rpx 20rpx;display:flex;flex-direction:colunm;justify-content:center;color:#666;' wx:if="{{userAddress.length==0}}">
               <text >当前没有默认地址
               去添加一个详细的收货地址
               让小趣更好的服务你吧～</text>
             </view>
-            <view wx:else>
-              
-                <block wx:for="{{userAddress}}" >
-                  <view style='display: flex;flex-direction: column;background: #fff;border-radius: 10rpx;padding: 20rpx 5rpx;margin: 20rpx;'>
-                    <view style="margin-left:12rpx;color:blue;font-size:28rpx;" wx:if="{{item.defaultAddress==true}}">[默认地址]</view>
+            <scroll-view  scroll-y wx:else style="display:flex;flex-direction:column;height:90%">      
+                <view  wx:for="{{userAddressInServer}}">
+                  <view class='addressCard'>
+                    <view style="margin-left:12rpx;color:blue;font-size:28rpx;" wx:if="{{item.default_address==1}}">[默认地址]</view>
                     <view style='margin-left:15rpx;display:flex;flex-direction:row'>
                       <view style='display: flex;flex-direction: column;width:75%;border-right: 2rpx solid #eee;'>
-                        <view style="">{{item.linkMan}}</view>
-                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.mobile}}</view>
-                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.areaInfo}}  {{item.address}}</view>   
+                        <view style="">{{item.contact}}</view>
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.phone}}</view>
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.area_info}}  {{item.address}}</view>   
                       </view>
-                      <view style="font-size:13px;display: flex;flex-direction: column;padding:10rpx 0rpx;color:#666;justify-content: space-between;align-items:center;width:25%;">
-                        <view data-index="{{index}}" 
-                              bindtap='delAddress'
-                              style='color:red;'>删除</view>
-                        <view data-index="{{index}}" 
-                              bindtap='editAddress'>修改</view>
-                        <view data-index="{{index}}" 
-                              bindtap='setDefaultAddress'>设为默认</view>
+                    <view class="addressDel">
+                      <view data-index="{{index}}" 
+                            bindtap='delAddress'
+                            style='color:red;'>删除</view>
+                      <view data-index="{{index}}" 
+                            bindtap='editAddress'>修改</view>
+                      <view data-index="{{index}}" 
+                            bindtap='setDefaultAddress'>设为默认</view>
                       </view> 
                     </view>                                 
                   </view>
-                </block>
-              </view>  
+                </view>
+              </scroll-view>  
             <view class="add_wrap">
               <view class="button type_red" style="position:"bindtap="gotoAddress">新增地址</view>
              </view>
           </black>
+          
+          <black wx:elif="{{item=='意见反馈'}}">
+            <view style="color:#666;font-size:28rpx">（必选）请选择您想反馈的问题点</view>
+            
+            <view style='background:#fff;padding:10rpx;font-size:35rpx'>
+                <checkbox-group bindchange="checkboxChange">
+                <label style='margin-bottom:15rpx;' wx:for="{{yijianList}}">
+                  <view style='margin-bottom:15rpx;'>
+                  <checkbox value="{{item.value}}" 
+                            checked="{{item.checked}}"/>{{item.value}}</view>
+                </label>
+                </checkbox-group>
+            </view>
+            <view style='padding:20rpx;font-size:30rpx;'>请补充详细问题和意见（{{textareaNum}}/250）
+            </view>
+              <view style='height:200rpx;background:#fff;font-size:30rpx;padding-left:15rpx;padding-top:10rpx;color:#000;'>
+              <textarea style='height:200rpx' maxlength="250" placeholder="请用不少于15个字描述您的意见吧，程序员小哥会努力去修复哦～" value="{{fankuixiangqing}}" bindinput="getInput"/>
+              </view>
+            <view style="color:#666;font-size:28rpx">（可选）请提供相关问题的截图或照片（{{imgArr.length}}/4）</view>
+            <view style='padding: 20rpx 20rpx;background-color: #fff;display: flex;flex-wrap: wrap;align-items: center;'>
+           
+              <!-->显示已经选择的图片-->
+              <block wx:for="{{imgArr}}" wx:key="key">
+                <view class="upFile" bindtap="showImage" style="border-radius: 5px" data-id="{{index}}">
+                    <image class="itemImv" src="{{item}}"></image>
+                    <image class="closeImv" src="https://raw.githubusercontent.com/dt8888/moreImgaes/master/pages/images/delect.png" mode="scaleToFill" catchtap="deleteImv"  data-id="{{index}}"></image>
+                </view>
+              </block>
+               <!-->添加图片按钮-->
+              <view class="chooseView" bindtap="chooseImage" style="border-radius: 5px" wx:if="{{chooseViewShow}}">
+        <image class="chooseImv" style="width:50rpx;height:50rpx;" src="https://raw.githubusercontent.com/dt8888/moreImgaes/master/pages/images/add.png"></image>
+              </view>
+            </view>
+            <button bindtap="submit" type="primary" style='margin-top:80rpx;'>提交</button>
+          </black>
 
           <block wx:else>
-            <view style='height:100%;display:flex;justify-content:center;align-items:center;'>亲亲～，该模块暂未开发，sorry啦～~</view>
-            </block>
+             <view class='emptynone'>
+                <text class='span'>暂无相关的数据</text>
+                <navigator open-type="switchTab" 
+                          class='goindex' 
+                          url="../index/index">去首页逛逛吧~
+                </navigator>
+              </view>
+          </block>
         </scroll-view>
       </view>
     </view>

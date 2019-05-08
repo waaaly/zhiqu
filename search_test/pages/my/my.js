@@ -22,27 +22,28 @@ Page({
             funcs: {
                 id: 1,
                 text: '常用功能',
-                tabs: ['我的收藏', "我的地址", "信用体系", "帮助反馈"],
+                tabs: ['我的收藏', "我的地址",  "意见反馈"],
                 url: '../../pages/myList/myList?pageName=常用功能',
                 icon: '../../image/gongnengfuwu.png',
                 tips: '查看全部功能',
                 items: [
                     { text: '我的收藏', url: '../../pages/myList/myList?id=1', icon: '../../image/wodeshoucang.png' },
                     { text: '我的地址', url: '../../pages/myList/myList?id=2', icon: '../../image/wodedizhi.png' },
-                    { text: '信用体系', url: '../../pages/myList/myList?id=3', icon: '../../image/wodezuji.png' },
-                    { text: '帮助反馈', url: '../../pages/myList/myList?id=4', icon: '../../image/bangzhufankui.png' },
+                    
+                    { text: '意见反馈', url: '../../pages/myList/myList?id=3', icon: '../../image/bangzhufankui.png' },
                 ]
             },
             property: {
                 id: 2,
                 text: '我的资产',
-                tabs: ['我的积分', '我的卡券'],
+              tabs: ['我的积分', "信用体系", '我的卡券'],
                 url: '../../pages/myList/myList?pageName=我的资产',
                 icon: '../../image/wodezichan.png',
                 tips: '查看所有资产',
                 items: [
                     { text: '我的积分', url: '../../pages/myList/myList?id=1', icon: '../../image/wodejifen.png' },
-                    { text: '我的卡券', url: '../../pages/myList/myList?id=1', icon: '../../image/wodekaquan.png' },
+                    { text: '信用体系', url: '../../pages/myList/myList?id=2', icon: '../../image/wodezuji.png' },
+                    { text: '我的卡券', url: '../../pages/myList/myList?id=3', icon: '../../image/wodekaquan.png' },
                 ]
             },
             setting: {
@@ -60,7 +61,7 @@ Page({
             }
         },
 
-        userInfo: null,
+      userInfoInServer: null,
     },
 
     /**
@@ -74,86 +75,87 @@ Page({
             success: function(e) {
                 console.log(e);
                 that.setData({
-                    userInfo: e.data
+                  userInfoInServer: e.data
                 });
             },
         });
     },
     toLogin: function(e) {
         let that = this;
-        console.log(app.globalData.userInfo);
-        if (app.globalData.userInfo == null) {
-            console.log(1111)
+      // console.log(wx.getStorageSync("userInfoInServer"))
+      console.log(that.data.userInfoInServer)
+      if (that.data.userInfoInServer == null) {
             that.useWxLogin();
-        } else {
-            that.setData({
-                userinfo: app.globalData.userInfo,
-            })
+        } 
+    },
+useWxLogin() {
+  var that = this;
+    myDialog.showModal({
+        title: "提示",
+        content: "小程序需要使用您当前的微信号进行登录",
+        confirmOpenType: "getUserInfo", //如果不设置就是普通弹框
+        success: (e) => {
+            console.log("e", e);
+            //获取到用户信息
+            let userInfo = e.detail.userInfo;
+            let rawData = e.detail.rawData;
+
+            
+            wx.login({
+                success: function(res) {
+                    var code = res.code; //返回code
+                    console.log(code);
+
+                    wx.request({
+                        url: "https://test.mingrui-gz.com/api/login",
+                        method: "GET",
+                        data: {
+                            code: code,
+                            rawData: rawData,
+                        },
+                        //请求头
+                        header: {
+                            "Content-Type": "applciation/json",
+                        },
+                        success: function(res) {
+                            console.log(res);
+                            //保存后台登录返回的数据
+                            
+                            var loginReturnData = res.data.data;
+                            that.setData({
+                              userInfoInServer: loginReturnData.userInfo,
+                            })
+                            wx.setStorage({
+                                key: 'userToken',
+                                data: loginReturnData.token,
+                                success: function(res) {
+                                    console.log('异步保存成功')
+                                }
+                            });
+                            wx.setStorage({
+                                key: 'userInfoInServer',
+                                data: loginReturnData.userInfo,
+                                success: function(res) {
+                                    console.log('异步保存成功')
+                                }
+                            });
+                        },
+                        fail: function(e) {
+                            console.log(e);
+                        }
+                    })
+                }
+            });
+        },
+        fail: (err) => {
+            // 用户不小必点到拒绝,提示登录失败
+            wx.showToast({
+                title: "用户未登录",
+                icon: "none"
+            });
         }
-    },
-    useWxLogin() {
-        myDialog.showModal({
-            title: "提示",
-            content: "小程序需要使用您当前的微信号进行登录",
-            confirmOpenType: "getUserInfo", //如果不设置就是普通弹框
-            success: (e) => {
-                console.log("e", e);
-                //获取到用户信息
-                let userInfo = e.detail.userInfo;
-                let rawData = e.detail.rawData;
-
-                app.globalData.userInfo = userInfo;
-                wx.login({
-                    success: function(res) {
-                        var code = res.code; //返回code
-                        console.log(code);
-
-                        wx.request({
-                            url: "https://test.mingrui-gz.com/api/login",
-                            method: "GET",
-                            data: {
-                                code: code,
-                                rawData: rawData,
-                            },
-                            //请求头
-                            header: {
-                                "Content-Type": "applciation/json",
-                            },
-                            success: function(res) {
-                                console.log(res);
-                                //保存后台登录返回的数据
-                                var loginReturnData = res.data.data;
-                                wx.setStorage({
-                                    key: 'userToken',
-                                    data: loginReturnData.token,
-                                    success: function(res) {
-                                        console.log('异步保存成功')
-                                    }
-                                });
-                                wx.setStorage({
-                                    key: 'userInfo',
-                                    data: loginReturnData.userInfo,
-                                    success: function(res) {
-                                        console.log('异步保存成功')
-                                    }
-                                });
-                            },
-                            fail: function(e) {
-                                console.log(e);
-                            }
-                        })
-                    }
-                });
-            },
-            fail: (err) => {
-                // 用户不小必点到拒绝,提示登录失败
-                wx.showToast({
-                    title: "用户未登录",
-                    icon: "none"
-                });
-            }
-        });
-    },
+    });
+},
     naviTo: function(e) {
         console.log(e)
         var item = e.currentTarget.dataset.item;
@@ -212,8 +214,7 @@ Page({
         })
     },
     gotoSetting: function(e) {
-        if (app.globalData.userInfo == null) {
-            console.log(1111)
+      if (this.data.userInfoInServer == null) {
             this.useWxLogin();
         } else {
             wx.navigateTo({

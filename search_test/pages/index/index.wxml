@@ -6,7 +6,7 @@
 
 
 <view class='hear'>
-  <view class='currentLocation'bindtap="userChooseLocation">
+  <view wx:if="{{LocationisShow}}" class='currentLocation'bindtap="userChooseLocation">
        <image class='Icon' src="../../image/weizhi.png"></image>
     <view class='postionText' style="padding-top:5rpx">{{currentAddress}}</view>
   </view>
@@ -55,16 +55,20 @@
 </view>
 
  <view class="header-title">优秀商家</view> 
- <scroll-view scroll-x="true" scroll-left="" class="scrollX" >
-  <view style=" margin:20rpx;width: 150px; height: 100rpx; display: inline-block"wx:for="{{shangjiaList}}" >
-  <image style="width:340rpx;height:180rpx;display:inline-block;overflow;"src="http://pic0.one1tree.com.cn/brand/2019/0410/5614624099129098497.jpg"></image>
+ <scroll-view scroll-x="true" 
+              bindscrolltoupper="touchLeft" 
+              bindscroll="movingOn"
+              class="scrollX" >
+  <view style=" margin-right:20rpx;width: 150px; height: 76px; display: inline-block"wx:for="{{shangjiaList}}" >
+  <image style="width:150px;height:76px;"src="http://pic0.one1tree.com.cn/brand/2019/0410/5614624099129098497.jpg"></image>
+
   </view>
   
 </scroll-view>
 
 <view  class="slide">
   <view class='slide-bar' >
-     <view class="slide-show" style="width:{{slideWidth}}rpx; margin-left:{{slideLeft<=1 ? 0 : slideLeft+'rpx'}};">
+     <view class="slide-show" style="width:{{slideWidth}}rpx;">
      </view>
   </view>
 </view>

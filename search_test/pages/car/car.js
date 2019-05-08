@@ -12,8 +12,35 @@ Page({
     // 默认展示数据
     hasList: true,
     // 商品列表数据
-    list: [{
-      id: 1,
+    list: [
+      {
+        id: 1,
+        title: '园艺大师抗皱精华露',
+        image: '../../image/daifukuan.png',
+        pro_name: "30ml",
+        num: 1,
+        price: 180,
+        selected: true
+      },
+      {
+        id: 2,
+        title: '园艺大师抗皱精华露',
+        image: '../../image/daifukuan.png',
+        pro_name: "30ml",
+        num: 1,
+        price: 180,
+        selected: true
+      },{
+      id: 3,
+      title: '园艺大师抗皱精华露',
+      image: '../../image/daifukuan.png',
+      pro_name: "30ml",
+      num: 1,
+      price: 180,
+      selected: true
+    },
+    {
+      id: 4,
       title: '园艺大师抗皱精华露',
       image: '../../image/daifukuan.png',
       pro_name: "30ml",
@@ -30,6 +57,24 @@ Page({
       price: 62,
       selected: true
     },
+      {
+        id: 2,
+        title: '伊芙琳玫瑰护手霜',
+        image: '../../image/daipingjia.png',
+        pro_name: "25g",
+        num: 1,
+        price: 62,
+        selected: true
+      },
+      {
+        id: 2,
+        title: '伊芙琳玫瑰护手霜',
+        image: '../../image/daipingjia.png',
+        pro_name: "25g",
+        num: 1,
+        price: 62,
+        selected: true
+      },
     {
       id: 2,
       title: '燕麦山羊乳舒缓护手霜',

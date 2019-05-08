@@ -7,6 +7,7 @@ Page({
    */
   data: {
     userInfo:null,
+    userInfoInServer:null,
   },
 
   /**
@@ -14,13 +15,34 @@ Page({
    */
   onLoad: function (options) {
     var that = this;
-    console.log(that.data.userInfo);
+    var jsonStr = wx.getStorageSync("userInfo");
+    var obj = JSON.parse(jsonStr);
+    console.log(obj);
     that.setData({
-      userInfo: app.globalData.userInfo,
-    });
-    console.log(that.data.userInfo);
+      userInfo: obj,
+      userInfoInServer: wx.getStorageSync("userInfoInServer")
+    })
   },
+  loginOut:function(e){
+    wx.showModal({
+      title: '提示',
+      content: "确定退出当前账号？",
+      cancelText: "下次再说",
+      confirmText: "确定登出",
+      confirmColor: "skybule",
+      success:function(e){
+        if (e.cancel) {
 
+        } else {
+          wx.showToast({
+            title: '用户登出！', //提示文字
+            duration: 2000, //显示时长
+            icon: 'none',
+          })
+        }
+      }
+    })
+  },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */

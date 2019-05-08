@@ -103,53 +103,49 @@ Page({
         size: 14,
         interval: 20, // 时间间隔
         sortSelected: 0, //商家排序方式
+        slideWidth:12,//scroll滑块长度
+      LocationisShow:true,
     },
 
     onReady: function(e) {
 
     },
 
-    onLoad: function() {
-        var that = this;
-        //读取本地缓存查看用户是否已经登录
-        var userTokenStorage;
-        wx.getStorage({
-            key: 'userToken',
-            success: function(res) {
-                console.log(res);
-                userTokenStorage = res.data;
-            },
-            fail: function(res) {
-            }
-        })
+    onLoad: function(e) {
+      var that = this; 
 
-        // wx.openSetting({
-
-        // })
         //引入TX地图SDK
         qqmapsdk = new QQMapWX({
-            key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
+          key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
         });
         //根据当前的经纬度获取用户当前地址信息
         var postion = that.data.currentAddress;
         qqmapsdk.reverseGeocoder({
-            success: function(res) {
-                //成功后显示当前的地址信息
-                var res = res.result;
-                postion = postion + res.address_component.district + res.address_component.street_number;
-                console.log(res);
-                console.log(postion);
-                that.setData({
-                    currentAddress: postion
-                })
-            },
-            fail: function(e) {
-                console.log(e)
-              that.setData({
-                currentAddress: '出了点问题小趣正在努力处理中～'
-              })
-            }
-        });
+          success: function (res) {
+            //成功后显示当前的地址信息
+            var res = res.result;
+            postion = postion + res.address_component.district + res.address_component.street_number;
+            console.log(res);
+            console.log(postion);
+            that.setData({
+              currentAddress: postion
+            })
+          },
+          fail: function (e) {
+            console.log(e)
+            that.setData({
+              currentAddress: '出了点问题小趣正在努力处理中～'
+            })
+          }
+        });     
+    },
+    onShow:function(e){
+      var addressObj = wx.getStorageSync("userClickAddressObj")
+      if (addressObj) {
+        this.setData({
+          currentAddress: addressObj.address,
+        })
+      }
     },
     //swiper页面切换事件
     swiperChange: function(e) {
@@ -173,6 +169,25 @@ Page({
         url: '../chooseAddress/chooseAddress?currentAddress='+that.data.currentAddress,
       })
     },
+    touchLeft:function(e){
+      this.setData({
+        slideWidth: 12,
+      })
+    },
+
+    movingOn:function(e){
+    //  console.log (e.detail.scrollLeft)
+        var slideMove = (e.detail.scrollLeft/786)*200;
+      if (slideMove>=188){
+          this.setData({
+            slideWidth: 200,
+          })
+        }else{
+          this.setData({
+            slideWidth: 12 + slideMove,
+          })
+        }
+    },
     //切换附近商家排序条件
     onTapTag: function(e) {
         console.log(e)
@@ -180,5 +195,17 @@ Page({
         that.setData({
             sortSelected: e.currentTarget.dataset.index,
         })
+    },
+    onPageScroll:function(e){
+      // console.log(e)
+      if(e.scrollTop>=8){
+        this.setData({
+          LocationisShow:false
+        })
+      }else{
+        this.setData({
+          LocationisShow: true
+        })
+      }
     }
 })

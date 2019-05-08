@@ -3,13 +3,13 @@ const APIURL=require("../../utils/api.js");
 Page({
   data: {
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
-    showSkeleton: wx.getStorageSync("userInfo")
+    showSkeleton: false
   },
   onLoad:function(){ 
     var that = this;
     setTimeout(() => {
       that.setData({
-        showSkeleton: false
+        showSkeleton: false    
       })
     }, 2000)
   },

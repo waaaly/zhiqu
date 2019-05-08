@@ -1,5 +1,6 @@
 // pages/user/address/choseaddress/chose.js
 var address = require('../../utils/city.js');
+const APIURL = require("../../utils/api.js");
 var animation;
 var app=getApp();
 var addressArray = [];
@@ -9,27 +10,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    // addressData: '',
-    // provinces: [],//存储省份的数据
-    // citys: [],//存储城市
-    // districts: [],//存储区县的数据
-    // selProvince: '省/',
-    // selCity: '市',
-    // selDistrict: '城区',
-    // selProvinceIndex: 0,
-    // selCityIndex: 0,
-    // selDistrictIndex: 0,
-    // provinceid: '',//存储获取到省份的id
-    // citysid: '',//存储获取到的城市的id
-    // streetid: '',//存储获取到的街市id
-    // savepid: '',
-    // savecid: '',
-    // savesid: '',
-    // readyid: '',//上一级页面传过来的地址ID
-    // url: '',
-    // showtitle: '',
-    // addressisdeafutl: '',
-
     isVisible: false,
     animationData: {},
     animationAddressMenu: {},
@@ -38,14 +18,18 @@ Page({
     provinces: [],
     citys: [],
     areas: [],
-    addressObj:{
-      areaInfo: '',// 地区
+    addressEdit:{
+      id:0,//地址id从1开始自增
+      user_id:wx.getStorageSync("userInfoInServer").id,//用户id
+      area_info: '',// 地区
       address: '',//详细地址
-      mobile: '',//手机👌
-      linkMan: '',//姓名
-      defaultAddress: true,//是否默认地址
+      phone: '',//手机👌
+      contact: '',//姓名
+      default_address: true,//是否默认地址
     },
-    editAddressIndex:""//上一层传过来的地址信息的数组下标
+    editAddressId:"",//上一层传过来的地址信息的数组下标
+    userInfoInServer:{},//后台数据库中的用户信息
+    userAddressInServer:[],//后台保存的地址数组
   },
   selectCity: function () {
 
@@ -117,58 +101,85 @@ Page({
       })
       return
     }
-    //修改地址，将修改后的副给原来的
-    if(that.data.editAddressIndex!=""){
-      addressArray[that.data.editAddressIndex] = that.data.addressObj;
+
+    console.log(that.data.addressEdit);
+    //新增地址
+    if(this.data.addressEdit.id==0){
+      wx.request({
+        url: APIURL.AddressSave,
+        data: {
+          code: wx.getStorageSync("userCode"),
+          rawData: wx.getStorageSync("userInfoInServer"),
+          userAddress: [that.data.addressEdit],
+        },
+        method: "POST",
+        //请求头
+        header: {
+          "Content-Type": "applciation/json",
+          'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+        },
+        success: function (e) {
+          console.log(e)
+          wx.showToast({
+            title: "添加成功",
+          })
+          wx.navigateBack({
+          })
+        },
+        fail: function (e) {
+          console.log(e);
+        }
+      }); 
+      /*修改并保存地址*/
     }else{
-      //新增地址，将地址信息插入到页面的数据中
-      if (that.data.addressObj.defaultAddress == true) {
-        //保证只有一个默认地址
-        addressArray[0].defaultAddress = false;
-        addressArray.unshift(that.data.addressObj);
-      } else {
-        addressArray.push(that.data.addressObj);
-      }
+      console.log(that.data.addressEdit);
+      wx.request({
+        url: APIURL.AddressUpdate,
+        data: {
+          code: wx.getStorageSync("userCode"),
+          rawData: wx.getStorageSync("userInfoInServer"),
+          // userAddress: [that.data.addressEdit],
+          user_id: wx.getStorageSync("userInfoInServer").id,
+          id: that.data.addressEdit.id,
+          area_info: that.data.addressEdit.area_info,
+          address: that.data.addressEdit.address,
+          contact: that.data.addressEdit.contact,
+          phone: that.data.addressEdit.phone,
+          default_address:that.data.addressEdit.default_address,
+        },
+        method: "POST",
+        //请求头
+        header: {
+          "Content-Type": "applciation/json",
+          'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+        },
+        success: function (e) {
+          console.log(e)
+          wx.showToast({
+            title: "修改成功",
+            duration: 1000
+          })
+          if (e.data.msg =="修改成功"){
+            wx.navigateBack({
+            })
+          }           
+        },
+        fail: function (e) {
+          console.log(e);
+        }
+      }); 
     }
     
-    console.log(addressArray);
-    //将地址信息保存成全局变量
-    app.globalData.userAddress = addressArray;
-    console.log(app.globalData.userAddress);
-    wx.showToast({
-          title: "保存成功",
-        })
-    wx.navigateBack({
-        })
-
-    // wx.request({
-    //   url: that.data.url,
-    //   data: {
-    //     token: getApp().globalData.token,
-    //     provinceId: that.data.savepid,
-    //     cityId: that.data.savecid,
-    //     districtId: that.data.savesid,
-    //     linkMan: linkMan,
-    //     address: address,
-    //     mobile: mobile,
-    //     // code: code,
-    //     isDefault: that.data.addressisdeafutl,
-    //     id: that.data.readyid
-    //   },
-    //   success: function (sucs) {
-    //     wx.showToast({
-    //       title: that.data.showtitle,
-    //     })
-    //     wx.navigateBack({
-
-    //     })
-    //   }
-    // })
   },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    wx.showToast({
+      title: "加载中",
+      icon: 'loading',
+      duration: 1000
+    })
     // 初始化动画变量
     var animation = wx.createAnimation({
       duration: 500,
@@ -183,17 +194,58 @@ Page({
       citys: address.citys[id],
       areas: address.areas[address.citys[id][0].id],
     })
-    //读取全局变量中的地址数组
-    addressArray=app.globalData.userAddress;
-    //接受上一层传过来的地址信息和该数据的数组下标
+
+    if (!wx.getStorageSync("userAddressInServer")) {
+      //读取后台的地址数据
+      wx.request({
+        url: APIURL.AddressList,
+        data: {
+          code: wx.getStorageSync("userCode"),
+          rawData: wx.getStorageSync("userInfoInServer"),
+          user_id: wx.getStorageSync("userInfoInServer").id,
+        },
+        method: "GET",
+        //请求头
+        header: {
+          "Content-Type": "applciation/json",
+          'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+        },
+        success: function (e) {
+          console.log(e)
+          wx.setStorage({
+            key: 'userAddressInServer',
+            data: e.data,
+          })
+        },
+        fail: function (e) {
+          console.log(e);
+        }
+      });
+    } 
     this.setData({
-      addressObj:JSON.parse(options.addressInfo),
-      editAddressIndex:options.currentIndex
-    });
-    //修改页面标题
-    wx.setNavigationBarTitle({
-      title: options.title
+      userAddressInServer:wx.getStorageSync("userAddressInServer")
     })
+    if(options.title){
+      //修改页面标题
+      wx.setNavigationBarTitle({
+        title: options.title
+      })
+    }
+    /*编辑地址*/
+    if(options.address){
+      var temp = JSON.parse(options.address);
+      this.setData({
+        addressEdit: temp,
+      })
+    }
+    /*用户携带当前地址传过来*/
+    if (options.currentAddress){
+      var str = "addressEdit.address";
+      this.setData({
+        [str]: options.currentAddress
+      })
+    }
+
   },
   //获取input输入的文本
   getInput:function (e){
@@ -202,20 +254,20 @@ Page({
 
     switch (parseInt(e.currentTarget.id)){
         case 1: 
-          var str = "addressObj.linkMan";
+        var str = "addressEdit.contact";
           this.setData({
             [str]: e.detail.value,
           })
           // console.log(this.data.addressObj.linkMan)
           break;
         case 2:
-          var str = "addressObj.mobile";
+        var str = "addressEdit.phone";
           this.setData({
             [str]: e.detail.value,
           })
           break;
         case 3:
-          var str = "addressObj.address";
+        var str = "addressEdit.address";
           this.setData({
             [str]: e.detail.value,
           })
@@ -223,7 +275,7 @@ Page({
       }
   },
   checkboxChange: function (event) {
-    var str = "addressObj.defaultAddress";
+    var str = "addressEdit.default_address";
     console.log(event)
     if (event.detail.value.length==0){
       this.setData({
@@ -271,7 +323,7 @@ Page({
  
     // 将选择的城市信息显示到输入框
     var areaInfo = that.data.provinces[value[0]].name + '-' + that.data.citys[value[1]].name + '-' + that.data.areas[value[2]].name;
-    var dataAreaInfo = "addressObj.areaInfo";
+    var dataAreaInfo = "addressEdit.area_info";
     //保存城市选择结果
     that.setData({
       [dataAreaInfo]: areaInfo,
@@ -322,7 +374,31 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    //读取后台的地址数据
+      wx.request({
+        url: APIURL.AddressList,
+        data: {
+          code: wx.getStorageSync("userCode"),
+          rawData: wx.getStorageSync("userInfoInServer"),
+          user_id:wx.getStorageSync("userInfoInServer").id,
+        },
+        method: "GET",
+        //请求头
+        header: {
+          "Content-Type": "applciation/json",
+          'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+        },
+        success: function (e) {
+          console.log(e)
+          wx.setStorage({
+            key: 'userAddressInServer',
+            data: e.data,
+          })
+        },
+        fail: function (e) {
+          console.log(e);
+        }
+      }); 
   },
   bindCancel: function () {
     wx.navigateBack({})
@@ -355,30 +431,7 @@ Page({
       wx.stopPullDownRefresh() //停止下拉刷新
     }, 1500);
   },
-  //删除地址
-  deleteAddress: function () {
-    var that = this
-    wx.showModal({
-      title: '确认删除地址吗',
-      content: '',
-      success: function (sure) {
-        wx.request({
-          url: 'https://api.it120.cc/b4bc6fa88ad298e813c236857ec6f67e/user/shipping-address/delete',
-          data: {
-            token: getApp().globalData.token,
-            id: that.data.readyid
-          },
-          success: function () {
-            wx.navigateBack({
-
-            })
-          }
-        })
-      }
-    })
-
-
-  },
+  
   /**
    * 页面上拉触底事件的处理函数
    */

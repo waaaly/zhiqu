@@ -66,6 +66,19 @@ page{
   flex-direction: row;
   padding: 5rpx 10rpx;
 }
+.defalut{
+  border-radius:50%;
+  background:blue;
+  width:60rpx;
+  height:60rpx;
+  display:flex;
+  color:#eee;
+  justify-content:center;
+  position:fixed;
+  left:680rpx;
+  top:300rpx;
+}
+
 .dizhiIcon{
   height: 30rpx;
   width:30rpx;

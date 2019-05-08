@@ -14,12 +14,13 @@
     <image class='dizhiIcon' src="../../image/shouye.png"></image>
     <view class='dizhiFont'>我的收货地址</view>   
   </view>
+  <!-- <view class='defalut'>默</view> -->
   <scroll-view scroll-y="true" class="addressScroll" >
-      <view class="item" >
-          <view style="">唐华夫
-            <text style="margin-left:30rpx;font-size:30rpx;margin-right:10rpx;color:#666;">15078541727</text>
+      <view bindtap="gotoBack" data-id="{{index}}" class="item" wx:for="{{userAddressInServer}}">
+          <view style="">{{item.contact}}
+            <text style="margin-left:30rpx;font-size:30rpx;margin-right:10rpx;color:#666;">{{item.phone}}</text>
           </view>
-          <view style="font-size:30rpx;margin-right:10rpx;color:#666;">广州黄浦区贾庄心存新冻结刘翔1👌</view>   
+          <view style="font-size:30rpx;margin-right:10rpx;color:#666;">{{item.area_info}}{{item.address}}</view>   
       </view>
   </scroll-view>
 </view>

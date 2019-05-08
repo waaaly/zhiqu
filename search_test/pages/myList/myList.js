@@ -1,5 +1,5 @@
 var app=getApp();
-
+const APIURL = require('../../utils/api.js');
 Page({
   data:{
     tabs: [],
@@ -43,16 +43,26 @@ Page({
       tStart: false
     },
     activeTab: 0,
-    userAddress:[],
+    userAddressInServer:[],
+    yijianList://意见列表
+    [
+        { value: '功能异常：功能故障或不可用', checked: false },
+        { value: '产品建议：用的不爽，我有建议', checked: false },
+        { value: '安全问题：密码，隐私、欺诈等', checked: false },
+        { value: '其他问题意见', checked: false }
+    ],
+    textareaMes:"",//用户输入的反馈信息
+    textareaNum:0,//用户当前输入的字符
+    imgArr: [],//用户选择上传的图片
+    chooseViewShow: true,//是否可以添加图片
+  },
 
-  },
-  onShow:function(e){
-    console.log(app.globalData.userAddress)
-    this.setData({
-      userAddress: app.globalData.userAddress,
-    })
-  },
   onLoad:function(options){
+    wx.showToast({
+      title: "加载中",
+      icon: 'loading',
+      duration: 1000
+    })
     try {
         let {tabs} = this.data; 
         var res = wx.getSystemInfoSync()
@@ -70,17 +80,99 @@ Page({
       title:options.pageName
     })
     var that = this;
-    //
+    //设置顶部tabs
     that.setData({
       tabs: JSON.parse(options.tabs),
     })
-    console.log(options);
-    //读取全局的地址数据
-    this.setData({
-      userAddress: app.globalData.userAddress,
+    if(options.pageName=="我的订单"){
+      //读取后台订单
+      wx.request({
+        url: APIURL.OrderList,
+        data: {
+          code: wx.getStorageSync("userCode"),
+          rawData: wx.getStorageSync("userInfo"),
+        },
+        method: "GET",
+        //请求头
+        header: {
+          "Content-Type": "applciation/json",
+          'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+        },
+        success: function (e) {
+          console.log(e)
+          
+        },
+        fail: function (e) {
+          console.log(e);
+        }
+      }); 
+    }
+    if (options.pageName == "常用功能"){
+     
+        //读取后台的地址数据
+        wx.request({
+          url: APIURL.AddressList,
+          data: {
+            code: wx.getStorageSync("userCode"),
+            rawData: wx.getStorageSync("userInfoInServer"),
+            user_id: wx.getStorageSync("userInfoInServer").id,
+          },
+          method: "GET",
+          //请求头
+          header: {
+            "Content-Type": "applciation/json",
+            'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+          },
+          success: function (e) {
+            console.log(e)
+            that.setData({
+              userAddressInServer:e.data,
+            })
+            wx.setStorage({
+              key: 'userAddressInServer',
+              data: e.data,
+            })
+          },
+          fail: function (e) {
+            console.log(e);
+          }
+        });
+
+    }
+    if (options.pageName == "我的资产") {
+
+    }
+    if (options.pageName == "使用指引") {
+
+    }
+  },
+  onShow: function (options){
+    var that = this;
+    wx.request({
+      url: APIURL.AddressList,
+      data: {
+        code: wx.getStorageSync("userCode"),
+        rawData: wx.getStorageSync("userInfoInServer"),
+        user_id: wx.getStorageSync("userInfoInServer").id,
+      },
+      method: "GET",
+      //请求头
+      header: {
+        "Content-Type": "applciation/json",
+        'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+      },
+      success: function (e) {
+        console.log(e)
+        that.setData({
+          userAddressInServer:e.data,
+        })
+        wx.setStorage({
+          key: 'userAddressInServer',
+          data: e.data,
+        })
+      }
     })
   },
-
   _updateSelectedPage(page) {
     let {tabs, stv, activeTab} = this.data;
     activeTab = page;
@@ -92,7 +184,7 @@ Page({
     this._updateSelectedPage(e.currentTarget.dataset.index);
   },
   gotoAddress:function(e){
-    
+
     wx.navigateTo({
       url: '../addAddress/addAddress',
     })
@@ -102,17 +194,18 @@ Page({
     var that=this;
     var currentIndex = e.currentTarget.dataset.index;
     var currentChooseAddress=
-      that.data.userAddress[currentIndex];
+      that.data.userAddressInServer[currentIndex];
     wx.navigateTo({
-      url: '../addAddress/addAddress?addressInfo='+
-        JSON.stringify(currentChooseAddress) + '&currentIndex='+
-        currentIndex + '&title=编辑地址',
+      url: '../addAddress/addAddress?address='+
+        JSON.stringify(currentChooseAddress) + '&title=编辑地址',
     })
   },
   delAddress:function(e){
     var that = this;
     var currentIndex = e.currentTarget.dataset.index;
-    var addressArray = app.globalData.userAddress;
+    var addressId = that.data.userAddressInServer[currentIndex].id;
+    var default_address = that.data.userAddressInServer[currentIndex].default_address;
+    var user_id = that.data.userAddressInServer[currentIndex].user_id;
     wx.showModal({
       title: '提示',
       content: "确定删除该地址吗？",
@@ -123,17 +216,33 @@ Page({
         if (e.cancel) {
           //点击取消,默认隐藏弹框
         } else {
-          addressArray.splice(currentIndex,1);
-          //位于数组第一的为默认地址
-          if (addressArray.length != 0 &&
-              addressArray[0].defaultAddress == false){
-            addressArray[0].defaultAddress=true;
-          };
-          app.globalData.userAddress = addressArray;
-          that.onShow();
-          wx.showToast({
-            title: '删除成功！',
-          })
+          wx.request({
+            url: APIURL.AddressDelete,
+            data: {
+              code: wx.getStorageSync("userCode"),
+              rawData: wx.getStorageSync("userInfoInServer"),
+              id: addressId,
+              default_address: default_address,
+              user_id: user_id,
+            },
+            method: "POST",
+            //请求头
+            header: {
+              "Content-Type": "applciation/json",
+              'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+            },
+            success: function (e) {
+              console.log(e)
+              that.onShow();
+              wx.showToast({
+                title: '删除成功！',
+                duration: 500
+              })
+            },
+            fail: function (e) {
+              console.log(e);
+            }
+          });
         }
       }
     })
@@ -142,9 +251,7 @@ Page({
   setDefaultAddress:function(e){
     var currentChooseIndex = e.currentTarget.dataset.index;
     var that = this;
-    var addressArray = app.globalData.userAddress;
-    var currentDefaultIndex = 0;
-    console.log(addressArray[currentDefaultIndex].defaultAddress)
+    var currentAddress = that.data.userAddressInServer[currentChooseIndex];
     wx.showModal({
       title: '提示',
       content: "确定将当前地址设为默认地址？",
@@ -155,14 +262,8 @@ Page({
         if (e.cancel) {
           //点击取消,默认隐藏弹框
         } else {
-          //找到当前默认地址的数组下标
-          while (addressArray[currentDefaultIndex].defaultAddress!=true){
-            currentDefaultIndex ++;
-            if (currentDefaultIndex == addressArray.length){
-              break;
-            }
-          }
-          if (currentDefaultIndex == currentChooseIndex){
+          console.log()
+          if (currentAddress.default_address == true){
             wx.showModal({
               title: '提示',
               content: '当前项为默认地址！',
@@ -171,25 +272,117 @@ Page({
               confirmColor: "skybule",
             })
             return;
+          }else{
+            wx.request({
+              url: APIURL.AddressUpdate,
+              data: {
+                code: wx.getStorageSync("userCode"),
+                rawData: wx.getStorageSync("userInfoInServer"),
+              
+                user_id: wx.getStorageSync("userInfoInServer").id,
+                id: currentAddress.id,
+                area_info: currentAddress.area_info,
+                address: currentAddress.address,
+                contact: currentAddress.contact,
+                phone: currentAddress.phone,
+                default_address: true,
+              },
+              method: "POST",
+              //请求头
+              header: {
+                "Content-Type": "applciation/json",
+                'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
+              },
+              success: function (e) {
+                console.log(e)
+                wx.showToast({
+                  title: "设置成功",
+                  duration: 500
+                })
+                that.onShow();
+              },
+              fail: function (e) {
+                console.log(e);
+              }
+            }); 
           }
-          if (currentDefaultIndex < addressArray.length){
-            //取消当前的默认地址
-            addressArray[currentDefaultIndex].defaultAddress = false;
-          }
-          //设置当前选中的为默认地址并移到第一位
-          var currentObj = addressArray[currentChooseIndex];
-          currentObj.defaultAddress = true;
-          addressArray.splice(currentChooseIndex,1);
-          addressArray.unshift(currentObj);
-          //同步到全局变量
-          app.globalData.userAddress = addressArray;
-          that.onShow();
-          wx.showToast({
-            title: '设置成功！',
-          })
+         
         }
       }
     })
+  },
+  /*获取用户文本输入*/
+  getInput:function(e){
+    console.log(e);
+    this.setData({
+      textareaNum:e.detail.cursor,
+      textareaMes:e.detail.value,
+    })
+  },
+  /** 选择图片 */
+  chooseImage: function () {
+    var that = this;
+    wx.chooseImage({
+      count: 9 - that.data.imgArr.length,//最多选择4张图片
+      sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+      sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+      success: function (res) {
+        // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+        console.log(res.tempFilePaths);
+        if (res.tempFilePaths.count == 0) {
+          return;
+        }
+        //上传图片
+        var imgArrNow = that.data.imgArr;
+        imgArrNow = imgArrNow.concat(res.tempFilePaths);
+        that.setData({
+          imgArr: imgArrNow,
+          picNum: that.data.picNum +1,
+        })
+        that.chooseViewShow();
+      }
+    })
+  },
+
+  /** 删除图片 */
+  deleteImv: function (e) {
+    var imgArr = this.data.imgArr;
+    var itemIndex = e.currentTarget.dataset.id;
+    imgArr.splice(itemIndex, 1);
+    this.setData({
+      imgArr: imgArr
+    })
+    //判断是否隐藏选择图片
+    this.chooseViewShow();
+  },
+
+
+  /** 是否隐藏图片选择 */
+  chooseViewShow: function () {
+    if (this.data.imgArr.length >= 4) {
+      this.setData({
+        chooseViewShow: false
+      })
+    } else {
+      this.setData({
+        chooseViewShow: true
+      })
+    }
+  },
+
+  /** 显示图片 */
+  showImage: function (e) {
+    var imgArr = this.data.imgArr;
+    var itemIndex = e.currentTarget.dataset.id;
+
+    wx.previewImage({
+      current: imgArr[itemIndex], // 当前显示图片的http链接
+      urls: imgArr // 需要预览的图片http链接列表
+    })
+  },
+  /*提交意见反馈*/
+  submit:function(e){
+
   }
 })
 

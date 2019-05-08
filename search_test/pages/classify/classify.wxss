@@ -90,7 +90,7 @@ page{
   float: left;  
   /*每个item设置宽度是33.33%*/  
   width: 33.33%;  
-  height: 120px;  
+  height: 100px;  
   text-align: center;  
 }  
 .nav_right .nav_right_items image{  
