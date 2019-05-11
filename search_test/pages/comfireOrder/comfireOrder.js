@@ -5,7 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    isHaveDefAddress:false,//是否已有默认地址
   },
 
   /**

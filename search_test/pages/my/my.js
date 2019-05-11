@@ -1,5 +1,6 @@
 var app = getApp();
 import myDialog from "../../template/loginDialog/loginDialog";
+const StaticImgUrl = "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/";
 Page({
     /**
      * 页面的初始数据
@@ -10,13 +11,13 @@ Page({
                 id: 0,
                 text: '我的订单',
                 tabs: ['全部订单', '待付款', '待送货', '待收货', '待评价'],
-                icon: '../../image/wodedingdan.png',
+                icon: StaticImgUrl + 'wodedingdan.png',
                 tips: '查看全部订单',
                 items: [
-                    { text: '代付款', url: '../../pages/myList/myList?id=1', icon: '../../image/daifukuan.png' },
-                    { text: '待送货', url: '../../pages/myList/myList?id=2', icon: '../../image/daifahuo.png' },
-                    { text: '待收货', url: '../../pages/myList/myList?id=3', icon: '../../image/daishouhuo.png' },
-                    { text: '待评价', url: '../../pages/myList/myList?id=4', icon: '../../image/daipingjia.png' },
+                    { text: '代付款', url: '../../pages/myList/myList?id=1', icon: StaticImgUrl +'daifukuan.png' },
+                    { text: '待送货', url: '../../pages/myList/myList?id=2', icon: StaticImgUrl +'daifahuo.png' },
+                    { text: '待收货', url: '../../pages/myList/myList?id=3', icon: StaticImgUrl +'daishouhuo.png' },
+                    { text: '待评价', url: '../../pages/myList/myList?id=4', icon: StaticImgUrl +'daipingjia.png' },
                 ]
             },
             funcs: {
@@ -24,13 +25,13 @@ Page({
                 text: '常用功能',
                 tabs: ['我的收藏', "我的地址",  "意见反馈"],
                 url: '../../pages/myList/myList?pageName=常用功能',
-                icon: '../../image/gongnengfuwu.png',
+                icon: StaticImgUrl +'gongnengfuwu.png',
                 tips: '查看全部功能',
                 items: [
-                    { text: '我的收藏', url: '../../pages/myList/myList?id=1', icon: '../../image/wodeshoucang.png' },
-                    { text: '我的地址', url: '../../pages/myList/myList?id=2', icon: '../../image/wodedizhi.png' },
+                    { text: '我的收藏', url: '../../pages/myList/myList?id=1', icon: StaticImgUrl +'wodeshoucang.png' },
+                    { text: '我的地址', url: '../../pages/myList/myList?id=2', icon: StaticImgUrl +'wodedizhi.png' },
                     
-                    { text: '意见反馈', url: '../../pages/myList/myList?id=3', icon: '../../image/bangzhufankui.png' },
+                    { text: '意见反馈', url: '../../pages/myList/myList?id=3', icon: StaticImgUrl +'bangzhufankui.png' },
                 ]
             },
             property: {
@@ -38,12 +39,12 @@ Page({
                 text: '我的资产',
               tabs: ['我的积分', "信用体系", '我的卡券'],
                 url: '../../pages/myList/myList?pageName=我的资产',
-                icon: '../../image/wodezichan.png',
+                icon: StaticImgUrl +'wodezichan.png',
                 tips: '查看所有资产',
                 items: [
-                    { text: '我的积分', url: '../../pages/myList/myList?id=1', icon: '../../image/wodejifen.png' },
-                    { text: '信用体系', url: '../../pages/myList/myList?id=2', icon: '../../image/wodezuji.png' },
-                    { text: '我的卡券', url: '../../pages/myList/myList?id=3', icon: '../../image/wodekaquan.png' },
+                    { text: '我的积分', url: '../../pages/myList/myList?id=1', icon: StaticImgUrl +'wodejifen.png' },
+                    { text: '信用体系', url: '../../pages/myList/myList?id=2', icon: StaticImgUrl +'wodezuji.png' },
+                    { text: '我的卡券', url: '../../pages/myList/myList?id=3', icon: StaticImgUrl +'wodekaquan.png' },
                 ]
             },
             setting: {
@@ -51,12 +52,12 @@ Page({
                 text: '系统设置',
                 tabs: ['使用指引', '清除缓存', '版本信息'],
                 url: '../../pages/useGuide/useGuide',
-                icon: '../../image/xitongshezhi.png',
+                icon: StaticImgUrl +'xitongshezhi.png',
                 tips: '',
                 items: [
-                    { text: '使用指引', url: '../../pages/myList/myList?id=1', icon: '../../image/qingchuhuancun.png' },
-                    { text: '清除缓存', url: '../../pages/myList/myList?id=2', icon: '../../image/qingchuhuancun.png' },
-                    { text: '版本信息', url: '../../pages/myList/myList?id=3', icon: '../../image/banbenxinxi.png' },
+                    { text: '使用指引', url: '../../pages/myList/myList?id=1', icon: StaticImgUrl +'qingchuhuancun.png' },
+                    { text: '清除缓存', url: '../../pages/myList/myList?id=2', icon: StaticImgUrl +'qingchuhuancun.png' },
+                    { text: '版本信息', url: '../../pages/myList/myList?id=3', icon: StaticImgUrl +'banbenxinxi.png' },
                 ]
             }
         },

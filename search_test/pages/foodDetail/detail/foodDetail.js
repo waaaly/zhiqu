@@ -9,6 +9,7 @@ var userInfoInServer = wx.getStorageSync("userInfoInServer");
 Page({
   firstIndex: -1,
   data: {
+    
     //滚动图片
     bannerItem: [
       "../../image/foodpic-1.jpg",

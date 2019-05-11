@@ -9,6 +9,7 @@ var util = require('../../utils/util.js');
 var app = getApp();
 Page({
     data: {
+        StaticImgUrl:"http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
         shangjiaList:[{
                 "name": "正新鸡排",
                 "star": 5,

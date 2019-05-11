@@ -27,7 +27,7 @@
               <view class='time'>2019-01-04 13:30</view>
               <view class='newsDetail'>
                 <view class='hear'>
-                  <image src="../../image/Z.png"></image>
+                  <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/gong gao.png"></image>
                   <text>新的订单状态变化通知</text>
                 </view>
                 <view class='order_process'>

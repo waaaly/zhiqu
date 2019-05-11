@@ -125,13 +125,6 @@ Page({
           },
           success: function (e) {
             console.log(e)
-            that.setData({
-              userAddressInServer:e.data,
-            })
-            wx.setStorage({
-              key: 'userAddressInServer',
-              data: e.data,
-            })
           },
           fail: function (e) {
             console.log(e);
@@ -163,12 +156,9 @@ Page({
       },
       success: function (e) {
         console.log(e)
+        wx.setStorageSync("userAddressInServer", e.data.data);
         that.setData({
-          userAddressInServer:e.data,
-        })
-        wx.setStorage({
-          key: 'userAddressInServer',
-          data: e.data,
+          userAddressInServer:e.data.data,
         })
       }
     })
@@ -183,12 +173,14 @@ Page({
   handlerTabTap(e) {
     this._updateSelectedPage(e.currentTarget.dataset.index);
   },
+  //新增地址
   gotoAddress:function(e){
 
     wx.navigateTo({
       url: '../addAddress/addAddress',
     })
   },
+  //修改地址
   editAddress:function(e){
     
     var that=this;
@@ -204,8 +196,8 @@ Page({
     var that = this;
     var currentIndex = e.currentTarget.dataset.index;
     var addressId = that.data.userAddressInServer[currentIndex].id;
-    var default_address = that.data.userAddressInServer[currentIndex].default_address;
-    var user_id = that.data.userAddressInServer[currentIndex].user_id;
+    var default_address = that.data.userAddressInServer[currentIndex].is_default;
+    // var user_id = that.data.userAddressInServer[currentIndex].user_id;
     wx.showModal({
       title: '提示',
       content: "确定删除该地址吗？",
@@ -222,8 +214,8 @@ Page({
               code: wx.getStorageSync("userCode"),
               rawData: wx.getStorageSync("userInfoInServer"),
               id: addressId,
-              default_address: default_address,
-              user_id: user_id,
+              is_default: default_address,
+              // user_id: user_id,
             },
             method: "POST",
             //请求头
@@ -263,7 +255,7 @@ Page({
           //点击取消,默认隐藏弹框
         } else {
           console.log()
-          if (currentAddress.default_address == true){
+          if (currentAddress.is_default){
             wx.showModal({
               title: '提示',
               content: '当前项为默认地址！',
@@ -274,18 +266,12 @@ Page({
             return;
           }else{
             wx.request({
-              url: APIURL.AddressUpdate,
+              url: APIURL.AddressSetDefault,
               data: {
                 code: wx.getStorageSync("userCode"),
-                rawData: wx.getStorageSync("userInfoInServer"),
-              
-                user_id: wx.getStorageSync("userInfoInServer").id,
+                rawData: wx.getStorageSync("userInfoInServer"),       
+
                 id: currentAddress.id,
-                area_info: currentAddress.area_info,
-                address: currentAddress.address,
-                contact: currentAddress.contact,
-                phone: currentAddress.phone,
-                default_address: true,
               },
               method: "POST",
               //请求头
@@ -294,7 +280,7 @@ Page({
                 'Authorization': 'Bearer ' + wx.getStorageSync('userToken')
               },
               success: function (e) {
-                console.log(e)
+                console.log(e.data);
                 wx.showToast({
                   title: "设置成功",
                   duration: 500

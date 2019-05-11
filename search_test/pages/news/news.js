@@ -1,4 +1,5 @@
 // pages/news/news.js
+const StaticImgUrl = 'http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/';
 Page({
 
   /**
@@ -17,31 +18,31 @@ Page({
       name: '完成下单',
       start: '#fff',
       end: '#EFF3F6',
-      icon: '../../image/status.png'
+      icon: StaticImgUrl +'status.png'
     },
     {
       name: '商家接单',
       start: '#EFF3F6',
       end: '#EFF3F6',
-      icon: '../../image/status-off.png'
+      icon: StaticImgUrl +'status-off.png'
     },
     {
       name: '商家发货',
       start: '#EFF3F6',
       end: '#EFF3F6',
-      icon: '../../image/status-off.png'
+      icon: StaticImgUrl +'status-off.png'
     },
     {
       name: '用户收货',
       start: '#EFF3F6',
       end: '#EFF3F6',
-      icon: '../../image/status-off.png'
+      icon: StaticImgUrl +'status-off.png'
     },
     {
       name: '订单完成',
       start: '#EFF3F6',
       end: '#fff',
-      icon: '../../image/status-off.png'
+      icon: StaticImgUrl +'status-off.png'
     }],
   },
 

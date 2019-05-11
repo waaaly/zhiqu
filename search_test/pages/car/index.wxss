@@ -1,0 +1,307 @@
+/* pages/car/index.wxss */
+
+.container {
+  margin: 0;
+  padding: 0;
+}
+.car-item-box .footer-pay .itemdisbase {
+  background: #999;
+  color: #fff;
+}
+.footer-pay .item4{background:#bebebe !important;}
+.addlist {
+  width: 700rpx;
+  padding: 0 25rpx;
+  line-height: 60rpx;
+  height: 60rpx;
+  font-size: 30rpx;
+  position: relative;
+  padding-top: 30rpx
+}
+
+.addlist::after {
+  content: "";
+  position: absolute;
+  right:25rpx;
+  top: 50%;
+  width: 16rpx;
+  height: 12rpx;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: translate3d(0, -50%, 0) rotate(135deg);
+  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
+  opacity: 0.5;
+}
+
+.orderaddress {
+  border-bottom: 5px solid #f5f5f5;
+}
+
+.orderaddress .tetx {
+  line-height: 70rpx;
+  font-size: 32rpx;
+  border-bottom: 1px solid #f5f5f5;
+  padding-left: 15rpx;
+  display: block;
+}
+
+.addressinfo {
+  width: 720rpx;
+  padding: 15rpx;
+  position: relative;
+}
+
+.addressinfo text {
+  display: block;
+  font-size: 30rpx;
+  line-height: 1.5;
+}
+
+.addressinfo .icon {
+  content: "";
+  position: absolute;
+  right: 12rpx;
+  top: 50%;
+  width: 16rpx;
+  height: 12rpx;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: translate3d(0, -50%, 0) rotate(135deg);
+  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
+  opacity: 0.5;
+}
+
+.ord {
+  padding-top: 10rpx;
+}
+
+.order-price {
+  padding-bottom: 100rpx;
+}
+
+.product-item {
+  border-bottom: 1px solid #f6f6f6;
+  padding: 24rpx 0;
+  background: #fff;
+  margin-top: 5px;
+}
+
+.item-box {
+  display: -webkit-flex;
+  display: flex;
+  position: relative;
+}
+
+.car-item-box {
+  padding-bottom: 100rpx;
+}
+
+.item-box .item-check {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 180rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
+  background-size: 40rpx 40rpx;
+}
+
+.item-box .check ,.item2 .check {
+  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
+  background-size: 40rpx 40rpx;
+}
+
+.list-img {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  display: block;
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  margin-right: 20rpx;
+  border: 1px solid #eee;
+  border-radius: 2px;
+}
+
+.list-img img {
+  height: 100%;
+}
+
+.car-item-box {
+  width: 100%;
+}
+
+.info-tit {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.info-tit .name {
+  font-size: 32rpx;
+  line-height: 1.2;
+  color: #666;
+  margin-bottom: 12rpx;
+  margin-right: 30rpx;
+  display: -webkit-box;
+  display: box;
+  -webkit-box-align: start;
+  box-align: start;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.info-tit .price-without {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+  padding-top: 10rpx;
+}
+
+.info-tit .xm-input-number {
+  top: 115rpx;
+  right: 258rpx;
+  border: 1rpx solid #eee;
+  width: 227rpx;
+  position: absolute;
+  z-index: 11;
+}
+
+.info-tit .input-sub, .info-tit .input-add {
+  height: 60rpx;
+  line-height: 60rpx;
+  float: left;
+  width: 60rpx;
+  text-align: center;
+  background: #fafafa;
+}
+
+.info-tit .input-num {
+  width: 107rpx;
+  float: left;
+  height: 60rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.delete {
+  width: 60rpx;
+  height: 60rpx;
+  position: absolute;
+  right: 30rpx;
+  bottom: 6rpx;
+}
+.price-without{width:100%;display:block}
+.price-without text {
+  margin-right: 6rpx;
+}
+
+.footer-pay {
+  width: 100%;
+  height: 100rpx;
+  position: fixed;
+  bottom: 0;
+  display: -webkit-flex;
+  display: flex;
+  z-index: 14;
+}
+
+.footer-pay view {
+  line-height: 100rpx;
+  text-align: center;
+  -webkit-felx: 2;
+  flex: 2;
+}
+
+.footer-pay .item3 {
+  background: #f37d6a;
+  color: #fff;
+  font-size: 32rpx;
+}
+
+.footer-pay .item2 {
+  background: #f4f4f4;
+  color: #333;
+  font-size: 32rpx;
+  border-right: 1px solid #f1f1f1;
+  -webkit-felx: 1;
+  flex: 1;
+}
+
+.footer-pay .item-pri {
+  display: block;
+  color: #999;
+  font-size: 28rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+}
+
+.footer-pay .all {
+  font-size: 36rpx;
+  display: block;
+  color: #ff6700;
+  height: 60rpx;
+  line-height: 30rpx;
+}
+
+.footer-pay .item {
+  line-height: 100rpx;
+  text-align: center;
+  -webkit-felx: 2;
+  flex: 2;
+  background: #f4f4f4;
+}
+
+.item-check {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 100rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
+  background-size: 40rpx 40rpx;
+  float: left;
+}
+
+.empty-box {
+  padding: 80rpx 30rpx;
+  width: 690rpx;
+}
+
+.empty-box image {
+  width: 40%;
+  margin: 0 auto;
+  display: block;
+
+}
+
+.empty-box .span {
+  font-size: 36rpx;
+  padding: 18rpx 0;
+  display: block;
+  text-align: center;
+  margin-left:35rpx;
+margin-top:30rpx;
+
+}
+
+.empty-box .goindex {
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 32rpx;
+  margin-top:200rpx;
+
+}

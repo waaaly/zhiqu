@@ -7,7 +7,8 @@ Page({
       foodList:[],
       curNav: 0,
       curIndex: 1,
-      imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/"
+      imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+      StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
     },
     onLoad: function(e) {
       wx.showToast({
@@ -47,8 +48,8 @@ Page({
       let id = e.target.dataset.id,
           index = parseInt(e.target.dataset.index);
       // 把点击到的某一项，设为当前index  
-      console.log(id);
-      console.log(index);
+      // console.log(id);
+      // console.log(index);
       this.setData({
           curNav: id,
           curIndex: index

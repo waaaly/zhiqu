@@ -31,6 +31,6 @@
   </scroll-view>
   </view>
   <button class='btn1' bindtap='loginOut'>
-    <image class='btnImg' src='../../image/wechat.png'></image>
+    <image class='btnImg' src='http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/wechat.png'></image>
     <view>退出当前账号</view>
  </button>

@@ -13,7 +13,7 @@
       <text class='bigtil'>{{foodObj.goods_brief}}</text>
       <text class='smalltitle'>{{foodObj.goods_name}}</text>
       <text class='count'></text>
-      <text class='price'>￥{{foodObj.unit_price}}<text class='htit' wx:if="{{bigprice}}">￥{{bigprice}}</text></text>
+      <text class='price'>￥{{foodObj.retail_price}}<text class='htit' wx:if="{{foodObj.unit_price}}">￥{{foodObj.unit_price}}</text></text>
       
     </view>
     <view class='ctil'>已选:{{chosename}} x{{detailnumber}}</view>
@@ -30,8 +30,8 @@
       <text>购买数量:</text>
       <view class='xm-input-number'>
         <view class="input-sub {{detailnumber==1? 'disabled' : ''}}" bindtap='cutnumber'>-</view>
-        <input class='inout-num' value='{{detailnumber}}' disabled="true"></input>
-        <view class="input-add {{detailnumber==3? 'disabled' : ''}}" bindtap='addnumber'>+</view>
+        <input class='input-num' value='{{detailnumber}}' disabled="true"></input>
+        <view class="input-add {{detailnumber==99? 'disabled' : ''}}" bindtap='addnumber'>+</view>
       </view>
     </view>
     <view class='procontent'>
@@ -124,7 +124,7 @@
     <view class='detailsbuy'>
       <navigator class='item' bindtap="gotocart" url='../car/index'>
       <view class="carImg"></view>
-        <text class='carnum' wx:if="{{totalnum>0}}">{{totalnum}}</text>
+        <text class='carnum' wx:if="{{cartTotal.checkedGoodsCount>0}}">{{cartTotal.checkedGoodsCount}}</text>
         <text style='position:absolute;bottom:11rpx;left:26rpx'>结算</text>
       </navigator>
       <view class='item4' bindtap='Collection'>
@@ -138,7 +138,7 @@
       </button> 
       <!-- </view> -->
       <view class='item2' bindtap='addcart'>加入购物车</view>
-      <view class='item3' bindtap='gocart'>移出购物车</view>
+      <view class='item3 {{isDelOutCar?"item3Enable":""}}' bindtap='delOutcart'>移出购物车</view>
     </view>
   </view>
 </view>

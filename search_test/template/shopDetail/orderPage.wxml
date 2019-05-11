@@ -37,7 +37,7 @@
     <view class="footer {{cost!=0?'active':''}}">
       <view class="howMuch">
         <view class="img" style="background:{{cost!=0?'#FFD161':'#E7E7E7'}};">
-          <image src="../../image/trolley.png" style="width:60rpx;height:60rpx;"></image>
+          <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/trolley.png" style="width:60rpx;height:60rpx;"></image>
         </view>
         <view class="cost" hidden="{{cost==0}}">￥{{cost}}</view>
         <view class="free">免配送费</view>

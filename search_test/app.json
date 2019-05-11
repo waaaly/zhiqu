@@ -1,13 +1,18 @@
 {
   "pages": [
-    "pages/foodDetail/index",
-    "pages/classify/classify",
+    "pages/login/login",
     "pages/my/my",
+    "pages/car/index",
+    "pages/foodDetail/index",
+    
+    
+    "pages/classify/classify",
+    
     "pages/chooseAddress/chooseAddress",
     "pages/addAddress/addAddress",
     
     
-    "pages/login/login",
+    
     "pages/index/index",
     
     
@@ -15,14 +20,14 @@
     "pages/bindNum/bindNum",
     
 
-    "pages/myBindPhone/myBindPhone",
+   
     
     "pages/comfireOrder/comfireOrder",
     "pages/myList/myList",
     
     
     "pages/news/news",
-    "pages/car/car",
+    
     "pages/search/search",
     "template/shopDetail/index",
     "pages/personSet/setting",
@@ -60,7 +65,7 @@
       {
         "selectedIconPath": "/image/gouwuche.png",
         "iconPath": "/image/gouwuche-2.png",
-        "pagePath": "pages/car/car",
+        "pagePath": "pages/car/index",
         "text": "购物车"
       },
       {

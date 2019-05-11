@@ -1,17 +1,17 @@
 <!--pages/chooseAddress/chooseAddress.wxml-->
 <view class='hear'>
   <view class='currentLocation'>
-    <image class='Icon' src="../../image/weizhi.png"></image>
+    <image class='Icon' src='{{StaticImgUrl+"weizhi.png"}}'></image>
     <view class='postionText'>{{currentAddress}}</view>   
   </view>
     <view class='relocation'>
-    <image class='Icon' src="../../image/relocation.png"></image>
+    <image class='Icon' src='{{StaticImgUrl+"relocation.png"}}'></image>
     <view  bindtap="userChooseAddress" class='postionText'style="font-size:33rpx;">点击重新定位</view>   
   </view>
 </view>
 <view class='body'>
   <view class='bodyTitle'> 
-    <image class='dizhiIcon' src="../../image/shouye.png"></image>
+    <image class='dizhiIcon' src='{{StaticImgUrl+"shouye.png"}}' ></image>
     <view class='dizhiFont'>我的收货地址</view>   
   </view>
   <!-- <view class='defalut'>默</view> -->

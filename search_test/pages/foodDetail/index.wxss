@@ -271,6 +271,7 @@
   background: #fff;
   width: 100%;
   z-index: 12;
+  border-top: 2rpx solid #eee;
 }
 
 .detailsbuy .item2, .detailsbuy .item3 {
@@ -326,7 +327,12 @@
 }
 /*移出购物车*/
 .detailsbuy .item3 {
-  background: #f5f5f5;
+  background: #c3c3c3;
+  color:#666;
+}
+.detailsbuy .item3Enable {
+  background: #e03030;
+  color:#fff;
 }
 /*加入收藏*/
 .detailsbuy .item4 {
@@ -388,7 +394,7 @@ button::after {
   background: #fafafa;
 }
 
-.numbox .inout-num {
+.numbox .input-num {
   width: 107rpx;
   float: left;
   height: 60rpx;

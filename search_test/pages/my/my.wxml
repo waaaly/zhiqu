@@ -5,7 +5,7 @@
     <view class="avatar-wrapper">
         <view>
             <view class="avatar" bindtap="gotoSetting">
-                <image style="border-radius:50%;" src="{{userInfoInServer.avatar ? userInfoInServer.avatar:'../../image/bangzhufankui.png'}}"></image>
+                <image style="border-radius:50%;" src="{{userInfoInServer.avatar ? userInfoInServer.avatar:'http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/bangzhufankui.png'}}"></image>
             </view>
             <view class="text">
                 <text wx:if="{{userInfoInServer.nickname}}">{{userInfoInServer.nickname}}</text>
@@ -20,7 +20,7 @@
                 前往绑定手机号获取更优质的服务吧~
             </view>
             <view class="tips">{{item.tips}}
-                <image src="../../image/xiangyou.png"></image>
+                <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"></image>
             </view>
         </view>
     </view>
@@ -33,7 +33,7 @@
                     {{item.text}}
                 </view>
                 <view class="tips">{{item.tips}}
-                    <image src="../../image/xiangyou.png"></image>
+                    <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"></image>
                 </view>
             </view>
             <view class="weui-flex">
