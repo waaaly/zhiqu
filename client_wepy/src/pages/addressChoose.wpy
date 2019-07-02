@@ -1,0 +1,251 @@
+<template>
+   
+<view class='hear'>
+  <view style="display:flex;padding:20rpx;align-items:center;" >
+    <text @tap="chooseCity" style="color:#666;">{{city}}</text>
+    <image style="width:20rpx;height:20rpx;margin:0 20rpx 0 20rpx;" src="../images/icons/xiangxia.png"/>
+    <view style="background-color:#eee;padding:10rpx;position:relative;flex:2;display:flex;align-items:center;">
+      <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+      <input type="text" class="weui-search-bar__input" placeholder="搜索我的地址"/>
+    </view>
+  </view>
+    <view >
+      <view style="background-color:#eee;display:flex;align-items:center;padding:20rpx;">
+        <text style="flex:2;font-size:28rpx;color:#999;">当前地址</text>  
+        <image class='Icon' src="{{StaticImgUrl+'relocation.png'}}"/>
+        <text  bindtap="userChooseAddress"  style="font-size:28rpx;color:#ff6b5d;">重新定位</text>  
+      </view>
+      <view style="background-color:#fff;padding:12rpx;color:#ff6b5d">
+        <text >{{currentAddress}}</text>
+      </view>  
+  </view>
+</view>
+<view class='body'>
+  <view class='bodyTitle'> 
+    <view class='dizhiFont'>我的收货地址</view>   
+  </view>
+  <!-- <view class='defalut'>默</view> -->
+  <scroll-view scroll-y="true" class="addressScroll" >
+      <view wx:for="{{userAddressInServer}}" bindtap="edit" data-id="{{index}}" class="item" >
+         
+         <view style="color:#ff6b5d;">{{item.area_name}}</view>
+          <view style="padding-left:45rpx;">{{item.name}}
+            <text style="margin-left:30rpx;font-size:30rpx;margin-right:10rpx;color:#666;">{{item.mobile}}</text> 
+          </view>
+          <view style="font-size:30rpx;padding-left:45rpx;color:#666;">{{item.full_region}}{{item.address}}</view>  
+           
+      </view>
+      
+  </scroll-view>
+</view>
+
+<button bindtap="add" class='footButtom'>新增收货地址</button>
+
+</template>
+<script>
+import wepy from "wepy";
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class addressChoose extends wepy.page {
+    data = {
+        StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
+        currentAddress:"那就是女王申请表受欺负是李克农去",
+        userAddressInServer:[
+        ],
+        city:"",
+    }
+    onLoad(e){
+      console.log(e)
+      this.currentAddress = e.address;
+      this.city = e.city;
+    }
+    onShow(e){
+      //读取后台的地址数据
+      http.get(api.AddressList,{user_id: wx.getStorageSync("userInfoInServer").id,}).then(res=>{
+        console.log(res);
+        this.userAddressInServer = res;
+        this.$apply();
+      })
+    }
+    methods = {
+        userChooseAddress:function(e){
+            var that = this;
+            //打开内置api提供用户手动选择当前地址
+            wx.chooseLocation({
+                type: 'gcj02', //'wgs84',
+                success: function(res) {
+                    // let pages = getCurrentPages(); //获取当前页面js里面的pages里的所有信息。
+                    // let prevPage = pages[ pages.length - 2 ];  
+                    // prevPage.data.address = res.address;
+                    // console.log(prevPage);
+                    console.log(res);
+                    that.currentAddress=res.address;
+                }
+            })
+        },
+        add:function(e){
+            wx.navigateTo({
+            url: '/pages/addressAdd',
+            })
+        },
+        edit:function(e){
+            var clickAddressObj = this.data.userAddressInServer[e.currentTarget.dataset.id];
+            http.post(api.AddressSetDefault,{id:clickAddressObj.id}).then(res=>{  
+                  console.log(e.data);
+                  wx.setStorage({
+                    key: 'userDefaultAddress',
+                    data: clickAddressObj,
+                  })
+              })
+            
+            wx.navigateBack({
+              delta: 1, // 回退前 delta(默认为1) 页面
+            })          
+      },
+      chooseCity(e){
+        wx.navigateTo({
+          url: '/pages/cityChoose',
+        })
+      }
+    }
+}
+</script>
+
+<style>
+/* pages/chooseAddress/chooseAddress.wxss */
+/*隐藏滚动栏*/
+::-webkit-scrollbar{
+width: 0;
+height: 0;
+color: transparent;
+}
+page{
+  background: #FFF;
+  display: flex;
+  flex-direction: column;
+}
+.hear {
+  z-index: 99;
+  position: fixed;
+  background:#fff; 
+  top: 0;
+  width: 100%;
+  /* border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx;  */
+  
+  height: 23%;
+}
+.currentLocation {
+  display: flex;
+  margin: 5rpx 5rpx 3rpx 2rpx;
+  color: #666;
+}
+
+.Icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.postionText {
+  font-size: 30rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  /* display: flex; */
+  /* justify-content: center; */
+}
+.relocation{
+  display: flex;
+  flex-direction: column;
+  margin: 5rpx;
+  color: #666;
+  /* border-top:0.5px solid #ddd; */
+  /* padding:20rpx 0 0 240rpx; */
+}
+.body{
+  /* margin-top: 3rpx;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
+  border-bottom-left-radius: 20rpx;
+  border-bottom-right-radius: 20rpx;   */
+  height: 67%;
+  background:#fff;
+  position: absolute;
+  top: 23%;
+  width: 100%;
+}
+.weui-icon-search_in-box {
+  margin-right:20rpx;
+  margin-left: 20rpx;
+  /* position: absolute;
+  left: 10px;
+  top: 7px; */
+}
+.weui-search-bar__input {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 28px;
+  line-height: 28px;
+  font-size: 14px;
+}
+.bodyTitle{
+  margin-top: 1%;
+  background-color:#eee;
+  display: flex;
+  flex-direction: row;
+  padding: 15rpx 10rpx;
+}
+.defalut{
+  border-radius:50%;
+  background:blue;
+  width:60rpx;
+  height:60rpx;
+  display:flex;
+  color:#eee;
+  justify-content:center;
+  position:fixed;
+  left:680rpx;
+  top:300rpx;
+}
+
+.dizhiIcon{
+  height: 30rpx;
+  width:30rpx;
+}
+.dizhiFont{
+  font-size: 28rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 500rpx;
+  display: flex;
+  color: #999;
+}
+.addressScroll{
+  z-index: -999;
+  height:95%; 
+  display: flex;
+  flex-direction:column;
+  }
+.item{
+  /* background: green;  */
+  width: 80%; 
+  
+  border-bottom: 1rpx solid #666;
+  padding-bottom: 10rpx;
+  margin: 20rpx 0 20rpx 70rpx;
+}
+.footButtom{
+  height: 8%;
+  justify-content: center;
+  display: flex;
+  background: #ff6b5d;
+  color: #fff;
+  position: absolute;
+  bottom: 10rpx;
+  left: 0;
+  right: 0;
+  margin: 0 5rpx;
+}
+</style>

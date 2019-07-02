@@ -1,0 +1,568 @@
+<template>
+    <view class="container">
+    <form bindsubmit="bindSave">
+    <view class="form-box">
+        <view class="row-wrap">
+            <view class="label">联系人</view>
+            <view class="label-right">
+                <input id="1" name="contact" class="input" maxlength="13" type="text" placeholder="姓名" value="{{addressEdit.name}}" bindinput="getInput"/>
+            </view>
+        </view>
+        <view class="row-wrap">
+            <view class="label">联系手机</view>
+            <view class="label-right">
+                <input id="2" name="mobile" class="input" maxlength="11" type="number" placeholder="11位手机号码" value="{{addressEdit.mobile}}" bindinput="getInput"/>
+            </view>
+        </view>
+        <view class="row-wrap" >
+            <view class="label">所在地区</view>
+              <view wx:if="{{addressEdit.full_region===''}}" @tap='selectDistrict' class="picker hui" >点击选择所在地区</view>
+              <view bindtap="selectDistrict" class="picker" wx:esle>
+                {{addressEdit.full_region}}
+              </view>
+        </view>
+        <view style="{{showArea==false?'display:none':''}}" class="row-wrap" >
+            <view class="label">可服务的区域</view>
+            <view wx:if="{{areaList.length==0}}" style="color:#ff6b5d;">您周围暂没有可提供服务的商家呢～</view>
+            <view else wx:for="{{areaList}}">
+                <view class="{{areaid==item.area_id?'areaItemChoose':'areaItem'}}" @tap="chooseArea({{item.area_id}},{{item.area_name}})">{{item.area_name}}</view>
+            </view>
+        </view>
+        <view class="addr-details">
+            <view class="label">详细地址</view>
+            <view class="label-right">
+                <!--<input class="input" type="text" placeholder="街道门牌信息"/>-->
+                <textarea name="address" auto-height placeholder="更详细的地址小趣能更好的服务哦～"  value="{{addressEdit.address}}" id="3" bindinput="getInput"/>
+            </view>
+        </view>
+        <view class="row-wrap">
+            <view class="label">设为默认地址</view>
+            <view style='position:fixed;left:120px;'>
+              <checkbox-group bindchange="checkboxChange">
+                <checkbox disabled="{{disDefault}}" value="flase" checked="{{addressEdit.is_default}}" ></checkbox>
+              </checkbox-group>
+            </view>
+        </view>
+    </view>
+    <button  class="save-btn" formType="submit">保存</button>
+    <button type="default" class="save-btn" bindtap="deleteAddress" data-id="{{addressData.id}}" wx:if="{{addressData}}">删除该地址</button>
+    <button type="default" class="cancel-btn" bindtap="bindCancel">取消</button>
+    </form>
+</view>
+
+  <view class="picker-view" animation="{{animationAddressMenu}}" style="visibility:{{addressMenuIsShow ? 'visible':'hidden'}}">
+  <view style="height:10% ;width:95%;margin-top:10rpx">
+    <text catchtap="cityCancel">取消</text>
+    <text style="float: right; color:#09bb07;" catchtap="citySure">确定</text>
+  </view>
+  <!--"可以显示默认的城市，使用后级联选择城市反应很慢就不使用了-->
+  <picker-view style="width: 100%; height: 300px;" bindchange="cityChange" value="{{value}}" wx:key="">
+    <picker-view-column>
+      <view wx:for="{{provinces}}" class="picker-item">
+        {{item.name}}</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view wx:for="{{citys}}" class="picker-item" wx:key="">
+        {{item.name}}</view>
+    </picker-view-column>
+    <picker-view-column>
+      <view wx:for="{{areas}}" class="picker-item" wx:key="">
+        {{item.name}}</view>
+    </picker-view-column>
+  </picker-view>
+</view>
+</template>
+<script>
+import wepy from "wepy";
+import http from '../utils/Base';
+import api from '../utils/API';
+var CITY = require('../utils/City.js');
+
+var animation;
+export default class addressAdd extends wepy.page{
+   data = {
+        isVisible: false,
+        animationData: {},
+        animationAddressMenu: {},
+        addressMenuIsShow: false,
+        value: [0, 0, 0],//👇三个当前选择的各自所在数组的下标
+        provinces: [],//存储全部省份/直辖市
+        citys: [],//存储当前省份下的城市/直辖市就是直辖市
+        areas: [],//存储当前城市/直辖市下的区
+        disDefault:true,//默认地址是否禁止勾选
+        addressEdit:{
+            id: 0,//地址id
+            name: "",//联系人名称
+            mobile: "",//手机号
+            full_region: '',//级联地址
+            address: "",//手动填写的详细地址
+            is_default: 1,//是否默认地址
+            province_id: 110000,//省id
+            province_name: "北京市",//省名/直辖市名
+            city_id:110100,//城市id
+            city_name:"市辖区",//城市名称
+            country:"中国",//国籍
+            country_id:1,//国家id
+            district_id:110101,//区di
+            district_name:"东城区",//区名   
+        },
+        userAddressInServer:[],//后台保存的地址数组
+        showArea:false,// 是否显示服务区
+        areaList:[],//服务区域列表
+        areaid:NaN,//当前选择的服务区域
+        areaname:'',
+   } 
+   onLoad(options){
+       var that = this;
+        wx.showToast({
+        title: "加载中",
+        icon: 'loading',
+        duration: 1000
+        })
+        if (options.title) {
+        //修改页面标题
+            wx.setNavigationBarTitle({
+                title: options.title
+            })
+        }
+        /*用户在地址列表点击编辑地址*/
+        if (options.address) {
+            var temp = JSON.parse(options.address);  
+            this.addressEdit= temp; 
+            this.disDefault = false;
+        }
+        /*用户在首页定位携带当前地址传过来*/
+        if (options.currentAddress) {     
+            this.addressEdit.address = options.currentAddress;       
+        }
+        // 初始化动画变量
+        var animation = wx.createAnimation({
+            duration: 500,
+            transformOrigin: "50% 50%",
+            timingFunction: 'ease',
+        })
+        that.animation = animation;
+
+        // 默认联动显示北京
+        var id = CITY.provinces[0].id    
+        that.provinces= CITY.provinces
+        that.citys= CITY.citys[id]
+        that.areas= CITY.areas[CITY.citys[id][0].id]
+        
+        //读取后台的地址数据
+       
+        http.get(api.AddressList,{user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+            console.log(res);
+            this.userAddressInServer = res;
+            this.$apply();   
+        })
+  }
+     // 执行动画
+    startAddressAnimation (isShow) {
+        console.log(isShow);
+        var that = this;
+        if (isShow) {
+        this.animation.translateY(0 + 'vh').step()
+        } else {
+        this.animation.translateY(40 + 'vh').step()
+        }
+        
+        this.animationAddressMenu = this.animation.export();
+        this.addressMenuIsShow = isShow;    
+    }
+    hideCitySelected (e) {
+        // console.log(e)
+        this.startAddressAnimation(false)
+    }
+    
+   methods = {
+       //提交保存
+        bindSave: function (e) {
+            var that = this;
+            console.log(e);
+            var linkMan = e.detail.value.linkMan;
+            var address = e.detail.value.address;
+            var mobile = e.detail.value.mobile;
+            
+            if (linkMan == "") {
+            wx.showModal({
+                title: '提示',
+                content: '请填写联系人姓名',
+                showCancel: false
+            })
+            return
+            }
+            else if (mobile == '') {
+            wx.showModal({
+                title: '请输入手机号！',
+                icon: 'success',
+                duration: 1500
+            })
+            return false;
+            }
+            else if (mobile.length != 11) {
+            wx.showModal({
+                title: '手机号长度有误！',
+                icon: 'success',
+                duration: 1500
+            })
+            return false;
+            }
+            var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+            if (!myreg.test(mobile)) {
+            wx.showModal({
+                title: '手机号有误！',
+                icon: 'success',
+                duration: 1500
+            })
+            return false;
+            }
+            else if (this.data.selProvince == "请选择") {
+            wx.showModal({
+                title: '提示',
+                content: '请选择省份',
+                showCancel: false
+            })
+            return
+            }
+            else if (this.data.areaInfo === "") {
+            wx.showModal({
+                title: '提示',
+                content: '请选择所在地区',
+                showCancel: false
+            })
+            return
+            }
+            else if (this.data.areaname === "") {
+                let tips = '您所在地区暂无服务,换个地方试试～';
+                if(this.areaList.length!=0){
+                    tips = "请选择服务区域"
+                }
+                wx.showModal({
+                    title: '提示',
+                    content: tips,
+                    showCancel: false
+                })
+                return
+            }
+            else if (address == "") {
+            wx.showModal({
+                title: '提示',
+                content: '请填写详细地址',
+                showCancel: false
+            })
+            return
+            }
+    
+            //新增地址
+            if(this.data.addressEdit.id==0){
+                var obj = {
+                    name: this.addressEdit.name,
+                    mobile: this.addressEdit.mobile,
+                    province: this.provinces[this.value[0]].name,
+                    province_id: this.provinces[this.value[0]].id,
+                    city: this.citys[this.value[1]].name,
+                    city_id: this.citys[this.value[1]].id,
+                    district: this.areas[this.value[2]].name,         
+                    district_id: this.areas[this.value[2]].id,
+                    address: this.addressEdit.address,         
+                    is_default: this.addressEdit.is_default,
+                    area_id:this.areaid,
+                    area_name:this.areaname,
+                    user_id:wx.getStorageSync('userInfoInServer').id
+                }
+                http.post(api.AddressSave,{...obj}).then(res=>{
+                    // console.log(res);
+                    wx.showToast({
+                        title: "添加成功",
+                    })
+                    wx.setStorageSync('userDefaultAddress', obj);
+                    wx.navigateBack({
+                    })
+                })                             
+            }       
+            /*修改并保存地址*/
+            else{
+                console.log(that.data.addressEdit);
+            
+                var obj = {
+                    id:  that.data.addressEdit.id,
+                    name: this.addressEdit.name,
+                    mobile: this.addressEdit.mobile,
+                    province: this.provinces[this.value[0]].name,
+                    province_id: this.provinces[this.value[0]].id,
+                    city: this.citys[this.value[1]].name,
+                    city_id: this.citys[this.value[1]].id,
+                    district: this.areas[this.value[2]].name,
+                    district_id: this.areas[this.value[2]].id,
+                    address: this.addressEdit.address,
+                    is_default: this.addressEdit.is_default,
+                    area_id:this.areaid,
+                    area_name:this.areaname,
+                    user_id:wx.getStorageSync('userInfoInServer').id
+                };
+                http.post(api.AddressSave,{...obj}).then(res=>{
+                    console.log(res);
+                    wx.showToast({
+                        title: "修改成功",
+                        duration: 1000
+                    })
+                    if(obj.is_default){
+                        wx.setStorageSync('userDefaultAddress', obj);
+                    }
+                    wx.navigateBack({
+                    })
+                })                         
+                }    
+        },
+        //点击取消
+        bindCancel(e){
+            wx.navigateBack({
+                delta: 1, // 回退前 delta(默认为1) 页面
+            })
+        },
+        //获取input输入的文本
+        getInput:function (e){
+            // console.log(e.currentTarget.id);
+            // console.log(e.detail.value);
+
+            switch (parseInt(e.currentTarget.id)){
+                case 1: 
+                     this.addressEdit.name = e.detail.value;
+                break;
+                case 2:
+                    this.addressEdit.mobile = e.detail.value;
+                break;
+                case 3:
+                    this.addressEdit.address = e.detail.value;
+                break;
+            }
+        },
+        checkboxChange: function (event) {
+            var str = "addressEdit.is_default";
+            console.log(event)
+            if (event.detail.value.length==0){
+                this.addressEdit.is_default = 0;
+            }
+            else{
+            this.addressEdit.is_default = 1;
+            } 
+        },
+        // 点击所在地区弹出选择框
+        selectDistrict: function (e) {
+            var that = this;
+            if (that.addressMenuIsShow) {
+            return
+            }
+            that.startAddressAnimation(true);
+        },
+        // 处理省市县联动逻辑
+        cityChange (e) {
+            console.log(e)
+            var value = e.detail.value
+            var provinces = this.data.provinces
+            var citys = this.data.citys
+            var areas = this.data.areas
+            var provinceNum = value[0]
+            var cityNum = value[1]
+            var countyNum = value[2]
+            if (this.data.value[0] != provinceNum) {
+            var id = provinces[provinceNum].id
+            
+                this.value = [provinceNum, 0, 0],
+                this.citys = CITY.citys[id],
+                this.areas = CITY.areas[CITY.citys[id][0].id];
+            
+            } else if (this.data.value[1] != cityNum) {
+            var id = citys[cityNum].id
+           
+                this.value = [provinceNum, cityNum, 0],
+                this.areas = CITY.areas[citys[cityNum].id];
+            
+            } else {
+            
+                this.value = [provinceNum, cityNum, countyNum]
+            
+            }
+            // console.log(this.data)
+         },
+        // 点击地区选择取消按钮
+        cityCancel: function (e) {
+            this.startAddressAnimation(false)
+        },
+        // 点击地区选择确定按钮
+        citySure: function (e) {         
+            var that = this;         
+            var city = that.data.city;
+            var value = that.data.value;
+            that.startAddressAnimation(false);
+
+            // 将选择的城市信息显示到输入框
+            var areaInfo = that.data.provinces[value[0]].name + '-' + that.data.citys[value[1]].name + '-' + that.data.areas[value[2]].name;
+            
+            //保存城市选择结果
+            that.addressEdit.full_region= areaInfo;
+            //提交所在区域，获得提供服务的区域
+            http.get(api.GetShopArea,{district:that.data.areas[value[2]].name}).then(res=>{
+                console.log(res)
+                this.areaList = res;
+                this.showArea = true;
+                this.$apply();
+            })
+        },
+        //点击服务区域
+        chooseArea(id,name){
+            this.areaid = id;
+            this.areaname = name;
+            this.$apply();
+        }
+   }
+}
+</script>
+
+<style>
+page{
+    height: 100%;
+}
+.container{
+    background-color: #f5f5f9;
+    justify-content: initial;
+}
+.form-box{
+    width:100%;
+    background-color: #fff;
+    margin-top: 20rpx;
+}
+.row-wrap{
+    width: 720rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    margin-left: 30rpx;
+    border-bottom: 1rpx solid #eee;
+    display: flex;
+    font-size: 28rpx;
+    /*justify-content: space-between;*/
+}
+.row-wrap .label{
+    width: 185rpx;
+    color: #333;
+}
+.row-wrap .label-right{
+    flex: 1;
+    height: 88rpx;
+    line-height: 88rpx;
+}
+.row-wrap .label-right input{
+    height: 100%;
+    font-size: 28rpx;
+    padding-right: 30rpx;
+}
+.row-wrap .right-box{
+    margin-right: 30rpx; 
+}
+.arrow-right{
+    width: 15rpx;
+    height: 24rpx;
+}
+
+.cancel-btn{
+    width: 690rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: center;
+    margin-top:30rpx; 
+    border-radius: 6rpx;
+    box-sizing: border-box;
+} 
+.save-btn{
+    background-color: #ff6b5d;
+    color:#fff;
+    width: 690rpx;
+    height: 80rpx;
+    line-height: 80rpx;
+    text-align: center;
+    margin-top:30rpx; 
+    border-radius: 6rpx;
+    box-sizing: border-box;
+}
+/* button[type="default"]{
+    background-color: #ffffff;
+    color:#000;
+} */
+.addr-details{
+    height: auto;
+    padding: 30rpx 0;
+    margin-left:30rpx;
+    border-bottom: 1rpx solid #eee;
+    display: flex;
+    font-size: 28rpx;
+}
+.addr-details .label{
+    margin:auto 0 auto 0;
+    width: 160rpx;
+    color: #333
+}
+.addr-details textarea{
+    box-sizing: border-box;
+    width: 480rpx;
+    overflow: scroll;
+}
+picker {
+    min-width: 20rpx;
+    height: 100%;
+    margin-right: 20rpx;
+}
+.hui{
+    color: #777;
+}
+.picker-view {
+  width: 100%;
+  display: flex;
+  z-index:12;
+  background-color: #fff;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 0rpx;
+  left: 0rpx;
+  height: 40vh;
+}
+
+.picker-item {
+  line-height: 70rpx;
+  margin-left: 5rpx;
+  margin-right: 5rpx;
+  text-align: center;
+}
+
+.areaList{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #eee;
+}
+
+.areaItem{
+  line-height:34px;
+  flex: 0 0 18%;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid #eee;
+  margin: 5px;
+  
+  border-radius: 5px;
+  background-color: rgba(200, 200, 200, 0.1);
+}
+.areaItemChoose{
+  line-height:34px;
+  flex: 0 0 18%;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid #eee;
+  margin: 5px;
+  color: white;
+  border-radius: 5px;
+  background-color: #ff6b5d;
+}
+</style>

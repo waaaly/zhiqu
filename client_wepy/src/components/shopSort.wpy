@@ -1,0 +1,147 @@
+<template>
+<view class="mask {{mask1Hidden.data?'':'show'}}" 
+ @tap="mask1Cancel">
+  <view class="sort-list">
+      <view class="sort sort-active" @tap="onOverallTag">综合排序     
+        <view class="xiajiantou"></view>    
+      </view>
+      <view data-index="0"
+      @tap="onTapTag" 
+      class="sort {{selected == 0?'sort-active':''}}">
+        销量
+      </view>
+      <view data-index="1"
+      @tap="onTapTag" 
+      class="sort {{selected == 1?'sort-active':''}}">
+        好评
+      </view>
+      <view data-index="2"
+      @tap="onTapTag" 
+      class="sort {{selected == 1?'sort-active':''}}">
+        距离
+      </view>
+  </view>
+  <view class="overall-sort-list">
+    <block wx:for="{{sortList}}" wx:key="">
+    <view class="overall-sort" data-index="{{index}}" 
+    @tap="sortSelected">{{item}}</view>
+    </block> 
+  </view>
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+export default class shopSort extends wepy.component{
+    props = {
+        animationData: {},
+        mask1Hidden:{
+            data:true,
+            twoWay:true,
+        }
+    }
+    data ={
+        
+        sortList:[
+            '综合排序',
+            '速度最快',
+            '评分最高',
+            '起送最低',
+            '配送最低'
+        ]
+    }
+    onLoad(e){
+        
+    }
+    watch = {
+    //     mask1Hidden (newValue, oldValue) {
+    //         let animation = wx.createAnimation({
+    //             duration: 1000,
+    //             timingFunction: 'ease',
+    //         })
+    //         console.log(1111);
+    //         var i = 0;
+    //         var interval = setInterval(function () {
+    //             i += 0.1;
+    //             animation.opacity(0.1).step();
+    //             this.animationData =  animation.export();
+    //             console.log(i)   
+    //             if(i > 1){
+    //                 return;
+    //             }  
+    //         },10000)
+    //   }
+    }
+    methods = {
+        mask1Cancel(e){
+            this.mask1Hidden.data=true;
+            console.log(this.mask1Hidden)
+        }
+        
+    }
+}
+</script>
+<style>
+.mask{
+  width:100%;
+  height:100%;
+  position: fixed;
+  z-index:-999;
+  background-color:rgba(15, 15, 26, 0.7);
+  opacity:0;
+  /* transition: opacity 1s ease; */
+}
+.show{
+    z-index:999;
+    opacity:1;
+    transition: opacity 1s ease;
+}
+.xiajiantou{
+    display:inline-block;  
+    width:0;  
+    height:0;  
+    border-left:5px solid transparent;  
+    border-right: 5px solid transparent;  
+    border-top:5px solid orange;
+}
+   
+.sort-list{
+  justify-content: space-around;
+  display: flex;
+  background: white;
+  width: 100%;
+  height: 80rpx;
+  font-size: 27rpx;
+  color: #6A6A6A;
+  align-content: center;
+  border: 1rpx solid #ECECEC;
+}
+.sort{
+  text-align: center;
+  margin: auto 0;
+  height: 30rpx;
+  line-height: 30rpx;
+  border-right: 1rpx solid #ECECEC; 
+  flex: 1;
+}
+.sort-active{
+  color:rgb(243, 190, 18);
+  font-weight: 800;
+}
+.overall-sort-list,.filterList,.filterList-footer{
+  background: white;
+}
+.overall-sort-list{
+  flex-direction: column;
+  border-top: 1px solid rgba(0,0,0,0);
+  display: flex;
+}
+.overall-sort{
+  font-size: 25rpx;
+  height: 70rpx;
+  line-height: 70rpx;
+  margin-left: 30rpx;
+}
+</style>
+
+
+

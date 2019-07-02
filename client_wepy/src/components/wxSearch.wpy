@@ -1,0 +1,376 @@
+<style lang="less">
+/** 整个区域 */
+.wxSearch{
+  position: absolute;
+  top: 43px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top: 1px #eee solid;
+  background-color: rgba(200, 200, 200, 0.1);
+  z-index: 9999;
+}
+
+/** 搜索框下面的提示区域 */
+.wxSearchInner{
+  background-color: #fff;
+}
+
+/** 搜索热点标题 */
+.wxSearchTitle{
+  display: block;
+  padding: 10px 5px 5px 16px;
+  font-size: 13px;
+  text-align: left;
+  color:#666;
+}
+
+/** 提示样式 */
+.wxSearchMindKeyItem{
+  padding: 10px 5px 10px 15px;
+  margin-left: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  font-size: 13px;
+}
+
+/** 标签样式 */
+.wxSearchKeyList{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #eee;
+}
+
+/** 标签样式 */
+.wxSearchKeyItem{
+  flex: 0 0 18%;
+  font-size: 13px;
+  text-align: center;
+  border: 1px solid #eee;
+  margin: 5px;
+  padding: 4px 5px 4px 5px;
+  border-radius: 5px;
+  background-color: rgba(200, 200, 200, 0.1);
+}
+
+/** 搜索记录标题栏 */
+.wxSearchHistoryItem{
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  display: flex;
+}
+
+/** 搜索记录标题 */
+.wxSearchHistoryItemTitle{
+  flex: 8;
+  font-size: 13px;
+  color: #666;
+}
+
+/** 搜索记录删除按钮 */
+.wxSearchHistoryItemDel{
+  flex: 1;
+  font-size: 13px;
+  text-align: center;
+  padding-top:2px;
+  padding-bottom: 2px;
+  border: 1px solid #eee;
+  border-radius: 2px;
+}
+
+/** ---------------------- 以下是搜索框的 we-ui 样式--------------------------------*/
+
+/*!
+ * WeUI v1.1.1 (https://github.com/weui/weui-wxss)
+ * Copyright 2017 Tencent, Inc.
+ * Licensed under the MIT license
+ */
+
+.weui-search-bar {
+  position: relative;
+  padding: 8px 10px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  box-sizing: border-box;
+  background-color: #efeff4;
+  border-top: 1rpx solid #d7d6dc;
+  border-bottom: 1rpx solid #d7d6dc;
+}
+
+.weui-icon-search {
+  margin-right: 8px;
+  font-size: inherit;
+}
+
+.weui-icon-search_in-box {
+  position: absolute;
+  left: 10px;
+  top: 7px;
+}
+
+.weui-search-bar__text {
+  display: inline-block;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.weui-search-bar__form {
+  position: relative;
+  -webkit-box-flex: 1;
+  -webkit-flex: auto;
+  flex: auto;
+  border-radius: 5px;
+  background: #fff;
+  border: 1rpx solid #e6e6ea;
+}
+
+.weui-search-bar__box {
+  position: relative;
+  padding-left: 30px;
+  padding-right: 30px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.weui-search-bar__input {
+  height: 28px;
+  line-height: 28px;
+  font-size: 14px;
+}
+
+.weui-icon-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 7px 8px;
+  font-size: 0;
+}
+
+.weui-search-bar__label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  border-radius: 3px;
+  text-align: center;
+  color: #9b9b9b;
+  background: #fff;
+  line-height: 28px;
+}
+
+.weui-search-bar__cancel-btn {
+  margin-left: 10px;
+  line-height: 28px;
+  color:#ff6a3c;/* #09bb07;*/
+  white-space: nowrap;
+}
+</style>
+
+<template >
+<view class="weui-search-bar">
+   <view class="weui-search-bar__form">
+    <view class="weui-search-bar__box">
+      <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+      <input type="text" class="weui-search-bar__input" placeholder="请输入查询内容" value="{{wxSearchData.value}}" @tap="wxSearchInput" bindconfirm="wxSearchConfirm" />
+      <view class="weui-icon-clear" wx:if="{{wxSearchData.value != ''}}" @tap="wxSearchClear">
+        <icon type="clear" size="14"></icon>
+      </view>
+    </view>
+  </view>
+    <view class="weui-search-bar__cancel-btn" @tap="wxSearchConfirm">
+         <text wx:if="{{wxSearchData.value != ''}}" data-key='search'>搜索</text>
+         <text wx:else data-key='back'>返回</text>
+     </view>
+</view>
+
+<view class="wxSearch" style="'block';height:{{wxSearchData.view.seachHeight}}px;top:{{wxSearchData.view.barHeight}}px;">
+
+  <view class="wxSearchInner">
+    <!-- 搜索提示部分 -->
+    <view class="wxSearchMindKey">
+      <view class="wxSearchMindKeyList">
+        <block wx:for="{{wxSearchData.tipKeys}}">
+          <view class="wxSearchMindKeyItem" @tap="wxSearchKeyTap" data-key="{{item}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+    <!-- 热门搜索-->
+    <view class="wxSearchKey" style="display:{{wxSearchData.value != '' ? 'none':'block'}}">
+      <image style="height:30px;width:32px;position:fixed;" src="../images/HOT-2.png"></image>
+      <text wx:if="{{wxSearchData.hotKeys[0]}}" class="wxSearchTitle">搜索热点</text>
+      <view class="wxSearchKeyList">
+        <block wx:for="{{wxSearchData.hotKeys}}">
+          <view class="wxSearchKeyItem" @tap="wxSearchKeyTap" data-key="{{item}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+    <!--搜索历史 -->
+    <view wx:if="{{wxSearchData.his[0]}}" class="wxSearchHistory" style="display:{{wxSearchData.value!='' ? 'none':'block'}}">
+      <view class="wxSearchHistoryItem">
+        <text class="wxSearchHistoryItemTitle">搜索记录</text>
+        <!-- <text class="wxSearchHistoryItemDel" @tap="wxSearchDeleteAll">删除</text> -->
+        <icon type="clear" @tap="wxSearchDeleteAll" size="18" />
+      </view>
+      <view class="wxSearchKeyList">
+        <block wx:for="{{wxSearchData.his}}">
+          <view class="wxSearchKeyItem" @tap="wxSearchKeyTap" data-key="{{item}}">{{item}}</view>
+        </block>
+      </view>
+    </view>
+
+  </view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class wxSearch extends wepy.component {
+    //夫组件传过来的参数
+    props = {
+
+    }
+    //页面绑定的数据
+    data = {
+        wxSearchData:{
+            value:'',//当前搜索词
+            tipKeys:[],//搜索联想词
+            view:{
+                hidden: true,
+                seachHeight: 20,
+                barHeight:43,
+                seachHeight:0,
+        },
+            hotKeys:[//自定义热门搜索
+                '苹果香蕉','橘子','葡萄','草莓'
+        ],
+            his:[//历史搜索 
+                
+            ],
+        }
+    }
+    computed = {
+
+    }
+    watch = {
+        
+    }
+    methods = {
+        wxSearchInput(e){
+            let inputValue = e.detail.value;
+            let tempData = this.wxSearchData;
+            let tipsKey = [];
+            if(inputValue && input.length > 0){
+                // for(let item of )
+            }
+            this.wxSearchData.value = inputValue;
+        },
+        wxSearchClear() {
+        // 更新数据
+        this.wxSearchData.value = '';
+        this.wxSearchData.tipKeys = []
+        this.$apply();
+        },
+        wxSearchKeyTap(e) {
+            search(e.target.dataset.key);
+        }
+    }
+    onLoad(){
+        wx.getSystemInfo({
+            success:  (res)=> {
+            var wHeight = res.windowHeight;
+            this.wxSearchData.view.seachHeight = wHeight - this.wxSearchData.view.barHeight;
+            }
+        });
+        //读取缓存的历史搜索记录
+        this.wxSearchData.his = wx.getStorageSync('userSearchHis');
+        this.$apply();
+    }
+    onShow(){
+
+    }
+    search(inputValue) {
+        if (inputValue && inputValue.length > 0) {
+            // 添加历史记录
+            wxSearchAddHisKey(inputValue);
+            // 更新
+            var temData = __that.data.wxSearchData;
+            temData.value = inputValue;
+            __that.setData({
+            wxSearchData: temData
+            });
+            // 回调搜索
+            __searchFunction(inputValue);
+        }
+    }
+    // 读取缓存
+    getHisKeys() {
+        var value = [];
+        try {
+            value = wx.getStorageSync('wxSearchHisKeys')
+            if (value) {
+            // Do something with return value
+            var temData = __that.data.wxSearchData;
+            temData.his = value;
+            __that.setData({
+                wxSearchData: temData
+            });
+            }
+        } catch (e) {
+            // Do something when catch error
+        }
+    }
+
+    // 添加缓存
+    wxSearchAddHisKey(inputValue) {
+    if (!inputValue || inputValue.length == 0) {
+        return;
+    }
+    var value = wx.getStorageSync('wxSearchHisKeys');
+    if (value) {
+        if (value.indexOf(inputValue) < 0) {
+        value.unshift(inputValue);
+        }
+        wx.setStorage({
+        key: "wxSearchHisKeys",
+        data: value,
+        success: function () {
+            getHisKeys(__that);
+        }
+        })
+    } else {
+        value = [];
+        value.push(inputValue);
+        wx.setStorage({
+        key: "wxSearchHisKeys",
+        data: value,
+        success: function () {
+            getHisKeys(__that);
+        }
+        })
+    }
+    }
+
+    // 删除缓存
+    wxSearchDeleteAll() {
+        wx.removeStorage({
+        key: 'wxSearchHisKeys',
+        success: function (res) {
+            var value = [];
+            var temData = __that.data.wxSearchData;
+            temData.his = value;
+            __that.setData({
+            wxSearchData: temData
+            });
+        }
+        })
+    }
+}
+</script>

@@ -1,0 +1,259 @@
+<style>
+.protitle {
+  padding: 10rpx;
+  position: relative;
+}
+.protitle .bigtil {
+  font-size: 40rpx;
+  display: block;
+}
+.protitle .smalltitle {
+  font-size: 30rpx;
+  color: #666;
+  line-height: 30rpx;
+}
+.count {
+  color: #ff6700;
+  font-size: 28rpx;
+}
+.protitle .price {
+  color: #ff6700;
+  font-size: 36rpx;
+  display: block;
+}
+
+.protitle  .htit {
+  font-size: 30rpx;
+  color: #999;
+  text-decoration: line-through;
+  margin-left: 15rpx;
+}
+
+.ctil {
+  font-size: 32rpx;
+  line-height: 2.5;
+}
+
+.numbox {
+  padding-top: 10rpx;
+  overflow: hidden;
+  padding-left: 15rpx;
+  padding-right: 15rpx;
+  padding-bottom:15rpx;
+}
+.numbox text {
+  float: left;
+  line-height: 60rpx;
+  font-size: 30rpx;
+}
+.numbox .xm-input-number {
+  border: 1rpx solid #eee;
+  width: 227rpx;
+  float: right;
+}
+.numbox .input-sub, .numbox .input-add {
+  height: 60rpx;
+  line-height: 60rpx;
+  float: left;
+  width: 60rpx;
+  text-align: center;
+  background: #fafafa;
+}
+
+.disabled {
+  color:#aaa;
+}
+.numbox .input-num {
+  color: #ff6700;
+  width: 107rpx;
+  float: left;
+  height: 60rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.protab {
+  display: -webkit-flex;
+  display: flex;
+  position: relative;
+  border-bottom: 5rpx solid #efefef;
+  border-top: 5rpx solid #efefef;
+}
+.swiper-tab-item{
+    -webkit-box-flex: 1;
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color:#f37d6a;
+}
+
+</style>
+
+
+<template>
+<view style = 'padding-bottom:100rpx;position:relative;'>
+  <view  catchtouchmove="buttonMove" catchtouchstart="buttonStart" catchtouchend="buttonEnd"
+        style="top:{{buttonTop}}px;left:{{buttonLeft}}px;position:fixed;z-index:1024;background-color:#fafafa;border-radius:10rpx;display:flex;align-items:center;"> 
+    <text bindtap='goShop' style="color:#ff6b5d;font-size:30rpx;">{{shopInfo.shop_name}}</text>
+    <image style="width:65rpx;height:65rpx;border-radius:50%;" src="{{imageUrl + shopInfo.shop_icon}}"/>
+  </view>
+    <swiper indicator-dots="true" autoplay="true" interval="5000" 
+    duration="1000" style='height:{{swiper_H}}px;width:{{swiper_W}}px;' indicator-active-color='#ff6d5b'>
+      <block wx:for="{{goodObj.list_pic_url}}" wx:for-item="item" wx:key="index">
+        <swiper-item>
+          <image   src="{{imageUrl+item}}" style="width:100%;"  bindload='imgLoaded'/>
+        </swiper-item>
+      </block>
+    </swiper>
+
+    <view class='protitle'>
+      <text class='bigtil'>{{goodObj.goods_name}}</text>
+      <text class='smalltitle'>{{goodObj.goods_desc}}</text>
+      <text class='count'></text>
+      <text class='price'>￥{{goodObj.retail_price}}
+        <!-- <text class='htit' wx:if="{{goodObj.unit_price}}">￥{{goodObj.unit_price}}</text> -->
+      </text>
+    </view>
+
+    <view class='numbox'>
+      <text>购买数量:</text>
+      <view class='xm-input-number'>
+        <view class="input-sub {{detailnumber==1? 'disabled' : ''}}" bindtap='cutnumber'>-</view>
+        <input class='input-num' value='{{detailnumber}}' disabled="true"></input>
+        <view class="input-add {{detailnumber==goodObj.goods_number? 'disabled' : ''}}" bindtap='addnumber'>+</view>
+      </view>
+    </view>
+
+    <view class='protab'>
+        <view class="swiper-tab-item" data-current="0" bindtap="swichNav">商品概述</view>
+    </view>
+    <!-- <rich-text nodes="{{goodObj.html}}"></rich-text> -->
+    <view > 
+      <image wx:for="{{goodObj.details_pic_url}}" style="width:100%;" src="{{imageUrl + item}}" mode="widthFix"/>
+    </view>
+    <!-- 商品底部导航栏 -->
+    <goodbar></goodbar>
+    </view>
+</template>
+<script>
+
+import wepy from 'wepy';
+import http from '../utils/Base';
+import url from '../utils/API'
+import goodBar from '../components/goodBar';
+var startPoint;//悬浮钮的起始
+export default class goodDetail extends wepy.page{
+    components = {
+        goodbar:goodBar
+    }
+    data = {
+        swiper_H:0,
+        swiper_W:0,
+        buttonTop:200,//上边界
+        buttonLeft:0,//商家悬浮钮左边界
+        offsetLeft:0,//商家悬浮钮初始边界，用来判断用户的单击动作
+        offsetTop:0,//
+        windowWidth:0,
+        windowHeight:0,
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+        goodObj:{},//商品对象
+        shopInfo:{},//
+        cartList: [],//后台返回的购物车列表
+        cartTotal: {},//购物车的商品总数量，全部价格
+        detailnumber:1,//已选商品数量
+    }
+    onLoad(good){
+        let systemInfo = wx.getSystemInfoSync();
+        this.swiper_W = systemInfo.windowWidth;
+        this.windowWidth = systemInfo.windowWidth;
+        this.windowHeight = systemInfo.windowHeight;
+        // console.log(good);
+        new Promise((resolve,reject)=>{
+            http.get(url.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
+                console.log(res)
+                this.goodObj = res.shopGoods[0];
+                this.shopInfo = res.shopInfo[0];
+                
+                this.$apply();
+                this.$broadcast('init',good.shopId,good.goodId,1);
+            })
+        })
+        
+    }
+    methods = {
+        imgLoaded(e){
+            // console.log(e);
+            if(this.swiper_H == 0){
+              this.swiper_H = e.detail.height * (this.swiper_W/e.detail.width) +20;
+            }
+        },
+         //数量减
+      cutnumber () {
+        if (this.data.detailnumber == 1){
+          return 
+        }
+       this.detailnumber = this.detailnumber - 1;
+      },
+      //数量加
+      addnumber () {
+        if (this.data.detailnumber == this.goodObj.goods_number){
+          return 
+        }
+          this.detailnumber = this.detailnumber + 1;
+      },
+      //悬浮按钮移动
+      buttonStart: function (e) {
+          startPoint = e.touches[0]
+      },
+      buttonMove: function (e) {
+        var endPoint = e.touches[e.touches.length - 1]
+        var translateX = endPoint.clientX - startPoint.clientX
+        var translateY = endPoint.clientY - startPoint.clientY
+        startPoint = endPoint
+        var buttonTop = this.data.buttonTop + translateY
+        var buttonLeft = this.data.buttonLeft + translateX
+        //判断是移动否超出屏幕
+        if (buttonLeft+50 >= this.data.windowWidth){
+          buttonLeft = this.data.windowWidth-50;
+        }
+        if (buttonLeft<=0){
+          buttonLeft=0;
+        }
+        if (buttonTop<=0){
+          buttonTop=0
+        }
+        if (buttonTop + 50 >= this.data.windowHeight){
+          buttonTop = this.data.windowHeight-50;
+        }
+        
+         this.buttonTop = buttonTop;
+          this.buttonLeft = buttonLeft;
+       
+      },
+      buttonEnd: function (e) {
+        if(this.offsetLeft == e.currentTarget.offsetLeft &&
+        this.offsetTop == e.currentTarget.offsetTop){
+            var shop_id = this.shopInfo.id;
+            wx.navigateTo({
+              url: '/pages/shoper?shop_id='+shop_id,
+              success: function(res){
+                // success
+              },
+              fail: function() {
+                // fail
+              },
+              complete: function() {
+                // complete
+              }
+            })
+        }
+        this.offsetLeft = e.currentTarget.offsetLeft;
+        this.offsetTop= e.currentTarget.offsetTop;
+      }
+
+    }
+  
+}
+</script>

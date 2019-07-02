@@ -1,0 +1,59 @@
+<template>
+  <view class="address-box row" wx:if="{{address.fullAddress}}">
+    <!--左侧图标-->
+    <view class="icon-box">
+      <image class="icon-lg" src="/images/icons/address.png"/>
+    </view>
+    <!-- 地址内容 -->
+    <view class="info-box column">
+      <view class="row-between">
+        <text>收货人：{{address.name}} </text>
+        <view class="row"  @tap="phone">
+          <image class="icon" src="/images/icons/call.png" />
+          <text class="primary ml10">{{address.phone}}</text>
+        </view>
+      </view>
+      <view class="mt10">
+        <text>地址：{{address.fullAddress}} </text>
+      </view>
+    </view>
+  </view>
+  <image class="hr-address" src="/images/icons/address-hr.png" />
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Address extends wepy.component {
+    props = {
+      address: {}
+    };
+    methods = {
+      phone() {
+        wepy.makePhoneCall({phoneNumber: this.address.phone});
+      }
+    }
+  }
+</script>
+
+<style lang="scss">
+  @import "../../style/variable";
+  .address-box{
+    padding: 25rpx 20rpx 25rpx 0;
+    background-color: #FFF;
+    .icon-box{
+      width: 80rpx;
+      text-align: center;
+    }
+    .info-box{
+      width: 600rpx;
+      flex:1;
+
+      text{ font-size: $text-lg}
+    }
+  }
+  .hr-address{
+    width: 100%;
+    height: 5px;
+    margin-bottom: 15rpx;
+  }
+</style>

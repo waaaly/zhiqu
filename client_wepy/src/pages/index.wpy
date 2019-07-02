@@ -1,0 +1,526 @@
+<template>
+<shopSort :mask1Hidden.sync='mask1Hidden'></shopSort>
+ <view class="weui-search-bar__form" style="margin-top:{{form_MT}}px;width:{{form_W}}px;">
+    
+    <view class="weui-search-title" bindtap="goChooseAddress" style="top:{{title_top}}px;left:{{title_left}}px;right:{{title_right}}px;">
+        <image style="height:40rpx;width:40rpx;" src='../images/icons/dingwei.png'/>
+        <text style="width:{{titleText_W}}%;font-size:30rpx;color:#666;text-overflow:ellipsis;overflow:hidden;">{{address}}</text>
+        <image style="width:20rpx;height:20rpx;margin:0 20rpx 0 20rpx;" src="../images/icons/xiangxia.png"/>
+        <image style="height:40rpx;width:40rpx;position:absolute;right:{{sao_R}}px" src="../images/icons/saoyisao.png"
+        @tap="scan"/>
+    </view>
+    <navigator class="weui-search-bar__box" style="width:{{search_W}}%;margin-left:{{search_ML}}px;right:{{search_R}}px" url='/pages/search'>
+      <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+      <input type="text" class="weui-search-bar__input" placeholder="搜索（水果）有惊喜"/>
+      <view class="weui-icon-clear" wx:if="{{wxSearchData.value != ''}}" @tap="wxSearchClear">
+        <icon type="clear" size="14"></icon>
+      </view>
+    </navigator>
+  </view>
+  <view class='wrap-swiper'>
+      <swiper style="height:{{swiper_H}}px" indicator-dots="{{true}}" autoplay="{{flase}}" interval="{{1500}}" duration="{{1500}}" circular="{{true}}" current="{{current}}" bindchange='testDetails' indicator-active-color='#ff6d5b'>
+        <block wx:for="{{imgUrls}}" wx:key="key">
+      <swiper-item>
+        <image src="{{imageUrl+item.pic_url}}" style="width:100%;" mode="widthFix"  />
+      </swiper-item>
+        </block>
+      </swiper>
+  </view>
+
+  <view style=' align-items: center; display:flex;flex-direction:column;justify-content:space-between'>
+    <text style="font-size:50rpx;color:#ffb65d;font-weight:bold;font-size:50rpx">ACTIVITY AREA</text>
+    <text style="color:block;font-size:50rpx;margin-bottom:30rpx;">- 活动专区 -</text>
+    <text style="color:#666;font-size:20rpx;margin-bottom:30rpx;">这里可以写一些有趣的引导用户的引导小语</text>
+  </view> 
+                  <!-- 活动专区 热门商品 -->
+
+    <view wx:if="{{notDefaultAddress}}" style="text-align:center;">
+      <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
+      <text style="color:#ff6b5d;">换个地址试试呢～</text>
+      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator>
+    </view>
+    <view wx:else>
+      <goodHot1 :hotGood.sync="hotGood1"></goodHot1>
+      <goodHot2 wx:if="{{hotGood2.length!=0}}" :hotGood.sync="hotGood2" ></goodHot2>
+      <goodHot3 wx:if="{{hotGood3.length!=0}}" :hotGood.sync="hotGood3" ></goodHot3>
+      <goodHot4 wx:if="{{hotGood4.length!=0}}" :hotGood.sync="hotGood4" ></goodHot4>
+    </view>
+
+  <view style='margin-top:30rpx; align-items: center; display:flex;flex-direction:column;justify-content:space-between'>
+    <text style="font:50rpx;color:#ffb65d;font-weight:bold;font-size:50rpx">NICE SHOP</text>
+    <text style="color:block;font-size:50rpx;margin-bottom:30rpx;">- 推荐商家 -</text>
+  </view>
+  
+                  <!-- 推荐商家 -->
+  <view wx:if="{{notDefaultAddress}}" style="text-align:center;">
+   <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
+      <text style="color:#ff6b5d;">换个地址试试呢～</text>
+      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator>
+  </view>
+  
+    <view wx:else class='index-content'>
+        <repeat   for="{{shopList}}">
+            <shopIndex :shop.sync="item"></shopIndex>
+        </repeat>
+    </view>
+
+</template>
+
+  
+<script>
+import wepy from "wepy";
+import http from '../utils/Base';
+import api from '../utils/API';
+import shopSort from '../components/shopSort';
+import shopIndex from '../components/shopIndex';
+import goodHot from '../components/goodHot';
+//引入sdk核心类
+var QQMapWX = require('../utils/qqmap-wx-jssdk.js');
+//实例化api核心类
+var qqmapsdk;
+export default class Index extends wepy.page{
+    components = {
+    shopSort:shopSort,
+    shopIndex:shopIndex,
+    goodHot1:goodHot,
+    goodHot2:goodHot,
+    goodHot3:goodHot,
+    goodHot4:goodHot,
+  }
+  data = {
+    notDefaultAddress:true,//当前是否没有默认地址
+    imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+    address:"正在努力获取您的位置....",
+    mask1Hidden:{
+      data:true,
+      twoWay:true
+    },
+    imgUrls: [],//siwepr
+    
+    hotGoodList:[[],[],[],[]],//首页活动热门商品
+    hotGood1:[],
+    hotGood2:[],
+    hotGood3:[],
+    hotGood4:[],
+
+    shopList:[],// 首页推荐商家表
+    gradeList:[],//评分数组
+    selectedSort:3,
+    form_MT:0,//首页顶部上外边距
+    form_W:300,//首页顶部宽度
+    title_left:0,
+    title_right:0,
+    title_top:0,
+    sao_R:0,//扫一扫右边
+    search_W:100,//搜索栏宽度
+    search_ML:0,//搜索栏外边距
+    search_R:0,//
+    titleText_W:80,//
+    swiper_H:200,//swiper的高度
+    city:'',//当前城市
+
+  }
+
+  onLoad(){
+      var that = this;     
+        
+      //引入TX地图SDK
+      qqmapsdk = new QQMapWX({
+        key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
+      });
+      //根据当前的经纬度获取用户当前地址信息       
+      qqmapsdk.reverseGeocoder({
+        success (res) {
+          console.log(res);
+          if(!wx.getStorageSync('userDefaultAddress'))
+            that.address = res.result.address;
+         
+          let s = res.result.address_component.city;//当前所在城市
+          that.city = s.substring(0,s.length-1);
+          that.$apply();
+          
+        },
+        fail: function (e) {
+          console.log(e)
+          that.setData({
+            currentAddress: '出了点问题小趣正在努力处理中～'
+          })
+        }
+      }); 
+
+    wx.getSystemInfo({
+      success: ((res)=> {
+        // console.log(res);
+        this.form_W = res.windowWidth - 20;//剪掉padding
+        this.swiper_H = res.windowWidth/2;
+      })
+    })
+    //轮播图
+    new Promise((resolve,reject)=>{
+       http.get(api.Swiper,{}).then(res=>{
+        // console.log(res);
+        this.imgUrls = res;
+      })
+    })
+        //是否已经绑定手机
+    if(!wx.getStorageSync('userInfoInServer').phone){
+      wx.showModal({
+        title: '绑定手机',
+        showText: "下次再说",
+        confirmText: "前往绑定",
+        confirmColor:"skybule",
+        content: "您目前还未绑定手机哦~完成绑定后可以获取更多优质的服务",
+        success:function(res){
+          if(res.confirm){
+            wx.navigateTo({
+              url: '/pages/bindPhone',
+            })
+          }
+        }
+      })
+    }
+  }  
+  onShow(e){
+    var that = this;
+   //查找一个可以提供服务的默认地址
+    wx.getStorage({
+    key: 'userDefaultAddress',
+      success: function(res){ 
+        console.log(res.data)
+        var data = res.data;
+        that.address = data.area_name;
+        that.$apply();
+        that.notDefaultAddress=false;
+      },
+      fail:function(res){
+        that.notDefaultAddress=true;
+      }
+    })
+  }
+  watch = {
+    address(_new,old){
+      //活动专区
+      new Promise((resolve,reject)=>{
+        http.get(api.HotGood,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res=>{
+          console.log(res)
+          for(let x=0;x<4;x++){       
+            if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
+            if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}
+            if(res[x*4+2]!=undefined){this.hotGoodList[x].push(res[x*4+2])}
+            if(res[x*4+3]!=undefined){this.hotGoodList[x].push(res[x*4+3])}         
+          }
+        
+          this.hotGood1 = this.hotGoodList[0];
+          this.hotGood2 = this.hotGoodList[1];
+          this.hotGood3 = this.hotGoodList[2];
+          this.hotGood4 = this.hotGoodList[3];
+          console.log( this.hotGood1);
+          this.$apply();
+        })
+      })
+      //推荐商家
+      new Promise((resolve,reject)=>{
+        http.get(api.ShopList,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res =>{
+          console.log(res);
+          this.shopList = res;
+          this.$apply();
+        })
+      })
+    }
+  }
+  onPageScroll(e){
+      // console.log(e)
+      if(e.scrollTop <= 45){
+        this.form_MT = -40*(e.scrollTop/45);
+        this.title_left = 0 - 10*(e.scrollTop/45);
+        this.title_top = 0 + 40*(e.scrollTop/45);
+        this.title_right =  0 - 10*(e.scrollTop/45);
+        this.search_W =100- 50*(e.scrollTop)/45;
+        this.search_R =40*(e.scrollTop)/45;
+        this.titleText_W =80 -28*(e.scrollTop)/45;
+        this.sao_R = -20*(e.scrollTop)/45;
+        this.$apply();
+      }else{
+        this.form_MT = -40;
+        this.title_left =-10;
+        this.title_top = 40;
+        this.title_right =  -10;
+        this.search_W = 50;
+        this.search_R =40;
+        this.titleText_W =28;
+        this.sao_R = -20;
+        this.$apply();
+      }
+      
+    }
+  methods ={
+    goChooseAddress(e){
+      
+       let url = '/pages/addressChoose?address='+ this.address + '&city=' + this.city;
+       
+       console.log(url)
+        wx.navigateTo({
+          url: url, 
+        })
+    },
+
+    onOverallTag(e){
+      this.mask1Hidden.data = false;
+      this.selectedSort = e.currentTarget.dataset.index;
+      this.$apply();
+    },
+    onTapTag(e){
+      console.log(e);
+      this.selectedSort = e.currentTarget.dataset.index;
+    },
+    scan(e){
+      wx.navigateTo({
+        url: '/pages/scan',
+      })
+    },
+    
+
+  }
+}
+</script>
+<style>
+
+page{
+  background-color:#fff;
+}
+.weui-search-bar__form {
+  position: fixed;
+  -webkit-box-flex: 1;
+  -webkit-flex: auto;
+  flex: auto;
+  z-index:10;
+  padding-bottom:10px;
+  padding-left:10px;
+  padding-right:10px;
+  /* border: 30rpx solid #e6e6ea; */
+  background-color: #ffb65d;
+
+}
+ /* 地址、扫一扫 */
+.weui-search-title{
+  display:flex;
+  position:relative;
+  padding:10px 0 15px 0;
+  margin:10px 10px 0 10px;
+  /* overflow: hidden; */
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  align-items:center;
+}
+.weui-search-bar {
+  position: relative;
+  padding: 8px 10px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  box-sizing: border-box;
+  background-color: #efeff4;
+  border-top: 1rpx solid #d7d6dc;
+  border-bottom: 1rpx solid #d7d6dc;
+}
+
+.weui-icon-search {
+  margin-right: 8px;
+  font-size: inherit;
+}
+
+.weui-icon-search_in-box {
+  
+  position: absolute;
+  left: 10px;
+  top: 7px;
+}
+
+.weui-search-bar__text {
+  display: inline-block;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+.weui-search-bar__box {
+  border-radius: 5px;
+  position: relative;
+  padding:0 30px 0 30px;
+  float: right;
+  box-sizing: border-box;
+  z-index: 1;
+  background-color:#fff;
+}
+
+.weui-search-bar__input {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 28px;
+  line-height: 28px;
+  font-size: 14px;
+}
+
+.weui-icon-clear {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 7px 8px;
+  font-size: 0;
+}
+
+.weui-search-bar__label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  border-radius: 3px;
+  text-align: center;
+  color: #9b9b9b;
+  background: #fff;
+  line-height: 28px;
+}
+
+.weui-search-bar__cancel-btn {
+  margin-left: 10px;
+  line-height: 28px;
+  color:#ff6a3c;/* #09bb07;*/
+  white-space: nowrap;
+}
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: blur(20rpx);
+  overflow:hidden;
+}
+.swiper{
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20%;
+  padding-top: 25px;
+}
+.wrap{
+  display: flex;
+  justify-content: space-around;
+  margin-top: 25px;
+}
+.wrap-swiper{
+  padding-top:90px;
+}
+.index-icon {
+  display: flex;
+  flex-wrap:wrap;
+  /* background-color:#fff; */
+  padding-top:120px;
+  /* padding-top:20rpx; */
+  padding-bottom:20rpx;
+}
+
+.index-icon .item {
+   float: left;   
+    height: 180rpx;   
+    width: 25%;   
+    /* padding-right: 20px;    */
+    box-sizing: border-box;   
+    background-clip: content-box;
+    text-align: center;
+}
+
+.index-icon image {
+  width: 45px;
+  height: 45px;
+  margin: 0 auto;
+  border-radius: 50%;
+  
+}
+
+.index-icon .text {
+  text-align: center;
+  display: block;
+  font-size: 29rpx;
+  color: #444;
+  /* line-height: 2 */
+}
+.youjiantou{
+    display:inline-block;  
+    width:0;  
+    height:0;  
+    border-top: 5px solid transparent;  
+    border-left: 5px solid orange;  
+    border-bottom: 5px solid transparent;
+    transition:   ease;
+}
+.xiajiantou{
+    display:inline-block;  
+    width:0;  
+    height:0;  
+    border-left: 5px solid transparent;  
+    border-right: 5px solid transparent;
+    border-top: 5px solid orange;  
+    transition:   ease;
+    
+}
+.youjiantouFalse{
+  display:inline-block;  
+    width:0;  
+    height:0;  
+    border-top: 5px solid transparent;  
+    border-left: 5px solid black;  
+    border-bottom: 5px solid transparent;
+}
+.sort-list{
+  justify-content: space-around;
+  display: flex;
+  background: white;
+  width: 100%;
+  height: 80rpx;
+  font-size: 27rpx;
+  color: #6A6A6A;
+  align-content: center;
+  border: 1rpx solid #ECECEC;
+}
+.sort{
+  text-align: center;
+  margin: auto 0;
+  height: 30rpx;
+  line-height: 30rpx;
+  border-right: 1rpx solid #ECECEC; 
+  flex: 1;
+}
+.sort-active{
+  color:rgb(243, 190, 18);
+  font-weight: 800;
+}
+
+.index-content {
+  padding-top: 12rpx;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  padding: 15rpx;
+}
+
+.goAddress{
+  margin-left:25%;
+  margin-top:70rpx;
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  font-size: 32rpx;
+}
+</style>
+
+

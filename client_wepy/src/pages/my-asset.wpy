@@ -1,0 +1,149 @@
+<template>
+<view class="stv-container">
+  <view class="tab-bar">
+    <view wx:for="{{tabs}}" wx:key="unique" data-index=
+    "{{index}}" bindtap="handlerTabTap" class="tab {{activeTab==index?'tab-active':''}}" style="width: {{stv.windowWidth/tabs.length}}px">
+      <text>{{item}}</text>
+    </view>
+    <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
+  </view>
+  <view class="scroll-view">
+    <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
+      <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
+        <scroll-view style="height:100%" scroll-y>
+            <black wx:for="{{allOrderList}}">
+              <template is="orderList" data="{{...item}}"/>
+            </black>                    
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</view>
+
+</template>
+
+<script>
+import wepy from "wepy";
+export default class myOrder extends wepy.page{
+  data = {
+    stv: {
+      windowWidth: 0,
+      lineWidth: 0,
+      offset: 0,
+      tStart: false
+    },
+    activeTab: 0,
+    tabs:['我的积分','信用体系','我的卡券'],
+  }
+  onLoad(e){
+    try {
+          var res = wx.getSystemInfoSync()
+          this.windowWidth = res.windowWidth;
+          this.data.stv.lineWidth = this.windowWidth / this.data.tabs.length;
+          this.data.stv.windowWidth = res.windowWidth;
+          this.$apply();
+        } catch (e) {
+        }
+      //切换顶部tabs
+      this._updateSelectedPage(e.id);
+      //修改页面标题
+      wx.setNavigationBarTitle({
+        title:'我的资产'
+      })
+  }
+  methods = {
+      handlerTabTap(e) {
+          this._updateSelectedPage(e.currentTarget.dataset.index);
+      },
+  }
+  _updateSelectedPage(page) {
+      let {tabs, stv, activeTab} = this.data;
+      
+      this.activeTab = page;
+      this.stv.offset = stv.windowWidth*page;
+  }
+}
+</script>
+
+<style>
+.stv-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 20rpx;
+}
+.withAnimate {
+  transition: all 100ms ease;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  -moz-perspective: 1000;
+  -ms-perspective: 1000;
+  perspective: 1000;
+}
+.stv-container .tab-bar {
+  background-color: #fff;
+  position: relative;
+  display: flex;
+  font-size: 30rpx;
+  color: #666666;
+}
+.stv-container .tab-bar .tab-active {
+  color: #ff6b5d;
+  border-bottom: 6rpx solid #ff6b5d;
+}
+.stv-container .tab-bar .tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16rpx;
+  padding-bottom: 20rpx;
+}
+.stv-container .tab-bar .under-line {
+  position: absolute;
+  bottom: 0;
+  height: 6rpx;
+  background-color: #ff6b5d;
+}
+.stv-container .scroll-view {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #fafafa;
+}
+.stv-container .scroll-view .scroll-view-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 30px;
+  display: flex;
+}
+.stv-container .scroll-view .scroll-view-wrapper .one-scene {
+  height: 100%;
+}
+.one-scene text {
+  display: flex;
+  justify-content: center;
+  /* padding-top: 200rpx; */
+}
+
+.emptynone {
+  font-size:32rpx;
+  text-align:center;
+  color:#999;
+  margin-top:250rpx;
+  width:100%;
+  padding-top:250rpx;
+  background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQoAAAEKAgMAAACXpfNaAAAAA3NCSVQICAjb4U/gAAAADFBMVEX///8AAAAAAAAAAAD4jAJNAAAABHRSTlMAESIzthWI6wAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAPiSURBVHic7ZxNdtQwDMdjeH5ddMEq5yFH6KI5B1fhRnAUjsCCBQvANJOmkw9Lf0nz75Ap8aLvdUb+WZY9/pTcNGpK/VN61GX0lPsphRH9LD2ECKlfpEiFVogQZI0IVGdhyxyCtKdMnfi/IW27hb+jVDIkZ21yrczkqk2qqy18XE+t0LmzXZEkitoVaUVJmV4RlL7LRkVarQltimhqWBXJek8yjUdACBRhkzEo0iKRDK2asKrQqhlrCkUMTYdUTZYu1OrlGKoChWwjlSplqgqoTLb9KpNWGeugq8ip/HlS9DVWRS2sNc8fsu3t04dYWrLPHqJodkyFkkFax7wuyXpWboLODnOIwh5zSEp7zCFJ+xayVa1d5hDEfeaoq+0zR13eu66v6O00RzWD1xw1xbPTHINB8CcobUv1by3SuvZuk1aybKCGtGb4Tbo1od+k23Iju7V1/QmMiEnXBUdMujYigxFplnXJsaOFpRUJjFizLItOIZM+mXHGiDXLsilizbIsuw2ZdGmD6KnRvC2CzTLPGG3aeQWiTTs3ZLRp5w2aw0do55xq9/hUPmuMbmIoTfuulJ/yt2dLat3jrpTfGmNqUa1p70v5I3/7klXtHh9KKRrjcWJ0YcZkSrV7IMbLaaAiBBiZyFBHD8CYbPnqDNA/JoY6egDGlJnA0EcgxBgNsReGPoohxph7Nwx1kkOMdGLoky1mdFdh3JkY+mSrj+tT9jfEAAsHyBia5G0xVBHIGH5uYBGEGf3NMN6X8us6DH2tDhlDu4I9g4HRHYzXYOj7H8hodsQAezl973FiPByMg3EwxpQ4jB8H4x8wwHhqYMAx+bYY+lwJGYb5lsFoSvn+XzHA2tLAwAefiGFYJ++G8aV8u5jxsXyFDLAXa+7V7f64Z4gfjI/JsK+8KUb8wmJMhnOH22JEL5LGZDmXuh4DDWSIMfyN3+Ccc++FcdkPxnKefD0G6OzqvZjtnB+t158zqx0VnCkx7z0Y9y97uY9i3K0x7vgYd42MO0/K3SvjDphxF824E2fczTN8BBi+CgyfCYrvBsOHhOHLwvCpYfj2MHyM9uIvRfH92osfG8Mnby/+hRRfSYbPJsN3lOHDyvClpfj0MnyLGT7ODF9rhs83xfec4QPP8MVnxARQYhMYMRKMWA1GzAgldoURQ8OI5WHEFFFimxgxVoxYL0bMGSX2jRGDx4gFpMQkMmIjGTGalFhRRswqI3aWEsPLiCWmxDQzYqsZMd6UWHNGzLsiKdNrope+AUB5i+CkyEba9yYC5W2GhvFGBOOtCsqbGZS3OxrGGyJrSPCY5bKKPCfC2y6NsVv8BU5kqDEIDlCOAAAAAElFTkSuQmCC) no-repeat 50% 0;
+  background-size:200rpx 200rpx;
+
+}
+
+</style>
+

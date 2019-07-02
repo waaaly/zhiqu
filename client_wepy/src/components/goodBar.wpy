@@ -1,0 +1,170 @@
+<style>
+.goodBar{
+  display: flex;
+  display: -webkit-flex;
+  height: 100rpx;
+  position: fixed;
+  bottom: 0;
+  background: #fff;
+  width: 100%;
+  z-index: 12;
+  border-top: 2rpx solid #eee;
+}
+
+.settle{
+  color:#666;
+  font-size: 26rpx;
+  position: relative;
+  flex: 1;
+  padding-top:5px;
+
+}
+
+.collection{
+  position: relative;
+  flex: 1;
+  color:#666;
+  font-size: 26rpx;
+  padding-top:5px;
+
+}
+
+.share{
+  position: relative;
+  flex: 1;
+  color:#666;
+  font-size: 26rpx;
+  background:transparent;
+  display:flex;
+  justify-content:center;
+  margin-right:-30rpx;
+  margin-left:-30rpx;
+  padding-top:5px;
+
+}
+button::after {
+  border: none;
+}
+
+.addCart{
+  background: #f37d6a ;
+  color: #fff;
+    -webkit-flex: 4;
+  flex: 2;
+  text-align: center;
+  line-height: 100rpx;
+  font-size: 32rpx;
+}
+
+.removeCart {
+  background: #c3c3c3;
+  color:#666;
+    -webkit-flex: 4;
+  flex: 2;
+  text-align: center;
+  line-height: 100rpx;
+  font-size: 32rpx;
+}
+
+.removeCart-Enable {
+  background: #c3c3c3;
+  color:#666;
+    -webkit-flex: 4;
+  flex: 2;
+  text-align: center;
+  line-height: 100rpx;
+  font-size: 32rpx;
+}
+</style>
+
+<template>
+    <view class='goodBar'>
+      <view class='settle' @tap="gotocart" >
+       <image style="height:17px;width:17px;  display: block;width: 40rpx;height: 40rpx;margin: 0 auto;" src="/images/icons/jiesuan.png"></image>
+        <text class='carnum' wx:if="{{cartTotal.checkedGoodsCount>0}}">{{cartTotal.checkedGoodsCount}}</text>
+        <text style='position:absolute;bottom:11rpx;left:26rpx'>结算</text>
+      </view>
+      <view class='collection' @tap='Collection'>
+         <image style="height:17px;width:17px;  display: block;width: 40rpx;height: 40rpx;margin: 0 auto;" src="/images/icons/shoucang.png"></image>
+      <text style='position:absolute;bottom:11rpx;left:30rpx'>收藏</text>
+      </view>
+      <button class="share" open-type="share">
+        <image style="height:17px;width:17px;" src="/images/icons/friends.png"></image>
+        <text style='position:absolute;bottom:-1px;'>转发</text>
+      </button> 
+      <view class='addCart' @tap='addcart'>加入购物车</view>
+      <view class="{{isDelOutCar?'removeCart-Enable':'removeCart'}}" @tap='delOutcart'>移出购物车</view>
+    </view>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class goodBar extends wepy.component{
+    props = {
+
+    }
+    data = {
+        isDelOutCar:false,//是否可以移出购物车
+        shop_id:0,
+        good_id:0,
+        good_num:0,
+    }
+    events = {
+      'init':(shop_id,good_id,num,$event)=>{
+        console.log(num)
+        this.shop_id = parseInt(shop_id);
+        this.good_id = parseInt(good_id);
+        this.good_num = num;
+        this.$apply();
+      }
+    }
+    methods = {
+      gotocart(e) {
+        wepy.reLaunch({
+          url: '/pages/cart',
+        })
+      },
+      Collection(e){
+        new Promise((resolve,reject)=>{
+            http.post(api.CollectAdd,{
+                good_id:this.good_id,   
+                shop_id:this.shop_id, 
+                user_id:wx.getStorageSync('userInfoInServer').id,
+            }).then(res =>{
+                console.log(res)
+                wx.showToast({
+                    title: res.msg,
+                    icon: ''
+                })
+            })
+        }) 
+      },
+      addcart(e){
+        new Promise((resolve,reject)=>{
+            http.post(api.CartAdd,{
+                goods_id:this.good_id,   
+                shop_id: this.shop_id, 
+                number:this.good_num,
+                user_id:wx.getStorageSync('userInfoInServer').id,
+            }).then(res =>{
+                console.log(res)
+                if(res.msg){
+                  wx.showToast({
+                    title: res.msg,
+                    icon: 'none'
+                  })
+                }else{
+                   wx.showToast({
+                    title: '添加成功！',
+                    icon: ''
+                  })
+                }              
+            })
+        })
+      }
+    }
+}
+</script>

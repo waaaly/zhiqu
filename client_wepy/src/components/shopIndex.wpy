@@ -1,0 +1,101 @@
+<template>
+
+        <view class="item" @tap="goShoper({{shop.id}})">
+          <image style="display:block;width:100%;border-radius:10px;" src='{{imageUrl+shop.shop_icon}}' mode="widthFix"></image>
+          <view style="padding:5px;border-radius:10px;border: 1px solid #fff;margin-top:8px;background:#fafafa;justify-content:space-between;display:flex;flex-direction:column;font-size:10px;color:#666;position:relative;">
+          <view style="color:black;font-size:15px;">{{shop.shop_name}}
+            <view style="width: 1px;border-radius:50%;float:right;color: #ff6b5d;box-shadow: -1px 1px 0 1px ,-1px 5px 0 1px ,-1px 9px 0 1px "></view>
+          </view>
+          <view>
+            <star :grade.sync='shop.grade'>{{shop.grade}}</star>
+            <text>月售{{shop.monthly_sale}}</text>
+            <text style="float:right;">{{shop.delivery_time}}分钟  {{shop.district}}Km</text>
+          </view>
+          <view style="color:#ff6b5d;">“{{shop.shop_summary}}”</view>
+          </view>
+        </view> 
+
+</template>
+
+<script>
+import wepy from "wepy";
+import star from '../components/star';
+export default class shopIndex extends wepy.component{
+    components = {
+        star:star
+    }
+    props = {
+        shop:{
+            type:Object,
+            default:undefined,
+        }
+    }
+    data = {
+         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+         
+    }
+    onLoad(e){
+        // console.log(this.shop)
+    }
+    watch = {
+        shop(_new,old){
+            console.log(_new)
+        }
+    }
+    methods = {
+         goShoper(id){
+       
+
+        let url = '/pages/shoper?shop_id=';
+        url = url + id;
+       
+        wx.navigateTo({
+            url: url,
+        })
+        
+        }
+    }
+}
+</script>
+
+<style>
+
+
+.index-content .item {
+  width: 49.5%;
+  margin-bottom: 15px;
+}
+
+.index-content .title {
+  font-size: 32rpx;
+  line-height: 1.5;
+  padding-left: 10rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.index-content .smalltitle {
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #999;
+  padding-left: 10rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.index-content .price {
+  font-size: 30rpx;
+  color: #ff6700;
+}
+
+.index-content .numpi {
+  font-size: 28rpx;
+  color: #999;
+  text-decoration: line-through;
+  padding-left: 20rpx;
+}
+</style>

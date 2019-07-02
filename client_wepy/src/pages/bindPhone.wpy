@@ -1,0 +1,289 @@
+<template>
+<view class="bindPhoneTitle">
+  绑定手机号
+</view>
+ 
+<form bindsubmit='formSubmit'>
+  <view class="formItemPhone">
+    <label>手机号</label>
+    <input name="phone" placeholder="请输入手机号" data-id="phone"
+         maxlength="11" type="number"  placeholder-class='inputClass' bindinput='Input' />
+  </view>
+  <view class="formItemPhone">
+    <label>验证码</label>
+    <input name="code" placeholder="请输入验证码" data-id="code"
+         type="number"  placeholder-class='inputClass' bindinput='Input' />
+    <button class='codeBtn' wx:if="{{!isGetCode}}"
+            catchtap='getPhoneCode'>{{btnTxt}}</button>
+    <text class='code_toast' wx:else>{{countDown}}s</text>
+  </view>
+ 
+  <button class="formBtn {{formData.phone&&formData.code?'active':''}}"        
+          formType="submit">确定</button>
+</form>
+<view class="weui-footer_fixed-bottom">
+    <view class="weui-footer__links">
+      <navigator url="/pages/shop/contact" class="weui-footer__link">智趣工作室提供技术支持</navigator>
+    </view>
+    <view class="weui-footer__text">Copyright © 2019 zhiqu.com {{$Copyright$version}}</view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+const phoneRexp = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
+export default class bingPhone extends wepy.page{
+    data = {
+        btnTxt: '获取验证码',
+        isGetCode: false,
+        Loading: false,
+        countDown: 60,
+        formData: {
+            phone: '',
+            code: ''
+        },
+        token:'',
+      userInfoInServer:{},
+    }
+    //验证码倒计时
+timer() {
+    let that = this;
+    let countDown = that.data.countDown;
+    console.log(that.isGetCode)
+    let clock = setInterval(() => {
+        countDown--
+        if (countDown >= 0) {   
+                that.countDown= countDown     
+        } else {
+            clearInterval(clock)
+                that.countDown=60,
+                that.isGetCode= false,
+                that.btnTxt='重新获取'
+        }
+        that.$apply();
+    }, 1000)
+}
+  
+    methods = {
+        //获取验证码
+getPhoneCode() {
+    let that = this,
+        formData = that.data.formData,
+        errMsg = '';
+        errMsg = !formData.phone ? '手机号不能为空！' :
+        formData.phone && !phoneRexp.test(formData.phone) ? '手机号格式有误！' :'';
+        console.log(errMsg)
+        if (errMsg) {
+            wx.showToast({
+                title: errMsg,
+                icon:"none",
+            })
+            return false
+         }
+   
+    //连接服务器进行获取验证码操作
+
+  http.get(api.GetPhoneCode,{ phone: formData.phone,
+          user_id:wx.getStorageSync("userInfoInServer").id}).then(res=>{
+         that.isGetCode= true,
+         that.$apply();
+          that.timer();
+          console.log(res);
+          if(res.msg){
+            wx.showToast({
+                title: res.msg,
+          });
+          }else{
+              wx.showToast({
+                title: '验证码已发送！',
+              });
+          }
+  })
+},
+//点击确定提交绑定
+  formSubmit(e) {
+    let that = this,
+      formData = e.detail.value,
+      errMsg = '';
+      that.Loading=true
+    
+    if (!formData.phone) {
+      errMsg = '手机号不能为空！';
+    }
+    if (!formData.code) {
+      errMsg = '验证码不能为空！';
+    }
+    if (formData.phone) {
+      if (!phoneRexp.test(formData.phone)) {
+        errMsg = '手机号格式有误！';
+      }
+    }
+    if (errMsg) {
+      
+        that.Loading=false
+    
+      wx.showToast({
+        title: errMsg,
+        icon: "none",
+      })
+      return false;
+    }
+    //连接服务器进行验证码手机号验证操作
+    http.get(api.CheckPhoneCode,{phone: formData.phone,
+        verification_code: formData.code,user_id:wx.getStorageSync("userInfoInServer").id}).then(res=>{    
+          console.log(res)  
+          wx.showToast({
+          title: res.msg,
+          });
+        if(res.msg=="绑定成功"){
+          
+          var temp = wx.getStorageSync("userInfoInServer");
+        
+          temp.phone = formData.phone;
+        
+          
+          //绑定成功后更新到本地缓存
+          wx.setStorage({
+            key: 'userInfoInServer',
+            data: temp,
+          })
+          //返回上一级
+          wx.navigateBack({
+            
+          })
+        }
+    })
+  },
+
+    //输入检索
+    Input(e) {
+        let that = this;
+        var formData = that.formData;
+        var inputType = e.currentTarget.dataset.id;
+        var inputValue = e.detail.value;
+        inputType === 'phone' ? formData.phone = inputValue : formData.code = inputValue;
+        formData = inputValue;
+    }
+  }
+}
+</script>
+<style>
+.bindPhoneTitle {
+  width: 90%;
+  padding: 50rpx 5% 127rpx;
+  font-size: 48rpx;
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  color: #ffb65d;
+}
+ 
+.formItemPhone {
+  width: 90%;
+  margin: 0 5%;
+  padding: 0 0 20rpx;
+  border-bottom: 1px solid rgba(226, 228, 232, 1);
+  margin-bottom: 40rpx;
+  position: relative;
+}
+ 
+.formItemPhone label {
+  display: inline-block;
+  width: 25%;
+  vertical-align: middle;
+  margin-right: 10%;
+  font-size: 32rpx;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  color: rgba(51, 51, 51, 1);
+}
+ 
+.formItemPhone input {
+  display: inline-block;
+  width: 65%;
+  vertical-align: middle;
+  font-size: 32rpx;
+  font-family: PingFangSC-Medium;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 1);
+}
+ 
+.inputClass {
+  font-size: 32rpx;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  color: rgba(189, 199, 210, 1);
+}
+ 
+ 
+ 
+.codeBtn {
+  position: absolute;
+  right: 0;
+  bottom: 20rpx;
+  font-size: 28rpx;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  color: #ffb65d;
+  background: transparent;
+  padding: 0;
+  border: none;
+  outline: medium;
+  border-radius: 0;
+  z-index: 1000;
+}
+ 
+.codeBtn::after {
+  border: none;
+  outline: medium;
+  border-radius: 0;
+}
+ 
+.code_toast {
+  position: absolute;
+  right: 15rpx;
+  bottom: 20rpx;
+  font-size: 28rpx;
+  font-family: PingFangSC-Regular;
+  font-weight: 400;
+  color: rgba(189, 199, 210, 1);
+}
+.formBtn{
+    margin: 100rpx 70rpx;
+    color: #666;
+    border-radius: 10rpx;
+    background: #eee; 
+} 
+
+.formBtn.active{
+    background: #ffb65d;
+    color: #eee; 
+} 
+.weui-footer_fixed-bottom {
+  position: fixed;
+  bottom: 0.52em;
+  left: 0;
+  right: 0;
+    color: #999;
+  font-size: 14px;
+  text-align: center;
+    font-family: MicroSoft Yahei;
+  font-size: 28rpx;
+  color: #262626;
+}
+.weui-footer__links {
+  font-size: 0;
+}
+.weui-footer__link {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0.62em;
+  position: relative;
+  font-size: 14px;
+  color: #586c94;
+}
+.weui-footer__text {
+  padding: 0 0.34em;
+  font-size: 12px;
+}
+</style>

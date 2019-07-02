@@ -1,0 +1,86 @@
+<template>
+    <shopHeader :shopInfo.sync='shopInfo'></shopHeader>
+    <view class="tab" >
+        <view class="tab-item {{currentTab==index?'tab-item-active':''}}" wx:for="{{['商品','评论','商家']}}" @tap="touchTab({{index}})">
+            <view class="tab-font">{{item}}</view>     
+        </view>
+    </view>
+    <block wx:if="{{currentTab==0}}">
+        <!-- <shopGood></shopGood>
+        <shopFoot :food.sync='food'></shopFoot> -->
+        <classifyGood></classifyGood>
+    </block>
+    <block wx:if="{{currentTab==1}}">
+        <shopComment></shopComment>
+    </block>
+    <block wx:if="{{currentTab==2}}">
+        <shopInfo :shopInfo.sync='shopInfo'></shopInfo>
+    </block>
+</template>
+
+<script>
+import wepy from 'wepy';
+import shopHeader from '../components/shopHeader';
+import shopFoot from '../components/shopFoot';
+import shopGood from '../components/shopGood';
+import shopInfo from '../components/shopInfo';
+import shopComment from '../components/shopComment';
+import classifyGood from '../components/classifyGood';
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class Shoper extends wepy.page {
+    data ={
+        currentTab:0,
+        food:{},
+        goodList:[],
+        shopInfo:{},
+    }
+    components = {
+        shopHeader:shopHeader,
+        shopFoot:shopFoot,
+        shopGood:shopGood,
+        shopComment:shopComment,
+        shopInfo:shopInfo,
+        classifyGood:classifyGood,
+    }
+    onLoad(e){
+        console.log(e)
+        
+        http.get(api.ShopDetail,{shop_id:e.shop_id}).then(res =>{
+            console.log(res);   
+            this.shopInfo = res.shop_info;
+            this.$broadcast('shoperGoodList', res);    
+            this.$apply();       
+        })
+    }
+    methods ={
+        touchTab(index){
+            this.currentTab =index;
+        }
+    }
+}
+</script>
+<style lang="less">
+    .tab{
+        display: flex;
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        border-bottom:1px solid #ddd
+    }
+    .tab-item{
+        flex:1;
+        text-align:center;
+        color:rgb(77,85,93);
+    }
+    .tab-item-active{
+        color:rgb(240, 152, 20);
+    }
+    .tab-font{
+        display: block;
+        text-decoration: none;
+        font-size:14px;
+    }
+</style>
+
+

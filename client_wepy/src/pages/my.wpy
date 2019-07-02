@@ -1,0 +1,367 @@
+<template>
+<view wx:if="{{userInfoInServer.phone==null}}" style="witdh:100%;height:100%;">
+  <view style="position:absolute;top:20%;padding:10%; color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
+    <text style="margin-left:17%;">提供更优质的服务哦～</text></view>
+  <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
+</view>
+<view wx:else class="mine-wrapper">
+    <!-- 用户头像展示 -->
+    <view class="background">
+      <image src="{{userInfo.avatarUrl}}" width="100%" height="100%" class="_img "/>
+    </view>
+    <view class="avatar-wrapper">
+        <view>
+            <view class="avatar" bindtap="gotoSetting">
+                <image style="border-radius:50%;" src="{{userInfo.avatarUrl? userInfo.avatarUrl:'http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/bangzhufankui.png' }}"></image>
+            </view>
+            <view class="text">
+                <text wx:if="{{userInfo.nickName}}">{{userInfo.nickName}}</text>
+                <text wx:else bindtap="toLogin">使用微信登录</text>
+            </view>
+        </view>
+    </view>
+    <!-- 个人中心展示 -->
+    <block wx:if="{{userInfoInServer}}" wx:for="{{menuItems}}" wx:for-index="itemIndex">
+        <view class="wrapperItem">
+            <view bindtap="naviTo" data-itemname="{{itemIndex}}" class="weui-cell weui-cell_access" hover-class="none">
+                <view class="itemtext">
+                    <image src="{{item.icon}}" class="image"></image>
+                    {{item.text}}
+                </view>
+                <view class="tips">{{item.tips}}
+                    <image wx:if="{{item.touch}}" style="transform: rotate(90deg);" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+                    <image wx:else src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+                </view>
+            </view>
+            <view class="weui-flex" style="{{item.touch==false?'display:none':''}}">
+                <block wx:for="{{item.items}}" wx:for-item="childItems">
+                    <view bindtap="childNavTo"  data-url="{{childItems.url}}" data-fathertext="{{item.text}}" class="weui-flex_item" hover-class="none" style="flex-grow: 1">
+                        <view class="weui-cell_hd" style="text-align:center;">
+                            <image src="{{childItems.icon}}" class="image"></image>
+                        </view>
+                        <view style="font-size:25rpx;text-align: center;">{{childItems.text}}</view>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </block>
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+const StaticImgUrl = "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/";
+export default class my extends wepy.page{
+    data = {
+        userInfo:null,
+        userInfoInServer: null,
+        menuItems: {
+          shoper: {
+                
+                text: '我的商铺',
+                tabs: ['店铺状态', '订单管理'],
+                touch:true,
+                icon: StaticImgUrl +'xitongshezhi.png',
+                tips: '进入我的商铺',
+                items: [
+                    { text: '店铺状态', url: 1, icon: StaticImgUrl +'qingchuhuancun.png' },
+                    { text: '订单管理', url: 2, icon: StaticImgUrl +'qingchuhuancun.png' },
+                ]
+            },
+            order: {
+              
+                text: '我的订单',
+                tabs: ['全部订单', '待付款', '待送货', '待收货', '待评价'],
+                touch:false,
+                icon: StaticImgUrl + 'wodedingdan.png',
+                tips: '查看全部订单',
+                items: [
+                    { text: '代付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'daifukuan.png' },
+                    { text: '待送货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'daifahuo.png' },
+                    { text: '待收货', url: '/pages/my-order?id=3', icon: StaticImgUrl +'daishouhuo.png' },
+                    { text: '待评价', url: '/pages/my-order?id=4', icon: StaticImgUrl +'daipingjia.png' },
+                ]
+            },
+            funcs: {
+              
+                text: '常用功能',
+                tabs: ['我的收藏', "我的地址",  "意见反馈"],
+                touch:false,
+                icon: StaticImgUrl +'gongnengfuwu.png',
+                tips: '查看全部功能',
+                items: [
+                    { text: '我的收藏', url: '/pages/my-func?id=0', icon: StaticImgUrl +'wodeshoucang.png' },
+                    { text: '我的地址', url: '/pages/my-func?id=1', icon: StaticImgUrl +'wodedizhi.png' },                   
+                    { text: '意见反馈', url: '/pages/my-func?id=2', icon: StaticImgUrl +'bangzhufankui.png' },
+                ]
+            },
+            property: {
+                
+                text: '我的资产',
+                tabs: ['我的积分', "信用体系", '我的卡券'],
+                touch:false,
+                icon: StaticImgUrl +'wodezichan.png',
+                tips: '查看所有资产',
+                items: [
+                    { text: '我的积分', url: '/pages/my-asset?id=0', icon: StaticImgUrl +'wodejifen.png' },
+                    { text: '信用体系', url: '/pages/my-asset?id=1', icon: StaticImgUrl +'wodezuji.png' },
+                    { text: '我的卡券', url: '/pages/my-asset?id=2', icon: StaticImgUrl +'wodekaquan.png' },
+                ]
+            },
+            setting: {
+                
+                text: '系统设置',
+                tabs: ['使用指引', '清除缓存', '版本信息'],
+                touch:false,
+                icon: StaticImgUrl +'xitongshezhi.png',
+                tips: '查看系统设置',
+                items: [
+                    { text: '使用指引', url: 1, icon: StaticImgUrl +'qingchuhuancun.png' },
+                    { text: '清除缓存', url: 2, icon: StaticImgUrl +'qingchuhuancun.png' },
+                    { text: '版本信息', url: 3, icon: StaticImgUrl +'banbenxinxi.png' },
+                ]
+            },
+            
+        },
+    }
+    onLoad(){
+        var str = wx.getStorageSync('userInfo');
+        this.userInfo = JSON.parse(str);
+
+        this.$apply();
+    }
+    onShow(){
+      this.userInfoInServer = wx.getStorageSync("userInfoInServer");
+    }
+    methods = {
+       naviTo: function(e) {
+        // console.log(e.currentTarget.dataset);
+        var name = e.currentTarget.dataset.itemname;
+        // console.log( this.menuItems[name]);
+        this.menuItems[name].touch = !this.menuItems[name].touch ;
+        this.$apply();
+    },
+    childNavTo(e){
+      console.log(e.currentTarget);
+
+      let father = e.currentTarget.dataset.fathertext;
+      let url = e.currentTarget.dataset.url;
+
+      if(father == "我的商铺"){
+        http.get(api.AuthLoginByWeixin,{}).then(result =>{
+          if(result.userInfo&&result.token){
+            wx.setStorageSync('userToken', result.token);
+            wx.setStorageSync('userInfoInServer', result.userInfo);
+          }else{
+            reject(result);
+          }
+        });
+        switch(url){
+          case 1: 
+                
+                wx.navigateTo({
+                    url: '../pages/shopStatus',
+                })
+          case 2: 
+                wx.navigateTo({
+                    url: '../pages/shopHome',
+                })
+          } 
+        } 
+
+      else if (father === "系统设置") {
+            switch (url) {
+                case 1:
+                    wx.navigateTo({
+                        url: '../../pages/useGuide/useGuide',
+                    })
+                    break;
+                case 2:
+                    wx.showModal({
+                        title: '提示',
+                        content: "确定清除系统全部缓存？",
+                        cancelText: "下次再说",
+                        confirmText: "确定清除",
+                        confirmColor: "skybule",
+                        success: function(e) {
+                            if (e.cancel) {
+
+                            } else {
+                                wx.showToast({
+                                    title: '清除成功', //提示文字
+                                    duration: 2000, //显示时长
+                                    mask: true, //是否显示透明蒙层，防止触摸穿透，默认：false  
+                                    icon: 'success', //图标，支持"success"、"loading"  
+                                    success: function() {}, //接口调用成功
+                                    fail: function() {}, //接口调用失败的回调函数  
+                                    complete: function() {} //接口调用结束的回调函数  
+                                })
+                            }
+                        }
+                    });
+                    break;
+                case 3:
+                    wx.showModal({
+                        title: '当前系统版本',
+                        showCancel: false,
+                        confirmText: "知道了",
+                        confirmColor: "skybule",
+                        content: "V0.0.0.0",
+                    })
+                    break;
+            }
+        }
+        else{
+          wx.navigateTo({
+              url: url,
+          })
+        }
+      }
+  }
+  
+}
+</script>
+
+<style>
+.bindphone{
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 32rpx;
+  margin-top:700rpx;
+}
+.mine-wrapper{
+    overflow:hidden;
+
+}
+.wrapper {
+  background: #eee;
+}
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  filter: blur(20rpx);
+  overflow:hidden;
+}
+.background ._img{
+    height: 100%;
+    width: 100%;
+}
+.wrapperItem {
+  position: relative;
+  background-color: #fff;
+  line-height: 1.41176471;
+  font-size: 17px;
+  /* top: 10rpx; */
+  /* border-top-left-radius: 15rpx;
+  border-top-right-radius: 15rpx;
+  border-bottom-left-radius: 15rpx;
+  border-bottom-right-radius: 15rpx; */
+  /* margin-bottom:20rpx; */
+  padding: 20px;
+}
+.wrapperItem:after {
+  position:absolute; 
+  content: "";
+  left: 20px;
+  right:20px;
+  bottom:0;
+  /* background-color: #d6d6d6d6; */
+  border-bottom:1px solid #ddd;
+  /* width: 100%; */
+  height: 0;
+}
+.weui-cell {
+  padding: 10prx 15rpx;
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  /* -webkit-box-align: center;
+  -webkit-align-items: center; */
+  align-items: center;
+  margin:10rpx;
+}
+.weui-flex {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  margin-top: 15px;
+  color:#ff6b5d;
+  /* margin-bottom: 15px; */
+}
+
+.weui-cell_hd .image{
+  height:50rpx;
+  width:50rpx;
+}
+.itemtext{
+  display: flex;
+  align-items: center;
+  font-size:35rpx;
+  color: #666;
+  font-weight:bold;
+}
+.itemtext image{
+  margin-right: 30rpx;
+  width: 45rpx;
+  height: 45rpx;
+}
+.tips{
+  position:absolute;
+  right: 20rpx;
+  font-size:25rpx;
+  display: flex;
+  color:#bbb;
+  align-items: center;
+}
+.tips image{
+  margin-left: 10rpx;
+  width: 30rpx;
+  height: 30rpx;
+}
+.avatar-wrapper {
+  /* background: #1b82d1; */
+  padding: 25px 0;
+  border-bottom-left-radius: 15rpx;
+  border-bottom-right-radius: 15rpx;
+}
+
+.avatar-wrapper .avatar {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.avatar-wrapper .avatar image {
+  width: 100px;
+  height: 100px;
+}
+
+.avatar-wrapper .text {
+  text-align: center;
+  color: #ff6b5d;
+}
+
+.weui-cell__hd image {
+  margin-right: 5px;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+}
+
+.weui-cells::after {
+  content: none;
+  border-bottom: none;
+}
+
+.weui-cells::before {
+  border-top: none;
+}
+</style>

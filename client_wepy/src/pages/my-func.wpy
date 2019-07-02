@@ -1,0 +1,444 @@
+
+<style>
+page{
+  background-color: #fafafa;
+}
+  .stv-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 20rpx;
+}
+.withAnimate {
+  transition: all 100ms ease;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  -moz-perspective: 1000;
+  -ms-perspective: 1000;
+  perspective: 1000;
+}
+.stv-container .tab-bar {
+  background-color: #fff;
+  position: relative;
+  display: flex;
+  font-size: 30rpx;
+  color: #666666;
+}
+.stv-container .tab-bar .tab-active {
+  color: #ff6b5d;
+  border-bottom: 6rpx solid #ff6b5d;
+}
+.stv-container .tab-bar .tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16rpx;
+  padding-bottom: 20rpx;
+}
+.stv-container .tab-bar .under-line {
+  position: absolute;
+  bottom: 0;
+  height: 6rpx;
+  background-color: #ff6b5d;
+}
+.stv-container .scroll-view {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #fafafa;
+}
+.stv-container .scroll-view .scroll-view-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 30px;
+  display: flex;
+}
+.stv-container .scroll-view .scroll-view-wrapper .one-scene {
+  height: 100%;
+}
+.one-scene text {
+  position:relative;
+  display: flex;
+  justify-content: center;
+  /* padding-top: 200rpx; */
+}
+
+
+.emptynone {
+font-size:32rpx;
+text-align:center;
+color:#999;
+margin-top:250rpx;
+width:100%;
+padding-top:250rpx;
+background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQoAAAEKAgMAAACXpfNaAAAAA3NCSVQICAjb4U/gAAAADFBMVEX///8AAAAAAAAAAAD4jAJNAAAABHRSTlMAESIzthWI6wAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAPiSURBVHic7ZxNdtQwDMdjeH5ddMEq5yFH6KI5B1fhRnAUjsCCBQvANJOmkw9Lf0nz75Ap8aLvdUb+WZY9/pTcNGpK/VN61GX0lPsphRH9LD2ECKlfpEiFVogQZI0IVGdhyxyCtKdMnfi/IW27hb+jVDIkZ21yrczkqk2qqy18XE+t0LmzXZEkitoVaUVJmV4RlL7LRkVarQltimhqWBXJek8yjUdACBRhkzEo0iKRDK2asKrQqhlrCkUMTYdUTZYu1OrlGKoChWwjlSplqgqoTLb9KpNWGeugq8ip/HlS9DVWRS2sNc8fsu3t04dYWrLPHqJodkyFkkFax7wuyXpWboLODnOIwh5zSEp7zCFJ+xayVa1d5hDEfeaoq+0zR13eu66v6O00RzWD1xw1xbPTHINB8CcobUv1by3SuvZuk1aybKCGtGb4Tbo1od+k23Iju7V1/QmMiEnXBUdMujYigxFplnXJsaOFpRUJjFizLItOIZM+mXHGiDXLsilizbIsuw2ZdGmD6KnRvC2CzTLPGG3aeQWiTTs3ZLRp5w2aw0do55xq9/hUPmuMbmIoTfuulJ/yt2dLat3jrpTfGmNqUa1p70v5I3/7klXtHh9KKRrjcWJ0YcZkSrV7IMbLaaAiBBiZyFBHD8CYbPnqDNA/JoY6egDGlJnA0EcgxBgNsReGPoohxph7Nwx1kkOMdGLoky1mdFdh3JkY+mSrj+tT9jfEAAsHyBia5G0xVBHIGH5uYBGEGf3NMN6X8us6DH2tDhlDu4I9g4HRHYzXYOj7H8hodsQAezl973FiPByMg3EwxpQ4jB8H4x8wwHhqYMAx+bYY+lwJGYb5lsFoSvn+XzHA2tLAwAefiGFYJ++G8aV8u5jxsXyFDLAXa+7V7f64Z4gfjI/JsK+8KUb8wmJMhnOH22JEL5LGZDmXuh4DDWSIMfyN3+Ccc++FcdkPxnKefD0G6OzqvZjtnB+t158zqx0VnCkx7z0Y9y97uY9i3K0x7vgYd42MO0/K3SvjDphxF824E2fczTN8BBi+CgyfCYrvBsOHhOHLwvCpYfj2MHyM9uIvRfH92osfG8Mnby/+hRRfSYbPJsN3lOHDyvClpfj0MnyLGT7ODF9rhs83xfec4QPP8MVnxARQYhMYMRKMWA1GzAgldoURQ8OI5WHEFFFimxgxVoxYL0bMGSX2jRGDx4gFpMQkMmIjGTGalFhRRswqI3aWEsPLiCWmxDQzYqsZMd6UWHNGzLsiKdNrope+AUB5i+CkyEba9yYC5W2GhvFGBOOtCsqbGZS3OxrGGyJrSPCY5bKKPCfC2y6NsVv8BU5kqDEIDlCOAAAAAElFTkSuQmCC) no-repeat 50% 0;
+background-size:200rpx 200rpx;
+
+}
+.goindex {
+  width:60%;
+  height:70rpx;
+  line-height:70rpx;
+  text-align:center;
+  background:#ff6b5d;
+  color:#fff;
+  margin:30rpx auto 0 auto;
+
+}
+/*地址卡片*/
+.addressCard{
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 10rpx;
+  padding: 20rpx 5rpx;
+  margin: 20rpx;
+}
+/*地址操作*/
+.addressDel{
+  font-size:13px;
+  display: flex;
+  flex-direction: column;
+  padding:10rpx 0rpx;color:#666;
+  justify-content: space-between;
+  align-items:center;
+  width:25%;
+}
+/*新增地址按钮*/
+.add_wrap {
+display:block;
+width:95%;
+left:0;
+right:0;
+position:absolute;
+bottom:20rpx;
+margin:0 auto;
+}
+
+/*新增地址按钮*/
+.button {
+font-size:36rpx;
+height:95rpx;
+line-height:95rpx;
+text-align:center;
+margin:0 auto;
+width:100%;
+-moz-border-radius:10rpx;
+-webkit-border-radius:10rpx;
+border-radius:10rpx;
+background:#ff6b5d;
+color:#fff;
+
+}
+.addBotton{
+  position: fixed;
+  bottom:50rpx;
+  margin-left:14%;
+  border-radius:50%;
+  border:1px solid #ff6b5d;
+  width:50px;
+  height:50px;
+  font-size:50rpx;
+  background-color:#ff6b5d;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+}
+/*选择图片*/
+.chooseView{
+    width: 160rpx;
+    height: 160rpx;
+    background-color: #ffffff;
+    border: 1px solid lightgray;
+    text-align: center;
+    line-height: 180rpx;
+    padding: 0rpx 7rpx;
+}
+ .upFile{
+    width: 160rpx;
+    height:160rpx;
+    position: relative;
+    padding: 0rpx 7rpx;
+}
+ .itemImv{
+    width: 160rpx;
+    height: 160rpx;
+    padding: 0rpx 7rpx;
+    margin-right: 15rpx;
+}
+ .closeImv{
+    position: absolute;
+    right: 0rpx;
+    top: 0rpx;
+    width: 50rpx;
+    height:50rpx;
+}
+</style>
+
+<script>
+import wepy from "wepy";
+import http from '../utils/Base';
+import api from '../utils/API';
+import classifyGood from '../components/classifyGood';
+export default class myFunc extends wepy.page {
+  components = {
+    classifyGood:classifyGood,
+  }
+  data = {
+    stv: {
+      windowWidth: 0,
+      lineWidth: 0,
+      offset: 0,
+      tStart: false
+    },
+    activeTab: 0,
+    tabs:['我的收藏','我的地址','意见反馈'],
+    CollectList:[],//收藏列表
+    userAddress:[],//地址列表
+    yijianList://意见列表
+    [
+        { value: '功能异常：功能故障或不可用', checked: false },
+        { value: '产品建议：用的不爽，我有建议', checked: false },
+        { value: '安全问题：密码，隐私、欺诈等', checked: false },
+        { value: '其他问题意见', checked: false }
+    ],
+    textareaMes:"",//用户输入的反馈信息
+    textareaNum:0,//用户当前输入的字符
+    imgArr: [],//用户选择上传的图片
+    chooseViewShow: true,//是否可以添加图片
+  }
+  onLoad(e){
+    try {
+        var res = wx.getSystemInfoSync()
+        this.windowWidth = res.windowWidth;
+        this.data.stv.lineWidth = this.windowWidth / this.data.tabs.length;
+        this.data.stv.windowWidth = res.windowWidth;
+        this.$apply();
+      } catch (e) {
+      }
+    //切换顶部tabs
+    this._updateSelectedPage(e.id);
+    //修改页面标题
+    wx.setNavigationBarTitle({
+      title:'常用功能'
+    })    
+  }
+  onShow(){
+    http.get(api.AddressList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{     
+        console.log(res);
+        this.userAddress = res;
+        this.$apply();
+        
+      })
+      
+    http.get(api.CollectList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{ 
+        console.log(res);    
+        this.CollectList = res;
+        this.$apply(); 
+        this.$broadcast('collectGoodList', this.CollectList);    
+      })
+  }
+  _updateSelectedPage(page) {
+    let {tabs, stv, activeTab} = this.data; 
+    this.activeTab = page;
+    this.stv.offset = stv.windowWidth*page;
+  }
+  methods = {
+    gotoAddress(e){
+      wx.navigateTo({
+        url: '/pages/addressAdd',
+      })
+    },
+    //修改地址
+    editAddress:function(e){
+      var currentAddress = e.currentTarget.dataset.item;
+      wx.navigateTo({
+        url: '/pages/addressAdd?address='+
+          JSON.stringify(currentAddress) + '&title=编辑地址',
+      })
+    },
+    delAddress:function(e){
+      var currentAddress = e.currentTarget.dataset.item;
+      var that = this;
+      wx.showModal({
+        title: '提示',
+        content: "确定删除该地址吗？",
+        cancelText: "下次再说",
+        confirmText: "确定删除",
+        confirmColor: "skybule",
+        success: function (e) {
+          if (e.cancel) {
+            //点击取消,默认隐藏弹框
+          } else {
+            http.post(api.AddressDelete,{id:currentAddress.id,user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{
+                console.log(res)
+                that.onShow();
+                wx.showToast({
+                  title: '删除成功！',
+                  duration: 500
+                })
+            })
+          }
+        }
+      })
+    },
+    setDefaultAddress:function(e){
+      var currentAddress = e.currentTarget.dataset.item;
+      var that = this;
+
+      wx.showModal({
+        title: '提示',
+        content: "确定将当前地址设为默认地址？",
+        cancelText: "下次再说",
+        confirmText: "确定",
+        confirmColor: "skybule",
+        success: function (e) {
+          if (e.cancel) {
+            //点击取消,默认隐藏弹框
+          } else {
+            if (currentAddress.is_default){
+              wx.showModal({
+                title: '提示',
+                content: '当前项为默认地址！',
+                showCancel:false,
+                confirmText:'知道了',
+                confirmColor: "skybule",
+              })
+              return;
+            }else{
+              http.post(api.AddressSetDefault,{id:currentAddress.id}).then(res=>{  
+                  console.log(e.data);
+                  wx.showToast({
+                    title: "设置成功",
+                    duration: 500
+                  })
+                  wx.setStorageSync('userDefaultAddress', currentAddress);
+                  wx.setStorageSync('flagAddress', 1);
+                  that.onShow();
+              })
+            }
+          }
+        }
+      })
+    },
+    handlerTabTap(e) {
+        this._updateSelectedPage(e.currentTarget.dataset.index);
+    },
+  } 
+}
+</script>
+
+<template>
+<view class="stv-container">
+  <view class="tab-bar">
+    <view wx:for="{{tabs}}" wx:key="unique" data-index=
+    "{{index}}" bindtap="handlerTabTap" class="tab {{activeTab==index?'tab-active':''}}" style="width: {{stv.windowWidth/tabs.length}}px">
+      <text>{{item}}</text>
+    </view>
+    <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
+  </view>
+  <view class="scroll-view">
+    <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
+      <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}" wx:for-item="item" class="one-scene">
+        <scroll-view style="height:100%" scroll-y>
+          <view wx:if="{{item=='我的收藏'}}">
+            <view wx:if="{{CollectList == []}}" class='emptynone'>
+                <text class='span'>暂无相关的数据</text>
+                <navigator open-type="switchTab" 
+                          class='goindex' 
+                          url="../index/index">去发现更多好货~
+                </navigator>
+            </view>
+            <view wx:else>
+                <classifyGood></classifyGood>
+            </view>
+          </view>
+          <view wx:if="{{item=='意见反馈'}}"  style='position:relative; height:100%;'>
+            <view style="color:#666;font-size:28rpx">（必选）请选择您想反馈的问题点</view>
+            <view style='background:#fff;padding:10rpx;font-size:35rpx'>
+                <checkbox-group bindchange="checkboxChange">
+                <label style='margin-bottom:15rpx;' wx:for="{{yijianList}}">
+                  <view style='margin-bottom:15rpx;'>
+                  <checkbox value="{{item.value}}" 
+                            checked="{{item.checked}}"/>{{item.value}}</view>
+                </label>
+                </checkbox-group>
+            </view>
+            <view style='padding:20rpx;font-size:30rpx;'>请补充详细问题和意见（{{textareaNum}}/250）
+            </view>
+              <view style='height:200rpx;background:#fff;font-size:30rpx;padding-left:15rpx;padding-top:10rpx;color:#000;'>
+              <textarea style='height:200rpx' maxlength="250" placeholder="请用不少于15个字描述您的意见吧，程序员小哥会努力去修复哦～" value="{{fankuixiangqing}}" bindinput="getInput"/>
+              </view>
+            <view style="color:#666;font-size:28rpx">（可选）请提供相关问题的截图或照片（{{imgArr.length}}/4）</view>
+            <view style='position:relative;padding: 20rpx 20rpx;background-color: #fff;display: flex;flex-wrap: wrap;align-items: center;'>
+           
+              <!--显示已经选择的图片-->
+              <view wx:for="{{imgArr}}" wx:key="key">
+                <view class="upFile" bindtap="showImage" style="border-radius: 5px" data-id="{{index}}">
+                    <image class="itemImv" src="{{item}}"></image>
+                    <image class="closeImv" src="https://raw.githubusercontent.com/dt8888/moreImgaes/master/pages/images/delect.png" mode="scaleToFill" catchtap="deleteImv"  data-id="{{index}}"></image>
+                </view>
+              </view>
+               <!--添加图片按钮-->
+              <view class="chooseView" bindtap="chooseImage" style="border-radius: 5px" wx:if="{{chooseViewShow}}">
+                <image class="chooseImv" style="width:50rpx;height:50rpx;" 
+                        src="https://raw.githubusercontent.com/dt8888/moreImgaes/master/pages/images/add.png"/>
+              </view>
+            </view>
+            <button bindtap="submit" type="primary" style='width:80%;position:absulote;bottom:-50rpx;margin-top:80rpx;background-color:#ff6b5d;'>提交</button>
+          </view>
+
+          <view wx:if="{{item=='我的地址'}}">
+            <view wx:if="{{userAddress.length==0}}" style='align-items: center;margin:30rpx 20rpx;display:flex;flex-direction:colunm;justify-content:center;color:#666;' >
+              <text >当前没有默认地址
+              去添加一个详细的收货地址
+              让小趣更好的服务你吧～</text>
+            </view>
+            <scroll-view  scroll-y wx:else style="display:flex;flex-direction:column;height:90%">      
+                <view  wx:for="{{userAddress}}">
+                  <view class='addressCard'>
+                    <view style="margin-left:12rpx;color:blue;font-size:28rpx;color:#ff6b5d" wx:if="{{item.is_default}}">[默认地址]</view>
+                    <view style='margin-left:15rpx;display:flex;flex-direction:row'>
+                      <view style='display: flex;flex-direction: column;width:75%;border-right: 2rpx solid #eee;'>
+                        <view style="">{{item.name}}</view>
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.mobile}}</view>
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.full_region}}  {{item.address}}</view>   
+                      </view>
+                    <view class="addressDel">
+                      <view data-item="{{item}}" 
+                            bindtap='delAddress'
+                            style='color:red;'>删除</view>
+                      <view data-item="{{item}}" 
+                            bindtap='editAddress'>修改</view>
+                      <view data-item="{{item}}" 
+                            bindtap='setDefaultAddress'>设为默认</view>
+                      </view> 
+                    </view>                                 
+                  </view>
+                </view>
+            </scroll-view>  
+            <!-- <view class="add_wrap">
+              <view class="button type_red" style="position:" bindtap="gotoAddress">新增地址</view>
+            </view> -->
+            <view class="addBotton" style="{{userAddress.length==0?'opacity:1':'opacity:0.6'}}" bindtap="gotoAddress">+</view>
+          <view>
+          
+          
+          
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+</view>
+</template>
+

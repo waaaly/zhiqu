@@ -1,0 +1,252 @@
+<template>
+<block wx:for="{{goodList}}" wx:for-item="item" wx:key="index" wx:for-index="index">
+     <view @tap.shop="goGoodDetail({{item}})" style="align-items:center;padding:0 10px;margin:10px 0px;display:flex;flex-direction:row;background:#fff;">
+        <image style="width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
+        <view style="padding-top:10px;margin-left:5%;position:relative;width:70%;">
+            <view style="color:#ff6b5d;font-size:40rpx;display:flex;{{item.shop_name == undefine?'display:none;':''}}">
+                <view style="flex:2;">
+                    <image style="width:50rpx;height:50rpx;" src="{{imageUrl + item.shop_icon}}"/>
+                </view>              
+                <text>{{item.shop_name}}</text>
+            </view>
+            <view class="itemName">{{item.goods_name}}
+                <view wx:if="{{item.collectId}}" class="shoucang" @tap.stop="delInCollect({{item}})">
+                    <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
+              mode='widthFix'/>
+                </view>
+                <view wx:else @tap.stop="collect({{item}})" class="shoucang iconfont">&#xe628;</view>
+            </view>
+            <view class="goodText">
+                <text>{{item.goods_desc}}</text>
+            </view>
+            <view class="titleContent">
+                <view class="title">{{item.retail_price}}元</view>
+                <!-- <view class="smalltitle">{{item.extra_price}}元</view> -->
+                <view @tap.stop="addCart({{item}})" class="add iconfont"></view>
+            </view>              
+        </view>
+    </view>
+</block>
+<view wx:if="{{goodList.length==0&&ready}}" 
+    style="width:100%;height:80%;display:flex;justify-content:center;align-items:center;color:#ff6b5d;">该分类暂无数据</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class classifyGood extends wepy.component{
+    props = {
+        
+    }
+    data = {
+        ready:false,
+        image_H:100,
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+        StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
+        goodList:[],
+    }
+    onLoad(e){
+        wx.getSystemInfo({
+        success: ((res)=> {
+            this.image_H = res.windowWidth * 0.3;//剪掉padding
+        })
+      })      
+    }
+    methods = {
+        goGoodDetail(item){
+            console.log(item);
+            let URL='/pages/goodDetail?goodId=';
+            URL = URL + item.good_id;
+            URL = URL + '&shopId=' +item.shop_id;
+            wx.navigateTo({
+                url: URL,
+            })
+        },
+        collect(item){
+            new Promise((resolve,reject)=>{
+                    http.post(api.CollectAdd,{
+                        good_id:item.good_id,   
+                        shop_id:item.shop_id, 
+                        user_id:wx.getStorageSync('userInfoInServer').id,
+                    }).then(res =>{
+                        console.log(res)
+                        if(res.msg){
+                        wx.showToast({
+                            title: res.msg,
+                            icon: ''
+                        })
+                        }
+                    })
+                }) 
+        },
+        delInCollect(item,index){
+            new Promise((resolve,reject)=>{
+                    http.post(api.CollectDelete,{
+                        id:item.collectId
+                    }).then(res =>{
+                        console.log(res)
+                        if(res.msg == '删除收藏成功！'){
+                            wx.showToast({
+                                title: res.msg,
+                                icon: ''
+                            })
+                            for(let index in this.goodList){
+                                if(this.goodList[index].collectId==item.collectId){
+                                    this.goodList.splice(index,1);
+                                    this.$apply();
+                                    break;
+                                }
+                            }                        
+                        }
+                    })
+                }) 
+        },
+        addCart(item){
+            // console.log(item);
+
+            new Promise((resolve,reject)=>{
+                http.post(api.CartAdd,{
+                    goods_id:item.good_id,   
+                    shop_id: item.shop_id, 
+                    number:1,
+                    user_id:wx.getStorageSync('userInfoInServer').id,
+                }).then(res =>{
+                    console.log(res)
+                    if(res.msg){
+                        wx.showToast({
+                            title: res.msg,
+                            icon: ''
+                        })
+                    }
+                })
+            }) 
+        }
+    }
+    events = {
+        'shoperGoodList': (shoper, $event) => {
+            this.ready = true;          
+            var goodItem = new Object();
+            var that = this;
+            that.goodList = [];
+            for(let item of shoper.shop_goods_list){
+                
+                goodItem["good_id"] = item.id;
+                goodItem["primary_pic_url"] = item.primary_pic_url;          
+                goodItem["goods_name"] = item.goods_name;
+                goodItem["goods_desc"] = item.goods_desc;
+                goodItem["retail_price"] = item.retail_price;
+                goodItem["shop_id"] = shoper.shop_info.id;
+                // goodItem["shop_name"] = shoper.shop_info.shop_name;
+                // goodItem["shop_icon"] = shoper.shop_info.shop_icon;
+                that.goodList.push(goodItem);
+                goodItem = {};
+            }
+            this.$apply();  
+
+            // for(let item of this.goodList){
+            //     item.goods_desc = item.goods_desc.replace(/<p>/g,"");
+            //     item.goods_desc =item.goods_desc.replace(/<\/p>/g,"");
+                   
+        },
+        'classifyGoodList':(classify,$event)=>{
+            this.goodList = classify.goodList;                     
+            this.$apply();                  
+        },
+        'collectGoodList':(collect,$event)=>{
+            var goodItem = new Object();
+            var that = this;
+            that.goodList = [];
+            for(let item of collect){
+                goodItem["collectId"] = item.collectionId;
+                goodItem["good_id"] = item.goodsInfo.id;
+                goodItem["primary_pic_url"] = item.goodsInfo.primary_pic_url;          
+                goodItem["goods_name"] = item.goodsInfo.goods_name;
+                goodItem["goods_desc"] = item.goodsInfo.goods_desc;
+                goodItem["retail_price"] = item.goodsInfo.retail_price;
+                goodItem["shop_id"] = item.shopInfo.id;
+                goodItem["shop_name"] = item.shopInfo.shop_name;
+                goodItem["shop_icon"] = item.shopInfo.shop_icon;
+                that.goodList.push(goodItem);
+                goodItem = {};
+            }
+            this.$apply();
+        },
+        'notList':(e,$event)=>{ 
+            this.ready = true;          
+            this.goodList = [];
+            // console.log(this.goodList)
+            this.$apply();
+        }
+    }
+    
+}
+</script>
+
+
+<style>
+page{
+    height:100%;
+}
+.itemName{
+    font-size:30rpx;
+    position: relative;
+}
+.goodName{
+    font-size:35rpx;
+    position: relative;
+}
+.shoucang{
+    position: absolute;
+    top:0;
+    right: 8rpx;
+
+  font-size: 40rpx;
+  color: #ff6b5d;
+}
+.goodText{
+    font-size: 25rpx;
+    color:#666;
+   text-overflow:ellipsis;
+   overflow:hidden;
+   margin-right: 10rpx;
+}
+.titleContent{
+    display:flex;
+    align-items: center;
+    margin-top:10rpx;
+    /* position: absolute; */
+    /* bottom:3rpx; */
+}
+ .title {
+  color:coral;
+  font-size: 32rpx;
+  line-height: 1.5;
+  padding-left: 10rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+ .smalltitle {
+  font-size: 28rpx;
+  line-height: 1.5;
+  color: #999;
+  padding-left: 10rpx;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-decoration:line-through;
+}
+.add{
+  display: inline-block;
+  padding: 12rpx;
+  font-size: 40rpx;
+  color: #ff6b5d;
+  position: absolute;
+  right: 3rpx;
+  /* bottom:1rpx; */
+}
+</style>

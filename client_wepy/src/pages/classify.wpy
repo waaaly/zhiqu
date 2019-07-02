@@ -1,0 +1,344 @@
+<style lang="less">
+::-webkit-scrollbar{
+width: 0;
+height: 0;
+color: transparent;
+}
+page{
+  background:#f5f5f5;
+}
+
+.top_search {
+  padding-top:10px;
+  padding-bottom:18px;
+  background:#ffb65d;
+  color:#666;
+  font-size: 30rpx;
+}
+.search_input{
+  font-size:30rpx;
+  margin-left:15rpx;
+}
+.search_read_only .search_content {
+  display: flex;
+  align-items: center;
+  border-radius: 100rpx;
+  color: #999;
+  width: 500rpx;
+  background: #efefef;
+  padding: 0 30rpx;
+  height: 55rpx;
+  margin: 0 auto;
+}
+
+.search_read_only {
+  align-items: center;
+  display: flex;
+  margin: 0 auto;
+  width: 650rpx;
+}
+.active {
+      border-bottom: 6rpx solid #ff6a3c;
+      // background: #fff;
+      color: #ff6a3c;
+      padding-bottom: 10rpx;
+      font-size:33rpx;
+}
+
+
+.classify {
+  display: flex;
+  position: relative;
+  .classify_catetory {
+    width: 80px;
+    position: relative;
+    z-index: 1;
+    .name {
+      text-align: center;
+      height: 100rpx;
+      width:80px;
+      line-height: 100rpx;
+      font-size: 30rpx;
+      color: #666;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .active {
+      border-left: 6rpx solid #ff6a3c;
+      background: #fff;
+      color: #ff6a3c;
+    }
+  }
+  .classify_detail {
+    position: relative;
+    z-index: 999;
+    // margin-left: -15rpx;
+    background: #fff;
+    padding: 0px 10px 10px 10px;
+    .classify_item {}
+    .title {
+      font-size: 30rpx;
+      color: #333;
+      margin-left: 25rpx;
+    }
+    .children {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 20rpx 0rpx;
+    }
+    .child_image {
+      width: 60px;
+      height: 60px;
+    }
+    .child_name {
+      font-size: 26rpx;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 170rpx;
+    }
+    .children_item {
+      height: 200rpx;
+      width: 170rpx;
+      text-align: center;
+    }
+  }
+}
+
+</style>
+
+<template>
+  <view class="top_search">
+    <view class="search_read_only">
+      <navigator class="search_content" url="/pages/search">
+        <view class=" iconfont">&#xe60c;</view>
+        <view class="search_input">搜索商品</view>
+      </navigator>
+    </view>
+  </view>
+ <view style="white-space:nowrap;padding:20rpx;font-size:30rpx;color:#999;background-color:#fff;padding-bottom:0px;">
+      <scroll-view scroll-x scroll-with-animation="true" scroll-into-view="{{intoRootItem}}">
+        <block wx:for="{{rootcateList}}" wx:key="item" >
+          <view @tap="changeRoot" data-index="{{index}}" id="{{'rootItem-' + index}}" style="margin-right:20rpx;width:70px;display:inline-block;text-align:center;" 
+          class="{{item.id==currentRootArray.id? 'active':''}}">{{item.name}}</view>
+       </block> 
+      </scroll-view>
+</view> 
+  <!-- <block wx:for="{{childcateList}}" wx:for-item="item" wx:key="index"> -->
+    <view style="height:100%;" bindtouchstart="startTouch" bindtouchend="endTouch">
+    <classifyGood ></classifyGood>
+    </view>
+  
+</template>
+
+
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+import classifyGood from '../components/classifyGood';
+export default class Classify extends wepy.page {
+  config = {
+    navigationBarTitleText: '分类',
+  }
+  components = {
+    classifyGood:classifyGood,
+  }
+
+  data = {
+    imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+    scrollTop: 100,
+    windowHeight: 0,//
+    windowWidth:0,//
+   
+    
+    intoRootItem:'rootItem-0',//滚动到哪一个子项目，内容为子项目id
+    maxRootNum:0,//一级分类个数,从0起，为👆的最大下标值
+    rootcateList: [],//一级分类数据
+    currentRootArray:{},//当前一级分类
+    childcateList: {},//二级三级分类数据
+    banner_H:150,//banner高度
+    banner_W:220,//banner宽度
+    touchStartX:0,//开始触摸的x
+    touchStartY:0,//开始触摸的y
+  }
+
+   onLoad() {
+    let that = this;
+    let systemInfo = wx.getSystemInfoSync();
+    this.windowHeight = systemInfo.windowHeight;
+    this.windowWidth = systemInfo.windowWidth;
+    // console.log(systemInfo);
+    this.$apply();
+
+    new Promise((resolve,reject)=>{
+       http.get(api.GoodsCategory,{}).then(res=>{
+        console.log(res);
+        this.rootcateList = res.brotherCategory;
+        this.maxRootNum = this.rootcateList.length-1;
+        this.currentRootArray = this.rootcateList[0];
+        this.$apply();
+        resolve();
+      })
+    }).then(()=>{
+      http.get(api.GoodListAddress,{district:'番禺区'}).then(e=>{
+        console.log(e);
+        for(let item of e){
+          if(item.category_id == this.rootcateList[0].id){
+            this.childcateList = item.goodList;
+            this.$apply();
+            this.$broadcast('classifyGoodList', item);
+            break;
+          }
+        }
+
+        })
+    })
+    //创建节点选择器
+    // var query = wx.createSelectorQuery();
+    // //选择id
+    // query.select('.classify_detail').boundingClientRect((rect)=> {
+    //    this.banner_W = (rect.width)-20;//单位px
+    //    this.$apply();
+    //    console.log(rect);
+    // }).exec();
+  }
+
+  onShow() {
+    //this.getRootCateTopLevel();
+  }
+
+  computed = {
+
+  }
+  methods = {
+    startTouch(e){
+      // console.log(e)
+      this.touchStartX = e.changedTouches[0].clientX;
+      this.touchStartY = e.changedTouches[0].clientY;
+    },
+    endTouch(e){
+      // console.log(e)
+      var endX = e.changedTouches[0].clientX;
+      var endY = e.changedTouches[0].clientY;
+      //start > end 左滑
+      if(endX - this.touchStartX > 50 && Math.abs(endY - this.touchStartY) < 50){
+        var currentRootItem = parseInt(this.intoRootItem.substr(this.intoRootItem.length-1,1));//从0开始
+        if( currentRootItem== 0){
+          var rootId = this.rootcateList[this.maxRootNum].id;
+          this.changeChild(rootId);
+          this.intoRootItem = 'rootItem-' +this.maxRootNum ;
+          this.currentRootArray = this.rootcateList[this.maxRootNum]; 
+        }else{
+          var rootId = this.rootcateList[currentRootItem-1].id;
+          this.changeChild(rootId);
+          this.intoRootItem = 'rootItem-' +(currentRootItem-1);
+          this.currentRootArray = this.rootcateList[currentRootItem-1]; 
+        }
+      }
+      //start < end 右滑
+      else if(endX - this.touchStartX < -50 && Math.abs(endY - this.touchStartY) < 50){
+        var currentRootItem = parseInt(this.intoRootItem.substr(this.intoRootItem.length-1,1));//从0开始
+        if( currentRootItem== this.maxRootNum){
+          var rootId = this.rootcateList[0].id;
+          this.changeChild(rootId);
+          this.intoRootItem = 'rootItem-0' ;
+          this.currentRootArray = this.rootcateList[0]; 
+        }else{         
+          var rootId = this.rootcateList[currentRootItem+1].id;
+          this.changeChild(rootId);
+          this.intoRootItem = 'rootItem-' +(currentRootItem+1);
+          this.currentRootArray = this.rootcateList[currentRootItem+1]; 
+        }
+      }
+    },
+    changeRoot(e) {
+      console.log(e)
+      let index = e.currentTarget.dataset.index;
+      this.intoRootItem = 'rootItem-' +index;
+      this.currentRootArray = this.rootcateList[index]; 
+      this.$apply();
+      this.changeChild(this.currentRootArray.id);      
+    },
+    onShareAppMessage: function (res) {
+      if (res.from === 'button') {
+        // 来自页面内转发按钮
+        console.log(res.target)
+      }
+      return {
+        title: this.detail.name,
+        path: '/pages/classify',
+        success: function(res) {
+          // 转发成功
+        },
+        fail: function(res) {
+          // 转发失败
+        }
+      }
+    }
+  }
+    //刷新二级商品 
+  changeChild(rootId){
+    this.$broadcast('classifyGoodList', {});
+    http.get(api.GoodListAddress,{district:'番禺区'}).then(e=>{       
+      for(let item of e){
+        if(item.category_id == rootId){
+          this.childcateList = item.goodList;
+          this.$apply(); 
+          this.$broadcast('classifyGoodList', item);             
+          break;
+        }else{
+          this.$broadcast('notList', {});        
+        }
+      }
+    })
+  }
+  events = {
+
+  }
+  async getChildCate(rootCateCode) {
+    const json = await api.childGoodsCatetoryList({
+      query: {
+        rootCategoryCode: rootCateCode
+      }
+    });
+    if (json.data.code == 0) {
+      this.childcateList = json.data.list;
+    } else {
+      tip.error(json.data.msg);
+    }
+    this.$apply();
+  }
+
+  async getRootCateTopLevel() {
+    const json = await api.rootCtegoryList({
+      query: {}
+    });
+    if (json.data.code == 0) {
+      this.rootcateList = json.data.list;
+      if (this.rootcateList.length > 0) {
+        let selCode = wx.getStorageSync(SEL_CLASS_CODE);
+        var selRottCateCode = this.rootcateList[0].code;
+        if (selCode.length==0) {
+          this.rootcateList[0].active = true;
+        } else {
+          for (var i = 0; i < this.rootcateList.length; i++) {
+            if (selCode == this.rootcateList[i].code) {
+              selRottCateCode = this.rootcateList[i].code;
+              this.rootcateList[i].active = true;
+            }
+          }
+        }
+
+        this.getChildCate(selRottCateCode);
+      }
+    } else {
+      tip.error(json.data.msg);
+    }
+    this.$apply();
+  }
+}
+
+</script>

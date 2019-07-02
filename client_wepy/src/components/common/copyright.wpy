@@ -1,0 +1,29 @@
+<template>
+  <view class="weui-footer {{buttom == 'true' ? 'weui-footer_fixed-bottom' : 'mt20'}} ">
+    <view class="weui-footer__links">
+      <navigator url="/pages/shop/contact" class="weui-footer__link">智趣工作室提供技术支持</navigator>
+    </view>
+    <view class="weui-footer__text">Copyright © 2019 zhiqu.com {{version}}</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Copyright extends wepy.component {
+    props ={
+      buttom: {
+        default: 'false'
+      }
+    };
+    data = {
+      version: null
+    };
+    onLoad () {
+      this.version = wepy.$instance.globalData.version;
+    }
+  }
+</script>
+
+<style lang="scss">
+  @import "../../style/variable";
+</style>

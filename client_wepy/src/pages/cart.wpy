@@ -1,0 +1,753 @@
+<template>
+<view wx:if="{{userInfoInServer.phone==null}}" style="witdh:100%;height:100%;">
+  <view style="position:absolute;top:20%;padding:10%; color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
+    <text style="margin-left:17%;">提供更优质的服务哦～</text></view>
+  <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
+</view>
+
+<view wx:else class='container' >
+  <view class='car-item-box' wx:for="{{shopList}}" wx:for-item="shopItem" wx:for-index="shopIndex" wx:key="index"  id="{{shopIndex}}">
+    <!-- 商家头-->
+    <view  class="shop-info {{currentShop==index ? 'shop-top' : ''}} " @tap="goShoper('{{shopItem}}')" >
+        <view class=" {{shopCheckList[shopIndex]==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}" @tap.stop="selectedShop"></view>
+        <view style="flex:1;">
+          <image style="padding-bottom:2%;width:45rpx;height:45rpx;" src="{{imageUrl + shopItem.shop_icon}}"/>
+        </view>
+        <view style="font-size:30rpx;flex:10;" >{{shopItem.shop_name}}</view>
+        <icon class="iconfont " style="flex:1;">&#xe6ab;</icon>
+    </view>
+    <!-- 商品列表 -->
+    <view class="product-item " wx:for="{{cartList[shopIndex]}}" wx:for-item="cartItem" wx:for-index="cartIndex" >
+      <view class='item-box'>
+        <view class="item-check {{cartItem.checked?'check':''}}"  bindtap='selectedlist' data-currentGood="{{cartItem}}"></view>
+          <view class='list-img'>
+          <navigator url='/pages/goodDetail?goodId={{cartItem.goods_id}}&shopId={{cartItem.shop_id}}'>
+            <image style="width:78px;height:78px;border-radius: 4px;" src='{{imageUrl + cartItem.primary_pic_url}}' mode='scaleToFill'></image>
+            </navigator>
+          </view>
+        <view class='info-tit'>
+          <text class='name'>{{cartItem.goods_name}}</text>
+          <text class='price-without'>售价:<text>{{cartItem.retail_price}}</text>
+        </text>
+          <view class='xm-input-number'>
+            <view class='input-sub' bindtap='subnum' data-currentGood="{{cartItem}}" data-currentshop="{{shopItem}}">-</view>
+            <input class='input-num' value='{{cartItem.number}}' disabled='true' type='number'/>
+            <view class='input-add' bindtap='addnum' data-currentGood="{{cartItem}}" data-currentshop="{{shopItem}}">+</view>
+          </view>
+          <view class='delete' bindtap='delecart' data-currentGood="{{cartItem}}">
+            <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
+              mode='widthFix'/>
+          </view>
+        </view>
+      </view>
+    </view>
+    <!--结算购买-->
+    <view class='footer-pay'>
+      <view class='item'>
+        <text class='item-pri'>共 {{totalList[shopIndex].num}}件 </text>
+        <text class='all'>总金额:  {{totalList[shopIndex].money}}元</text>
+      </view>
+      <view class='item3'><view bindtap='goOrder' data-currentshop="{{shopItem}}">前往结算</view></view>
+    </view>
+
+   </view> 
+
+   <!-- <view wx:if="{{currentShop==index}}" style="height:100rpx; transition: all 1s linear;"></view> -->
+
+    
+ 
+
+    <view  style="height:100rpx; transition: all 1s linear;"></view>
+    <view class='empty-box' wx:if="{{shopList.length==0}}">
+      <image src="{{StaticImgUrl+'kongkongruye.jpg'}} "
+        mode='widthFix'/>
+      <text class='span'>购物车空空如也</text>
+      <view class='goindex' bindtap='gotoindex'>去商城逛逛吧</view>
+    </view>
+</view>
+</template>
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class Cart extends wepy.page{
+    data = {
+    userInfoInServer:{},
+    imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+    StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
+    currentShop:0,//当前置顶店铺
+    shopChangeHeight:[],//每个店铺的改变时记下页面的高度
+    shopHeightValues:[],//每个店铺的height值
+    scrollTop_old:0,//页面滑动旧值，判断上下滑
+
+    pronum: [],
+    num: 1,
+    car: [],
+    
+    totalPrice: 0,
+    totalnum: 0,
+    pic: '',
+    
+    allList:{},//
+    shopList:[],//商铺列表
+    cartList:[],//后台返回的购物车列表
+    shopCheckList:[],//是否勾选商家
+    totalList:[{
+    }],//每个商铺的商品数目和总价格
+
+    checkedGoodNum:0,//当前购物车中勾选的商品个数
+    checkGoodTotal:0,//购物车已勾选的总价格
+  }
+  onLoad(e){
+     
+  }
+  onShow(e){
+    this.userInfoInServer = wx.getStorageSync("userInfoInServer");
+    var id = wx.getStorageSync('userInfoInServer').id;
+    new Promise((resolve,reject)=>{   
+        http.get(api.CartList,{user_id:id}).then(res =>{
+          this.allList = res;//触发监听器
+          this.$apply();
+        })
+    })
+  }
+  //离开当前页面前将本地数据和后台同步
+  onHide(e){
+    //同步勾选
+
+    //同步商品数
+
+  }
+  onPageScroll(e){
+    // console.log(e) 
+    let pageTopMove = e.scrollTop; 
+    //下滑
+    if(pageTopMove > this.scrollTop_old){
+      if(this.currentShop == 0 ){
+        // console.log(pageTopMove);
+          if( pageTopMove > this.shopHeightValues[0]){
+            this.currentShop = 1;
+            this.shopChangeHeight.push(pageTopMove);
+            this.$apply();
+          }
+      }
+      for(let i=1; i<this.shopHeightValues.length; i++){
+          if( pageTopMove > this.shopHeightValues[i] && this.currentShop == i){
+            this.shopChangeHeight.push(pageTopMove);
+            this.currentShop = i+1;
+            this.$apply();
+          }
+      }
+    }else{
+      if( pageTopMove < this.shopChangeHeight[this.shopChangeHeight.length-1]-100){
+            this.currentShop = this.currentShop-1;
+            this.shopChangeHeight.splice(this.shopChangeHeight.length-1,1);
+            this.$apply();
+        }
+    }
+    this.scrollTop_old = pageTopMove;
+    console.log(this.currentShop);
+  }  
+  watch = {
+    allList (_new,old){
+      console.log(_new)
+      var that = this;
+      that.shopList= [];
+      that.cartList= [];
+      that.totalList = [];
+      that.shopCheckList = [];
+      var total = new Object();
+      var shopCheck = 1;
+      for(let index in _new){
+        // console.log(item)获取索引
+        that.shopList.push(_new[index].shopInfo);//商家信息
+        that.cartList.push(_new[index].cartList);//该商家的购物列表
+        total["num"] = _new[index].CountNum; //通过eval表达式可以给obj动态的赋值 ;//该商家勾选的商品数
+        total["money"] = _new[index].TotalPrice;//该商家勾选商品的总价格
+        that.totalList.push(total);
+        total={};
+        for(let cartItem of _new[index].cartList){
+          shopCheck &= cartItem.checked;
+          that.shopCheckList.push(shopCheck);
+          shopCheck = 1; 
+        }
+      }
+      this.$apply();
+      console.log(that.shopCheckList)
+    }
+  }
+  //提交商品数量到后台
+    changeFoodNum(cartId,goodId,number,shopId){
+      var that = this;
+      console.log(number)
+  
+      http.post(api.CartUpdate,{
+        id:cartId,
+        goods_id:goodId,
+        number:number,
+        shop_id:shopId,
+        user_id:wx.getStorageSync('userInfoInServer').id
+      }).then(res=>{
+        console.log(res);
+        that.allList = res;
+        this.$apply();
+      })
+    }
+    methods = {
+      //购物车全选事件
+    selectedShop: function(e) {
+      var index = e.currentTarget.dataset.shopindex;
+      var currentShop = this.shopList[index];
+      if(this.shopCheckList[index]){
+        this.shopCheckList[index] = 0;
+      }else{
+        this.shopCheckList[index] = 1;
+      }
+      console.log(!(this.shopCheckList[index]))
+      http.post(api.CartChechedAll,{shop_id:currentShop.id,
+      user_id:wx.getStorageSync('userInfoInServer').id,
+      checked_all:this.shopCheckList[index]}).then(res=>{
+        console.log(res)
+        this.allList = res;   
+        this.$apply() ;  
+      }) 
+    },
+      //前往商家
+    goShoper(res){
+      console.log(res);
+      let url = '/pages/shoper?shop_id=';
+        url = url + res.id;
+        wx.navigateTo({
+          url: url,
+      })
+    },
+    //改变勾选
+    selectedlist: function (e) {
+      // console.log(e)
+      var currentGood = e.currentTarget.dataset.currentgood;
+      
+      console.log(currentGood);
+      
+      var goods_id = currentGood.goods_id;
+      var id = currentGood.id;
+      var checked = currentGood.checked;//当前商品勾选值
+
+      if(checked){
+          checked = 0;
+      }else{
+        checked = 1; 
+      }
+      console.log(checked);
+      // new promise((resolve,reject) =>{
+        http.post(api.CartChecked,{
+          goods_id: goods_id,
+          id: id,
+          user_id:wx.getStorageSync('userInfoInServer').id,
+          checked: checked}).then(res=>{
+            console.log(res);
+            this.allList = res;
+            this.$apply();
+          })
+    },
+    //购物车加
+    addnum: function(e) {
+      if(e.currentTarget.dataset.currentgood.number >=99){
+        return
+      }
+      this.changeFoodNum(e.currentTarget.dataset.currentgood.id,
+                         e.currentTarget.dataset.currentgood.goods_id,
+                         e.currentTarget.dataset.currentgood.number + 1,
+                         e.currentTarget.dataset.currentshop.id);
+    },
+    //购物减
+    subnum: function(e) {
+
+      if(e.currentTarget.dataset.currentgood.number == 1){
+        return 
+      }
+      this.changeFoodNum(e.currentTarget.dataset.currentgood.id,
+                         e.currentTarget.dataset.currentgood.goods_id,
+                         e.currentTarget.dataset.currentgood.number - 1,
+                         e.currentTarget.dataset.currentshop.id);
+    },
+
+    //购物车删除
+    delecart: function (e) { 
+      var that = this;
+      var currentGood = e.currentTarget.dataset.currentgood;
+
+      wx.showModal({
+        title: '提示',
+        content: '确认将该商品移出购物车吗?',
+        success: function (res) {
+          if (res.confirm) {
+            http.post(api.CartDelete,{
+              id: currentGood.id,
+              user_id:wx.getStorageSync('userInfoInServer').id
+            }).then(res=>{
+              console.log(res);
+              that.allList = res;
+              that.$apply();
+            })
+          }
+        }
+        })
+      },    
+    
+    //提交订单
+    goOrder:function(e){
+      wx.showToast({
+        title: "加载中",
+        icon: 'loading',
+        duration: 1000
+      })
+      //确认用户绑定手机号
+      if(!wx.getStorageSync("userInfoInServer").phone){
+        wx.showModal({
+          title: '提交失败',
+          cancelText: '下次再说',
+          confirmText: "前往绑定",
+          confirmColor: "skybule",
+          content: "您还没有绑定手机号哟～",
+          success:function(e){
+            wx.navigateTo({
+              url: '/pages/bindPhone',
+              success: function(res){
+                // success
+              },
+              fail: function() {
+                // fail
+              },
+              complete: function() {
+                // complete
+              }
+            })
+          },
+        })
+        return;
+      }
+      //确认用户设置默认地址
+      if (!wx.getStorageSync("userDefaultAddress").is_default){
+        wx.showModal({
+          title: '提交失败',
+          cancelText: '下次再说',
+          confirmText: "前往设置",
+          confirmColor: "skybule",
+          content: "您还没有设置默认地址哟～",
+        })
+        return;
+      }
+      //下单前确认后台购物车中的数据
+      http.post(api.OrderSubmit,{address_id: wx.getStorageSync("userDefaultAddress").id,
+                                  shop_id:e.currentTarget.dataset.currentshop.id,
+                                  user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+        console.log(res);
+        wx.showModal({
+          title: '提交成功',
+        })
+      })
+      
+      // wx.navigateTo({
+      //   url: '../comfireOrder/comfireOrder',
+      // })
+    },
+    gotoindex(e){
+      wepy.reLaunch({
+        url: '/pages/index'
+      })
+    }
+  }
+}
+</script>  
+  
+<style>
+
+ page{
+    background-color:#f4f4f4;
+} 
+.container {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+.car-item-box{
+  width:100%;
+  margin-bottom:30rpx;
+  
+  /* border-bottom-style: 1px solid red; */
+}
+.car-item-box:last-child{
+  padding-bottom: 100rpx;
+}
+.car-item-box .footer-pay .itemdisbase {
+  background: #999;
+  color: #fff;
+}
+.shop-top{
+  position:fixed;
+  top:0;
+  left: 0;
+  right:0;
+  z-index:1024;
+
+}
+
+.shop-info{
+    display:flex;
+    /* position: relative; */
+    align-items:center;
+    color:#ff6700;
+    background-color: #fff;
+      transition: all 4s linear;
+  transform: rotate(0);
+}
+
+
+.footer-pay .item4{background:#bebebe !important;}
+.addlist {
+  width: 700rpx;
+  padding: 0 25rpx;
+  line-height: 60rpx;
+  height: 60rpx;
+  font-size: 30rpx;
+  position: relative;
+  padding-top: 30rpx
+}
+
+.addlist::after {
+  content: "";
+  position: absolute;
+  right:25rpx;
+  top: 50%;
+  width: 16rpx;
+  height: 12rpx;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: translate3d(0, -50%, 0) rotate(135deg);
+  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
+  opacity: 1;
+}
+
+.orderaddress {
+  border-bottom: 5px solid #f5f5f5;
+}
+
+.orderaddress .tetx {
+  line-height: 70rpx;
+  font-size: 32rpx;
+  border-bottom: 1px solid #f5f5f5;
+  padding-left: 15rpx;
+  display: block;
+}
+
+.addressinfo {
+  width: 720rpx;
+  padding: 15rpx;
+  position: relative;
+}
+
+.addressinfo text {
+  display: block;
+  font-size: 30rpx;
+  line-height: 1.5;
+}
+
+.addressinfo .icon {
+  content: "";
+  position: absolute;
+  right: 12rpx;
+  top: 50%;
+  width: 16rpx;
+  height: 12rpx;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: translate3d(0, -50%, 0) rotate(135deg);
+  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
+  opacity: 0.5;
+}
+
+.ord {
+  padding-top: 10rpx;
+}
+
+.order-price {
+  padding-bottom: 100rpx;
+}
+
+.product-item {
+  /* border-bottom: 1px solid #aaa; */
+  padding: 24rpx 24rpx;
+  background: #fff;
+  position: relative;
+   border-bottom-left-radius: 30rpx;
+  border-bottom-right-radius: 30rpx;
+}
+.product-item:last-child{
+  border-bottom-left-radius: 30rpx;
+  border-bottom-right-radius: 30rpx;
+}
+/* .product-item::after {
+   content: "";
+    position: absolute;
+    bottom:0;
+    left: 20px;
+    right: 20px;
+    height: 0;
+    border-bottom: 2px solid #cccccc;
+} */
+.product-item:last-child::after {
+   content: "";
+    position: absolute;
+    /* top:0; */
+    bottom:0;
+    left: 20px;
+    right: 20px;
+    /* width: 200%; */
+    height: 0;
+    border-bottom: 2px solid red;
+}
+.item-box {
+  display: -webkit-flex;
+  display: flex;
+  position: relative;
+}
+
+
+.item-box .item-check {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 180rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
+  background-size: 40rpx 40rpx;
+}
+
+.item-box .check ,.item2 .check {
+  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
+  background-size: 40rpx 40rpx;
+}
+
+.shopCheck {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 100rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
+  background-size: 40rpx 40rpx;
+}
+.list-img {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  display: block;
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  margin-right: 20rpx;
+  /* border: 1px solid #eee;
+  border-radius: 2px; */
+}
+
+.list-img img {
+  height: 100%;
+}
+
+
+
+.info-tit {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.info-tit .name {
+  font-size: 32rpx;
+  line-height: 1.2;
+  color: #666;
+  margin-bottom: 12rpx;
+  margin-right: 30rpx;
+  display: -webkit-box;
+  display: box;
+  -webkit-box-align: start;
+  box-align: start;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+.info-tit .price-without {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+  padding-top: 10rpx;
+}
+
+.info-tit .xm-input-number {
+  top: 115rpx;
+  /* right: 258rpx; */
+  border: 1rpx solid #eee;
+  width: 227rpx;
+  position: absolute;
+  z-index: 11;
+}
+
+.info-tit .input-sub, .info-tit .input-add {
+  height: 60rpx;
+  line-height: 60rpx;
+  float: left;
+  width: 60rpx;
+  text-align: center;
+  background: #fafafa;
+}
+
+.info-tit .input-num {
+  width: 107rpx;
+  float: left;
+  height: 60rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.delete {
+  width: 60rpx;
+  height: 60rpx;
+  position: absolute;
+  right: 30rpx;
+  bottom: 6rpx;
+}
+.price-without{width:100%;display:block}
+.price-without text {
+  margin-right: 6rpx;
+}
+
+
+
+.footer-pay {
+  width: 100%;
+  height: 90rpx;
+  /* position: fixed; */
+  bottom: 0;
+  display: -webkit-flex;
+  display: flex;
+  z-index: 14;
+  margin-top:10rpx;
+}
+
+.footer-pay view {
+  line-height: 90rpx;
+  text-align: center;
+  -webkit-felx: 2;
+  flex: 2;
+}
+
+.footer-pay .item3 {
+  background: #f37d6a;
+  color: #fff;
+  font-size: 32rpx;
+}
+
+.footer-pay .item2 {
+  background: #f4f4f4;
+  color: #333;
+  font-size: 32rpx;
+  border-right: 1px solid #f1f1f1;
+  -webkit-felx: 1;
+  flex: 1;
+}
+
+.footer-pay .item-pri {
+  display: block;
+  color: #999;
+  font-size: 28rpx;
+  height: 60rpx;
+  line-height: 90rpx;
+}
+
+.footer-pay .all {
+  font-size: 36rpx;
+  display: block;
+  color: #ff6700;
+  height: 60rpx;
+  line-height: 90rpx;
+}
+
+.footer-pay .item {
+  display:flex;
+  justify-content:space-around;
+  line-height: 90rpx;
+  text-align: center;
+  -webkit-felx: 2;
+  flex: 4;
+  border-bottom:1px solid #ff6b5d
+}
+
+.item-check {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 100rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
+  background-size: 40rpx 40rpx;
+  float: left;
+}
+
+.empty-box {
+  padding: 80rpx 30rpx;
+  width: 690rpx;
+}
+
+.empty-box image {
+  width: 40%;
+  margin: 0 auto;
+  display: block;
+
+}
+
+.empty-box .span {
+  font-size: 36rpx;
+  padding: 18rpx 0;
+  display: block;
+  text-align: center;
+  margin-left:35rpx;
+margin-top:30rpx;
+
+}
+
+.empty-box .goindex {
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 32rpx;
+  margin-top:200rpx;
+
+}
+
+.bindphone{
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 32rpx;
+  margin-top:700rpx;
+}
+
+</style>
+
