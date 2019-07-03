@@ -90,17 +90,8 @@ export default class addressChoose extends wepy.page {
         },
         edit:function(e){
             var clickAddressObj = this.data.userAddressInServer[e.currentTarget.dataset.id];
-            http.post(api.AddressSetDefault,{id:clickAddressObj.id}).then(res=>{  
-                  console.log(e.data);
-                  wx.setStorage({
-                    key: 'userDefaultAddress',
-                    data: clickAddressObj,
-                  })
-              })
-            
-            wx.navigateBack({
-              delta: 1, // 回退前 delta(默认为1) 页面
-            })          
+            wx.setStorageSync('userDefaultAddress',clickAddressObj);
+            wx.navigateBack();                       
       },
       chooseCity(e){
         wx.navigateTo({

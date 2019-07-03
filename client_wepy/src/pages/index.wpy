@@ -200,9 +200,13 @@ export default class Index extends wepy.page{
   watch = {
     address(_new,old){
       //活动专区
+      this.hotGood1 = this.hotGood2 = this.hotGood3 =this.hotGood4 =[];
+      this.hotGoodList = [[],[],[],[]];
+      this.$apply();
       new Promise((resolve,reject)=>{
         http.get(api.HotGood,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res=>{
-          console.log(res)
+          console.log("index")
+          console.log( res)  
           for(let x=0;x<4;x++){       
             if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
             if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}
@@ -214,7 +218,7 @@ export default class Index extends wepy.page{
           this.hotGood2 = this.hotGoodList[1];
           this.hotGood3 = this.hotGoodList[2];
           this.hotGood4 = this.hotGoodList[3];
-          console.log( this.hotGood1);
+
           this.$apply();
         })
       })

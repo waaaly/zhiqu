@@ -15,7 +15,7 @@
        </view>
      </view>
     
-     <view  style="{{hotGood.length>=3?'display:flex;width:100%;margin-top:-40rpx;':'display:none'}}" >
+     <view  style="{{hotGood.length>2?'display:flex;width:100%;margin-top:-40rpx;':'display:none'}}" >
          <view style="width:65%;padding:40rpx;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[2].goodsInfo.id}}" data-shopid="{{hotGood[2].shopInfo.id}}">
         <image style="width:100%;margin-bottom:15rpx;" mode="widthFix" src='{{imageUrl + hotGood[2].goodsInfo.hot_pic_url}}'/>
         <view style="font-size:28rpx;">{{hotGood[2].goodsInfo.goods_name}}</view>
@@ -52,6 +52,7 @@ export default class goodHot extends wepy.component{
     }
     watch ={
         hotGood(_new,old){
+            console.log("hotGood")
             console.log(_new)
         }
     }

@@ -44,6 +44,39 @@ export default class Authorize extends wepy.page {
     navigationBarTitleText: '授权登录',
   }
   async onLoad() { 
+//     const APP_ID ='wx6be14b9c1bbe7bc0';//输入小程序appid  
+//     const APP_SECRET ='7fef21202585b20d59cce7067fcade57';//输入小程序app_secret  
+//     var OPEN_ID=''//储存获取到openid  
+//     var SESSION_KEY=''//储存获取到session_key  
+
+//     var that=this;  
+//     wx.login({ 
+//        success:function(res){ 
+//          console.log(res.code)
+//           wx.request({  
+//             //获取openid接口  
+//           url: 'https://api.weixin.qq.com/sns/jscode2session',  
+//           data:{  
+//             appid:APP_ID,  
+//             secret:APP_SECRET,  
+//             js_code:res.code,  
+//             grant_type:'authorization_code'  
+//           },  
+//           method:'GET',  
+//           success:function(res){  
+//             console.log(res.data)  
+//             OPEN_ID = res.data.openid;//获取到的openid  
+//             SESSION_KEY = res.data.session_key;//获取到session_key  
+//           }   
+//     })
+//        }
+//       })
+//      
+
+
+
+
+
     wx.getStorage({
             key: 'userCode',
             success: function(res){      

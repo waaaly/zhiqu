@@ -270,6 +270,7 @@ export default class myFunc extends wepy.page {
     delAddress:function(e){
       var currentAddress = e.currentTarget.dataset.item;
       var that = this;
+
       wx.showModal({
         title: '提示',
         content: "确定删除该地址吗？",
@@ -320,10 +321,10 @@ export default class myFunc extends wepy.page {
                   console.log(e.data);
                   wx.showToast({
                     title: "设置成功",
-                    duration: 500
+                    duration: 1000
                   })
+                  currentAddress.is_default = 1;
                   wx.setStorageSync('userDefaultAddress', currentAddress);
-                  wx.setStorageSync('flagAddress', 1);
                   that.onShow();
               })
             }

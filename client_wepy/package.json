@@ -18,7 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "start": "^5.1.0",
-    "wepy": "^1.6.0",
+    "wepy": "^1.7.2",
     "wepy-async-function": "^1.4.7",
     "wepy-com-toast": "^1.0.2"
   },

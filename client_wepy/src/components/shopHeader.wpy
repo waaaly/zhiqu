@@ -85,14 +85,14 @@ export default class shopHeader extends wepy.component{
               <label class="  text">{{item.description}}</label>
             </view>
           </view>
-          <view else class="content">暂无优惠信息</view>
+          <view else class="content"  style="text-align:center">暂无优惠信息</view>
           <view class="  title">
             <view class="  line"></view>
             <view class="  text">商家公告</view>
             <view class="  line"></view>
           </view>
           <view class="  bulletin">
-            <view class="content">目前暂无公告</view>
+            <view class="content" style="text-align:center">目前暂无公告</view>
           </view>
         </view>
       </view>

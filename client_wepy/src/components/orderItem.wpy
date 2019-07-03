@@ -23,7 +23,7 @@
         </navigator>
         <view class='line'></view>
         <view class="thirdCol ">
-            <block wx:for="{{['确认收货','再来一单','售后/退款','相似商家','评价']}}">
+            <block wx:for="{{statusTab}}">
               <navigator class='forItem'>{{item}}</navigator>
             </block>
         </view>
@@ -39,7 +39,7 @@ export default class orderItem extends wepy.page{
     }
     data = {
       imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
-      statusTab:[]
+      statusTab:['确认收货','再来一单','售后/退款','相似商家','评价']
     }
     watch = {
       order(newValue,old){
@@ -72,8 +72,8 @@ export default class orderItem extends wepy.page{
   flex-direction: row;
 }
 .shangjiaIcon{
-  width:100rpx;
-   height:100rpx;
+  width:80rpx;
+   height:80rpx;
 }
 .shangpuming{
   margin: 10rpx;
