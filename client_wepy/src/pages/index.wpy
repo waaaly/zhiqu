@@ -11,7 +11,7 @@
     </view>
     <navigator class="weui-search-bar__box" style="width:{{search_W}}%;margin-left:{{search_ML}}px;right:{{search_R}}px" url='/pages/search'>
       <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
-      <input type="text" class="weui-search-bar__input" placeholder="搜索（水果）有惊喜"/>
+      <input type="text" class="weui-search-bar__input" placeholder="输入关键词进行搜索"/>
       <view class="weui-icon-clear" wx:if="{{wxSearchData.value != ''}}" @tap="wxSearchClear">
         <icon type="clear" size="14"></icon>
       </view>
@@ -79,6 +79,9 @@ var QQMapWX = require('../utils/qqmap-wx-jssdk.js');
 //实例化api核心类
 var qqmapsdk;
 export default class Index extends wepy.page{
+  config = {
+        "navigationBarTitleText": "首页"
+    };
     components = {
     shopSort:shopSort,
     shopIndex:shopIndex,
@@ -122,33 +125,12 @@ export default class Index extends wepy.page{
   }
 
   onLoad(){
-      var that = this;     
-        
-      //引入TX地图SDK
-      qqmapsdk = new QQMapWX({
-        key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
-      });
-      //根据当前的经纬度获取用户当前地址信息       
-      qqmapsdk.reverseGeocoder({
-        success (res) {
-          console.log(res);
-          if(!wx.getStorageSync('userDefaultAddress'))
-            that.address = res.result.address;
-         
-          let s = res.result.address_component.city;//当前所在城市
-          that.city = s.substring(0,s.length-1);
-          that.$apply();
-          
-        },
-        fail: function (e) {
-          console.log(e)
-          that.setData({
-            currentAddress: '出了点问题小趣正在努力处理中～'
-          })
-        }
-      }); 
-
-    wx.getSystemInfo({
+    //显示转发按钮
+    wx.showShareMenu({
+      withShareTicket: true
+    })
+      var that = this;   
+     wx.getSystemInfo({
       success: ((res)=> {
         // console.log(res);
         this.form_W = res.windowWidth - 20;//剪掉padding
@@ -161,24 +143,43 @@ export default class Index extends wepy.page{
         // console.log(res);
         this.imgUrls = res;
       })
-    })
+    })      
+      //引入TX地图SDK
+      qqmapsdk = new QQMapWX({
+        key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
+      });
+      //根据当前的经纬度获取用户当前地址信息       
+      qqmapsdk.reverseGeocoder({
+        success (res) {
+          if(!wx.getStorageSync('userDefaultAddress'))
+            that.address = res.result.address;    
+          let s = res.result.address_component.city;//当前所在城市
+          that.city = s.substring(0,s.length-1);
+          that.$apply();
+        },
+        fail: function (e) {
+          console.log(e)
+        },
+        complete:function(e){
         //是否已经绑定手机
-    if(!wx.getStorageSync('userInfoInServer').phone){
-      wx.showModal({
-        title: '绑定手机',
-        showText: "下次再说",
-        confirmText: "前往绑定",
-        confirmColor:"skybule",
-        content: "您目前还未绑定手机哦~完成绑定后可以获取更多优质的服务",
-        success:function(res){
-          if(res.confirm){
-            wx.navigateTo({
-              url: '/pages/bindPhone',
+          if(!wx.getStorageSync('userInfoInServer').phone){
+            wx.showModal({
+              title: '绑定手机',
+              showText: "下次再说",
+              confirmText: "前往绑定",
+              confirmColor:"skybule",
+              content: "您目前还未绑定手机哦~完成绑定后可以获取更多优质的服务",
+              success:function(res){
+                if(res.confirm){
+                  wx.navigateTo({
+                    url: '/pages/bindPhone',
+                  })
+                }
+              }
             })
           }
         }
-      })
-    }
+      }); 
   }  
   onShow(e){
     var that = this;
@@ -200,7 +201,6 @@ export default class Index extends wepy.page{
   watch = {
     address(_new,old){
       //活动专区
-      this.hotGood1 = this.hotGood2 = this.hotGood3 =this.hotGood4 =[];
       this.hotGoodList = [[],[],[],[]];
       this.$apply();
       new Promise((resolve,reject)=>{

@@ -1,5 +1,12 @@
 
 <style>
+/*隐藏滚动栏*/
+::-webkit-scrollbar{
+width: 0;
+height: 0;
+color: transparent;
+}
+
 page{
   background-color: #fafafa;
 }

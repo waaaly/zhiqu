@@ -59,22 +59,23 @@ export default class myOrder extends wepy.page{
     })
 
     if(this.activeTab == 1){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
-             
+           
             this.OrderList=res;
+            console.log(res)
             this.$apply();
           })}
     else if(this.activeTab == 2){ http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:22 }).then(res=>{
-          
+         
           this.OrderList=res;
             this.$apply();
         })}
     else if(this.activeTab == 3){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{
-           
+          
           this.OrderList=res;
             this.$apply();
         })}
     else if(this.activeTab == 4){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-          
+         
           this.OrderList=res;
             this.$apply();
         }) } 
@@ -82,15 +83,14 @@ export default class myOrder extends wepy.page{
    watch = {
      activeTab(newValue, oldValue) {
        console.log(`num value: ${oldValue} -> ${newValue}`);
-       // 10-待支付 22-支付完成 32-确认发货 40-订单完成) 空是全部
-   
+       //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
+   //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
    switch(newValue){
       case 0://全部订单
           {
-            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id }).then(res=>{
-               
+            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id }).then(res=>{   
               this.OrderList=res; 
-              this.$apply();   //出bug了快来找找
+              this.$apply();   
             })
             break;
           }
@@ -98,9 +98,9 @@ export default class myOrder extends wepy.page{
       case 1://带支付，待付款
         {
           http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
-             
+            
             this.OrderList=res; 
-            this.$apply();   //出bug了快来找找
+            this.$apply();  
           })
           break;
         } 
@@ -108,9 +108,9 @@ export default class myOrder extends wepy.page{
       case 2://支付完成，待送货
       {
         http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:22 }).then(res=>{
-          
+         
           this.OrderList=res; 
-          this.$apply();   //出bug了快来找找
+          this.$apply();  
         })
         break;
       }  
@@ -118,9 +118,9 @@ export default class myOrder extends wepy.page{
       case 3:// 确认发货，待收获
       {
         http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{
-           
+          
           this.OrderList=res; 
-          this.$apply();   //出bug了快来找找
+          this.$apply();  
         })
         break;
       }  
@@ -128,14 +128,14 @@ export default class myOrder extends wepy.page{
       case 4://订单完成，待评价
       {
         http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-          
+         
           this.OrderList=res; 
-          this.$apply();   //出bug了快来找找
+          this.$apply();   
         }) 
         break;
       } 
       } 
-      // console.log( this.OrderList) 
+      console.log(this.OrderList)
     }
     
   }
@@ -146,9 +146,10 @@ export default class myOrder extends wepy.page{
   }
   _updateSelectedPage(page) {
       let {tabs, stv, activeTab} = this.data;
-      
       this.activeTab = page;
       this.stv.offset = stv.windowWidth*page;
+      this.$apply();
+      console.log(this.activeTab)
   }
 }
 </script>

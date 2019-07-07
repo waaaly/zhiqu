@@ -17,9 +17,9 @@ module.exports = {
     GoodsList: ApiRootUrl + 'goods-list', //获得商品列表
     GoodsCategory: ApiRootUrl + 'goods-category', //获得分类数据
     GoodsDetail: ApiRootUrl + 'goods-detail', //获得商品的详情
-
     MyShop: ApiRootUrl + 'my-shop', //我的商铺
 
+    WechatPay:ApiRootUrl+'pay-prepay',//使用微信支付
 
     CartList: ApiRootUrl + 'cart-index', //获取购物车的数据
     CartAdd: ApiRootUrl + 'cart-add', // 添加商品到购物车
@@ -28,11 +28,11 @@ module.exports = {
     CartChecked: ApiRootUrl + 'cart-checked', // 选择或取消选择商品
     CartGoodsCount: ApiRootUrl + 'cart-goodscount', // 获取购物车商品件数
     CartChechedAll: ApiRootUrl + 'cart-check-all', //全选或全不选商品
-    CartCheckout: ApiRootUrl + 'cart-checkout', // 下单前信息确认
 
+    CartCheckout: ApiRootUrl + 'cart-checkout', // 下单前信息确认
     OrderSubmit: ApiRootUrl + 'order-submit', // 提交订单
     OrderList: ApiRootUrl + 'order-list', // 全部订单列表
-    OrderCancel: ApiRootUrl + 'order-list', //取消订单
+
     OrderDetail: ApiRootUrl + 'order-detail', //订单详情
     SendMsg: ApiRootUrl + 'send-message', //给用户发送消息
     PayPrepayId: ApiRootUrl + 'pay/prepay', //获取微信统一下单prepay_id
@@ -64,11 +64,6 @@ module.exports = {
     AddressSetDefault: ApiRootUrl + 'address-default', //直接设为默认地址
     RegionList: ApiRootUrl + 'region/list', //获取区域列表
 
-    OrderList: ApiRootUrl + 'order-list', //获得订单列表
-    OrderDetail: ApiRootUrl + 'order/detail', //订单详情
-    OrderCancel: ApiRootUrl + 'order/cancel', //取消订单
-    OrderExpress: ApiRootUrl + 'order/express', //物流详情
+   
 
-    FootprintList: ApiRootUrl + 'footprint/list', //足迹列表
-    FootprintDelete: ApiRootUrl + 'footprint/delete', //删除足迹
 }

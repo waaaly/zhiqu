@@ -9,7 +9,7 @@
           <view>
             <star :grade.sync='shop.grade'>{{shop.grade}}</star>
             <text>月售{{shop.monthly_sale}}</text>
-            <text style="float:right;">{{shop.delivery_time}}分钟  {{shop.district}}Km</text>
+            <text style="float:right;">配送时间:{{shop.delivery_time}}分钟</text>
           </view>
           <view style="color:#ff6b5d;">“{{shop.shop_summary}}”</view>
           </view>

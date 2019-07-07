@@ -186,7 +186,9 @@ color:#fff;
 
 
   export default class shopStatus extends wepy.page {
-
+      config = {
+        "navigationBarTitleText": "营业设置"
+    };
     data = {
         status:{
             Text:'营业中',

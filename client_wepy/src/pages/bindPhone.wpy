@@ -34,6 +34,9 @@ import http from '../utils/Base';
 import api from '../utils/API';
 const phoneRexp = /^(13[0-9]|14[579]|15[0-3,5-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}$/;
 export default class bingPhone extends wepy.page{
+  config = {
+        "navigationBarTitleText": "绑定手机"
+    };
     data = {
         btnTxt: '获取验证码',
         isGetCode: false,

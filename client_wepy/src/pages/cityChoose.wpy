@@ -19,6 +19,9 @@
 <script>
 import wepy from "wepy";
 export default class cityChoose extends wepy.page{
+  config = {
+        "navigationBarTitleText": "城市选择"
+    };
     data = {
     scrollAZ: null,
     scrollNow: 0,

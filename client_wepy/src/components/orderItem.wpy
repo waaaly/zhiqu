@@ -16,15 +16,28 @@
         </navigator>
         <view class='line'></view>
         <navigator class='secondCol'>
+            <image src='{{imageUrl + order.goodsList[0].list_pic_url}}'/>
             <view style="margin:18px;font-size:35rpx;">
-              {{order.goodsList[0].goods_name}}</view>
+              {{order.goodsList[0].goods_name}}
+               {{order.goodsList[0].actual_price}}
+                {{order.goodsList[0].number}}
+              </view>
             <view style="font-size:25rpx;margin-left:300rpx;margin-top:120rpx;">
               共计：{{order.goods_price}}</view>
         </navigator>
         <view class='line'></view>
         <view class="thirdCol ">
-            <block wx:for="{{statusTab}}">
-              <navigator class='forItem'>{{item}}</navigator>
+            <block wx:if="{{order.order_status == 10}}" >
+              <navigator wx:for="{{['确认支付', '取消订单']}}" class='forItem'>{{item}}</navigator>
+            </block>
+            <block wx:if="{{order.order_status == 22}}" >
+              <navigator wx:for="{{['申请退款']}}" class=' '>{{item}}</navigator>
+            </block>
+            <block wx:if="{{order.order_status == 32}}" >
+              <navigator wx:for="{{['确认收货' ,'申请退款']}}" class='forItem'>{{item}}</navigator>
+            </block>
+            <block wx:if="{{order.order_status == 40}}" >
+              <navigator wx:for="{{['前往评价']}}" class='forItem'>{{item}}</navigator>
             </block>
         </view>
     </view>
@@ -39,12 +52,31 @@ export default class orderItem extends wepy.page{
     }
     data = {
       imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
-      statusTab:['确认收货','再来一单','售后/退款','相似商家','评价']
     }
     watch = {
-      order(newValue,old){
-        console.log(newValue);
-      }
+      //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
+   //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
+      // order(newValue,old){
+      //   switch(newValue.order_status){
+      //     case 10:{
+      //       this.statusTab = ['确认支付', '取消订单'];
+      //       break;
+      //     }
+      //     case 22:{
+      //       this.statusTab = ['申请退款'];
+      //       break;
+      //     }
+      //     case 32:{
+      //       this.statusTab = ['确认收货' ,'申请退款'];
+      //       break;
+      //     }
+      //     case 40:{
+      //       this.statusTab = ['前往评价'];
+      //       break;
+      //     }
+      //   }
+      //   this.$apply();
+      // }
     }
 }
 </script>
@@ -72,8 +104,9 @@ export default class orderItem extends wepy.page{
   flex-direction: row;
 }
 .shangjiaIcon{
-  width:80rpx;
-   height:80rpx;
+  width:60rpx;
+  height:60rpx;
+  border-radius: 50%;
 }
 .shangpuming{
   margin: 10rpx;

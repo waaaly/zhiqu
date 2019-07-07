@@ -80,6 +80,9 @@ var CITY = require('../utils/City.js');
 
 var animation;
 export default class addressAdd extends wepy.page{
+    config = {
+        "navigationBarTitleText": "添加地址"
+    };
    data = {
         isVisible: false,
         animationData: {},

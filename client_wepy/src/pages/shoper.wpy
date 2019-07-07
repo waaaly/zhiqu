@@ -29,6 +29,9 @@ import classifyGood from '../components/classifyGood';
 import http from '../utils/Base';
 import api from '../utils/API';
 export default class Shoper extends wepy.page {
+    config = {
+        "navigationBarTitleText": "商铺详情"
+    };
     data ={
         currentTab:0,
         food:{},

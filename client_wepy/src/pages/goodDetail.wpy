@@ -141,10 +141,13 @@
 
 import wepy from 'wepy';
 import http from '../utils/Base';
-import url from '../utils/API'
+import api from '../utils/API'
 import goodBar from '../components/goodBar';
 var startPoint;//悬浮钮的起始
 export default class goodDetail extends wepy.page{
+  config = {
+        "navigationBarTitleText": "商品详情"
+    };
     components = {
         goodbar:goodBar
     }
@@ -159,9 +162,7 @@ export default class goodDetail extends wepy.page{
         windowHeight:0,
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         goodObj:{},//商品对象
-        shopInfo:{},//
-        cartList: [],//后台返回的购物车列表
-        cartTotal: {},//购物车的商品总数量，全部价格
+        shopInfo:{},//商铺对象
         detailnumber:1,//已选商品数量
     }
     onLoad(good){
@@ -171,16 +172,33 @@ export default class goodDetail extends wepy.page{
         this.windowHeight = systemInfo.windowHeight;
         // console.log(good);
         new Promise((resolve,reject)=>{
-            http.get(url.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
-                console.log(res)
+            http.get(api.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
+                // console.log(res)
                 this.goodObj = res.shopGoods[0];
-                this.shopInfo = res.shopInfo[0];
-                
+                this.shopInfo = res.shopInfo[0];              
                 this.$apply();
-                this.$broadcast('init',good.shopId,good.goodId,1);
+                http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(result =>{
+                  var redDot = false;
+                  var checkInCart = false;
+                  var cartId = 0;
+                  
+                  //查找当前商品是否已存在购物车中
+                  
+                  if(Object.keys(result).length != 0){
+                    for(let index in result){
+                      for(let cartItem of result[index].cartList){
+                        if(cartItem.goods_id == good.goodId){
+                          cartId = cartItem.id;
+                          checkInCart = true;
+                        }
+                      }                    
+                    }
+                    redDot = true;
+                  }
+                 this.$broadcast('init',good.shopId,good.goodId,1,redDot,checkInCart,cartId);                 
+                })
             })
-        })
-        
+        })      
     }
     methods = {
         imgLoaded(e){
@@ -194,7 +212,9 @@ export default class goodDetail extends wepy.page{
         if (this.data.detailnumber == 1){
           return 
         }
-       this.detailnumber = this.detailnumber - 1;
+        this.detailnumber = this.detailnumber - 1;
+        this.$apply();
+        this.$broadcast('changeNum',this.detailnumber);
       },
       //数量加
       addnumber () {
@@ -202,6 +222,8 @@ export default class goodDetail extends wepy.page{
           return 
         }
           this.detailnumber = this.detailnumber + 1;
+          this.$apply();
+          this.$broadcast('changeNum',this.detailnumber);
       },
       //悬浮按钮移动
       buttonStart: function (e) {

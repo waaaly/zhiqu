@@ -83,11 +83,17 @@ import 'wepy-async-function'
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/authorize',
+      'pages/cart',
+      'pages/orderCheck',
       'pages/my',
+      'pages/orderSubmit',
+      'pages/authorize',
       
       
-      'pages/orderDetail',
+      
+      
+      
+      'pages/shopOrder',
       'pages/shopHome',
       'pages/shopStatus',
       'pages/index',
@@ -95,7 +101,7 @@ export default class extends wepy.app {
       
       'pages/addressAdd',
       
-      'pages/cart',
+      
       
       
       
@@ -143,7 +149,7 @@ export default class extends wepy.app {
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#ffb65d',
-      navigationBarTitleText: '法米利',
+      navigationBarTitleText: '智趣Shop',
       navigationBarTextStyle: 'black'
     },
     tabBar: {

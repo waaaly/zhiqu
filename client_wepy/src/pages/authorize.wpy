@@ -116,6 +116,9 @@ export default class Authorize extends wepy.page {
                           if(result.userInfo&&result.token){
                             wx.setStorageSync('userToken', result.token);
                             wx.setStorageSync('userInfoInServer', result.userInfo);
+                            if(result.defaultAddress){
+                               wx.setStorageSync('userDefaultAddress', result.defaultAddress);
+                            }
                             wepy.reLaunch({
                               url: '/pages/index'
                             })

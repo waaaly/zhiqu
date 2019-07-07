@@ -1,13 +1,11 @@
 <template>
 <block wx:for="{{goodList}}" wx:for-item="item" wx:key="index" wx:for-index="index">
      <view @tap.shop="goGoodDetail({{item}})" style="align-items:center;padding:0 10px;margin:10px 0px;display:flex;flex-direction:row;background:#fff;">
-        <image style="width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
+        <image style="border-radius:20rpx;width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
         <view style="padding-top:10px;margin-left:5%;position:relative;width:70%;">
             <view style="color:#ff6b5d;font-size:40rpx;display:flex;{{item.shop_name == undefine?'display:none;':''}}">
-                <view style="flex:2;">
-                    <image style="width:50rpx;height:50rpx;" src="{{imageUrl + item.shop_icon}}"/>
-                </view>              
-                <text>{{item.shop_name}}</text>
+                <image style="width:50rpx;height:50rpx;border-radius:50%;" src="{{imageUrl + item.shop_icon}}"/>
+                <text style="margin-left:20rpx;font-size:30rpx;color:#ff6b5d;">{{item.shop_name}}</text>                
             </view>
             <view class="itemName">{{item.goods_name}}
                 <view wx:if="{{item.collectId}}" class="shoucang" @tap.stop="delInCollect({{item}})">
@@ -117,6 +115,10 @@ export default class classifyGood extends wepy.component{
                         wx.showToast({
                             title: res.msg,
                             icon: ''
+                        })
+                    }else{
+                        wx.showToast({
+                            title: '加入购物车成功~',
                         })
                     }
                 })

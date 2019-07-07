@@ -17,7 +17,15 @@
   position: relative;
   flex: 1;
   padding-top:5px;
-
+}
+.settleRedDot{
+  position: absolute;
+  top:3px;
+  left: 70%;
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  background-color:red;
 }
 
 .collection{
@@ -67,9 +75,9 @@ button::after {
 }
 
 .removeCart-Enable {
-  background: #c3c3c3;
-  color:#666;
-    -webkit-flex: 4;
+  background: red;
+  color:#fff;
+  -webkit-flex: 4;
   flex: 2;
   text-align: center;
   line-height: 100rpx;
@@ -80,6 +88,7 @@ button::after {
 <template>
     <view class='goodBar'>
       <view class='settle' @tap="gotocart" >
+        <view class="settleRedDot" style="{{showRedDot?'':'display:none'}}"></view>
        <image style="height:17px;width:17px;  display: block;width: 40rpx;height: 40rpx;margin: 0 auto;" src="/images/icons/jiesuan.png"></image>
         <text class='carnum' wx:if="{{cartTotal.checkedGoodsCount>0}}">{{cartTotal.checkedGoodsCount}}</text>
         <text style='position:absolute;bottom:11rpx;left:26rpx'>结算</text>
@@ -93,7 +102,7 @@ button::after {
         <text style='position:absolute;bottom:-1px;'>转发</text>
       </button> 
       <view class='addCart' @tap='addcart'>加入购物车</view>
-      <view class="{{isDelOutCar?'removeCart-Enable':'removeCart'}}" @tap='delOutcart'>移出购物车</view>
+      <view class="{{checkInCart?'removeCart-Enable':'removeCart'}}" @tap='delOutcart'>移出购物车</view>
     </view>
 
 </template>
@@ -107,18 +116,26 @@ export default class goodBar extends wepy.component{
 
     }
     data = {
-        isDelOutCar:false,//是否可以移出购物车
+        showRedDot:false,//是否显示小红点
+        checkInCart:false,//该商品是否已存在购物车中
+        cart_id:0,//如果这件商品存在于购物车中，这是他的购物车id
         shop_id:0,
         good_id:0,
-        good_num:0,
+        good_num:1,
     }
     events = {
-      'init':(shop_id,good_id,num,$event)=>{
-        console.log(num)
+      'init':(shop_id,good_id,num,redDot,checkInCart,cartId,$event)=>{
         this.shop_id = parseInt(shop_id);
         this.good_id = parseInt(good_id);
         this.good_num = num;
+        this.showRedDot = redDot;      
+        this.checkInCart = checkInCart;
+        this.cart_id = cartId;
         this.$apply();
+      },
+      'changeNum':(num,$event)=>{
+         this.good_num = num;
+         this.$apply();
       }
     }
     methods = {
@@ -161,9 +178,40 @@ export default class goodBar extends wepy.component{
                     title: '添加成功！',
                     icon: ''
                   })
+                  this.showRedDot = true;
+                  this.checkInCart = true;
+                  for(let index in res){
+                    for(let cartItem of res[index].cartList){
+                      if(cartItem.goods_id == this.good_id){
+                        this.cart_id = cartItem.id;
+                      }
+                    } 
+                  }           
+                  this.$apply();
                 }              
             })
         })
+      },
+      delOutcart(e){
+        var that = this;
+        if(!that.checkInCart){
+          return;
+        }
+        wx.showModal({
+          title: '提示',
+          content: '确认将该商品移出购物车吗?',
+          success: function (res) {
+              if (res.confirm) {
+                http.post(api.CartDelete,{
+                  id: that.cart_id,
+                  user_id:wx.getStorageSync('userInfoInServer').id
+                }).then(res=>{
+                  that.checkInCart = false;
+                  that.$apply();
+                })
+              }
+            }
+          })
       }
     }
 }

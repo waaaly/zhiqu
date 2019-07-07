@@ -1,0 +1,299 @@
+<script>
+    import wepy from 'wepy';
+    import http from '../utils/Base';
+    import api from '../utils/API'; 
+
+    export default class orderDetail extends wepy.component{
+      data = {
+        isShopOrder:false,
+        order:{}
+      }
+        events = {
+            'orderSubmit':(order,$event)=>{
+                console.log(order);
+                this.order = order;
+            },
+            'shopOrder':(order,$event)=>{
+
+            }
+        }
+    }
+</script>
+
+<template>
+<view>
+  <!--地址展现-->
+  <view class="address-box row">
+      <!--左侧图标-->
+      <view class="icon-box">
+          <image class="icon-lg" src="/images/icons/address.png"/>
+      </view>
+      <!-- 地址内容 -->
+      <view class="info-box column" style="width:100%;">
+          <view class="row-between" style="color:#262626;font-size:30rpx;">
+              <text>联系人：{{order.consignee}}</text>
+              <view class="row" bindtap="phone">
+              <image class="icon" src="/images/icons/call.png"/>
+              <text class="primary" style="margin-left:10rpx">{{order.mobile}}</text>
+              </view>
+          </view>
+          <view style="margin-top:10rpx;color:#262626;font-size:30rpx;">
+              <text>地址：{{order.address}} </text>
+          </view>
+      </view>
+  </view>
+  <!--地址展现end-->
+
+  <!--分隔符-->
+    <image class="hr-address" src="/images/icons/address-hr.png"/>
+  
+  <!--订单项目-->
+  <view wx:if="{{isShopOrder}}" class="order-item-container column">
+    <!--基本信息-->
+    <view  class="order-header-container colunm">
+      <view class="row-between">
+        <view style="align-items: center;display: flex;">
+          <image class="icon" src="/images/icons/idcard.png"/>
+          <text  style="font-size:26rpx;margin-left:10rpx;">{{order.consignee}}</text>
+        </view>
+        <view>
+          <text class="primary" style="font-size:26rpx;">等待接单</text>
+        </view>
+      </view>
+
+      <view class="order-info-container row-between">
+        <text>{{order.add_time}}</text>
+        <text>{{order.order_sn}}</text>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="weui-cells">
+    <view class="weui-cell">
+      <view class="weui-cell__bd">订单流水</view>
+      <view class="weui-cell__ft">{{order.order_sn}}</view>
+    </view>
+    <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="weui-cell">
+      <view class="weui-cell__bd">生成时间</view>
+      <view class="weui-cell__ft">{{order.add_time}}</view>
+    </view>
+      <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="weui-cell">
+      <view class="weui-cell__bd">订单状态</view>
+      <view class="weui-cell__ft">待付款</view>
+    </view>
+  </view>
+  <!--订单项目end-->
+
+  <!--商品区域-->
+  <view wx:if="{{isShopOrder}}" class="order-goods-list-container" bindtap="detail" data-wpydetail-a="{{order.orderId}}">
+    <block wx:for="{{order.orderGoodsInfos}}" wx:for-index="index" wx:for-item="item" wx:key="goodsId">
+      <view class="{{!order.orderId || index == 0 || expand[order.orderId] ? '' : 'order-goods-fold'}}">    
+        <view class="order-goods-container row-between">
+          <!--商品图片-->
+          <image class="order-goods-image" mode="aspectFill" src="{{item.imageUrl}}"/>
+          <!--商品说明-->
+          <view class="order-goods-title-container column">
+            <text>{{item.goodsName}}</text>
+            <text class="muted">{{item.skuText}}</text>
+          </view>
+          <!--商品信息-->
+          <view class="order-goods-buy-container column">
+            <text>￥{{item.goodsPrice}}</text>
+            <text class="muted">x{{item.count}}</text>
+          </view>
+        </view>
+        <view class="hr"/>
+      </view>
+    </block>
+    <view  wx:if="{{order.orderId && order.orderGoodsInfos.length > 1}}" class="goods-fold-btn row-center" catchtap="expand" data-wpyexpand-a="{{order.orderId}}">
+      <text class="muted" wx:if="{{!expand[order.orderId]}}">查看全部 {{order.orderGoodsInfos.length}} 件商品</text>
+      <text class="muted" wx:else>收起商品</text>
+    </view>
+  </view>
+  <!--商品区域end-->
+
+  <!--汇总信息-->
+  <view wx:if="{{isShopOrder}}" class="order-footer-container row-end">
+    <text style="margin-right:20rpx;font-size:28rpx;color:#262626;">共{{4}}件商品</text>
+    <text style="font-size:28rpx;color:#262626;">合计:</text>
+    <text style="font-size:32rpx;color:#ff6200;margin-right:20rpx;">￥{{20}}</text>
+    <text style="font-size:28rpx;color:#262626;">(含运费￥{{0}})</text>
+  </view>
+  <!--汇总信息end-->
+  
+  <!--订单详情-->
+  <view class="weui-cells">
+    <view class="weui-cell">
+      <view class="weui-cell__bd">支付方式</view>
+      <view class="weui-cell__ft">{{order.pay_name}}</view>
+    </view>
+      <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="weui-cell">
+      <view class="weui-cell__bd">配送方式</view>
+      <view class="weui-cell__ft">商家配送</view>
+    </view>
+      <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="weui-cell">
+      <view class="weui-cell__bd">买家留言</view>
+      <view class="weui-cell__ft">{{order.postscript}}</view>
+    </view>
+  </view>
+  <!--订单详情end-->
+
+  <!--信息汇总-->
+  <view class="summary-box">
+    <view class="price-box row-between">
+      <text>商品金额</text>
+      <text class="major">￥{{order.actual_price}}</text>
+    </view>
+    <!-- <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="price-box row-between">
+      <text>运费</text>
+      <text class="major">+￥2</text>
+    </view>
+    <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="price-box row-between">
+      <text>优惠券</text>
+      <text class="major">-￥2</text>
+    </view>
+    <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
+    <view class="price-box row-between" >
+      <text>积分抵扣</text>
+      <text class="major">-￥3</text>
+    </view>
+    
+    <view class="price-hr"/>
+    <view class="final-box origin-box" >
+      <text class="lg muted">原价：</text>
+      <text class="lg muted">￥22</text>
+    </view> -->
+    <view class="final-box">
+      <text class="lg">实付款：</text>
+      <text class="lg major">￥{{order.actual_price}}</text>
+    </view>
+  </view>
+</view>
+</template>
+
+<style>
+
+
+.order-trace-bar { padding: 25rpx; background-color: #FFF; border-bottom: 1px solid #EDEDED; }
+
+.order-trace-bar .info-box { width: 600rpx; margin-left: 20rpx; }
+
+.address-box{padding:25rpx 20rpx 25rpx 0;background-color:#fff;}
+
+.summary-box {color:#262626; margin-bottom:20rpx;padding: 10px 15px; background:#fff;border-top:1px solid #ededed;border-bottom:1px solid #ededed;margin-top:10rpx;overflow:hidden;font-size:28rpx;}
+
+.summary-box .price-hr { border-top: 1px solid #EDEDED; width: 100%; }
+
+.summary-box .final-box { float: right; width: 100%; padding-top: 10rpx; text-align: right; }
+
+.summary-box .origin-box text { text-decoration: line-through; }
+
+.summary-box .price-box { padding: 10rpx 0; }
+
+.order-item-container { margin-bottom: 0; border-top:1px solid #EDEDED;border-bottom:1px solid #EDEDED;background-color:#FFF;}
+
+.order-header-container{padding:10rpx 25rpx 10rpx 20rpx;color:#262626;font-size:28rpx;}
+
+.order-info-container{font-size:24rpx;color:#a3a3a3;}
+
+.order-footer-container {padding-left:25rpx;padding-right:20rpx;height:70rpx;}
+
+.order-action-bar { position: fixed; background-color: white; width: 750rpx; bottom: 0; border-top: 1px solid #EDEDED; height: 90rpx; padding-right: 10rpx; }
+
+.weui-cells{
+    border-bottom:1px solid #ededed;
+    border-top:none;
+    margin-top:5px;
+    position:relative;
+    background-color:#fff;
+    line-height:1.41176471;
+    font-size:17px;
+}
+
+.weui-cell{
+    font-size:28rpx;
+    padding:10px 15px;
+    position:relative;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center;
+}
+
+.weui-cell__bd{
+    font-size:28rpx;
+    flex:1;
+}
+
+.weui-cell__ft{
+    font-size:28rpx;
+    text-align:right;
+    color:#262626;
+}
+
+.muted{
+    font-size:28rpx;
+    color:#a3a3a3;
+    margin-top:10rpx;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    align-items:center;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+}
+.icon-lg{
+    height: 30px;
+    width:30px;
+}
+.xxl{
+    font-size: 34rpx;
+    color:#262626;
+}
+
+.icon{
+    height: 20px;
+    width:20px;
+}
+
+.row-between{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.primary{
+    color:#1286db;
+    font-size:30rpx;
+}
+
+.hr-address{
+    margin-top:15rpx;
+    width:100%;
+    height: 5px;
+    margin-bottom:15rpx;
+}
+
+.row-end {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-end;
+}
+
+.major{
+    color:#ff6200;
+}
+</style>

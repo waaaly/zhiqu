@@ -32,7 +32,7 @@
           <view style="padding-left:45rpx;">{{item.name}}
             <text style="margin-left:30rpx;font-size:30rpx;margin-right:10rpx;color:#666;">{{item.mobile}}</text> 
           </view>
-          <view style="font-size:30rpx;padding-left:45rpx;color:#666;">{{item.full_region}}{{item.address}}</view>  
+          <view style="font-size:30rpx;padding-left:45rpx;color:#666;">{{item.full_region}}{{item.area_name}}{{item.address}}</view>  
            
       </view>
       
@@ -47,9 +47,12 @@ import wepy from "wepy";
 import http from '../utils/Base';
 import api from '../utils/API';
 export default class addressChoose extends wepy.page {
+  config = {
+        "navigationBarTitleText": "地址选择"
+    };
     data = {
         StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
-        currentAddress:"那就是女王申请表受欺负是李克农去",
+        currentAddress:"正在努力获取您的位置....",
         userAddressInServer:[
         ],
         city:"",
@@ -74,10 +77,6 @@ export default class addressChoose extends wepy.page {
             wx.chooseLocation({
                 type: 'gcj02', //'wgs84',
                 success: function(res) {
-                    // let pages = getCurrentPages(); //获取当前页面js里面的pages里的所有信息。
-                    // let prevPage = pages[ pages.length - 2 ];  
-                    // prevPage.data.address = res.address;
-                    // console.log(prevPage);
                     console.log(res);
                     that.currentAddress=res.address;
                 }

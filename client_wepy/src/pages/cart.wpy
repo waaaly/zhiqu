@@ -1,17 +1,11 @@
 <template>
-<view wx:if="{{userInfoInServer.phone==null}}" style="witdh:100%;height:100%;">
-  <view style="position:absolute;top:20%;padding:10%; text-align:center;color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
-    <text style="text-align:center;">提供更优质的服务哦～</text></view>
-  <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
-</view>
-
-<view wx:else class='container' >
+<view  wx:if="{{userInfoInServer.phone!=null}}" class='container' >
   <view class='car-item-box' wx:for="{{shopList}}" wx:for-item="shopItem" wx:for-index="shopIndex" wx:key="index"  id="{{shopIndex}}">
     <!-- 商家头-->
     <view  class="shop-info {{currentShop==index ? 'shop-top' : ''}} " @tap="goShoper('{{shopItem}}')" >
         <view class=" {{shopCheckList[shopIndex]==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}" @tap.stop="selectedShop"></view>
-        <view style="flex:1;">
-          <image style="padding-bottom:2%;width:45rpx;height:45rpx;" src="{{imageUrl + shopItem.shop_icon}}"/>
+        <view style="flex:2;">
+          <image style="padding-bottom:2%;width:60rpx;height:60rpx;border-radius:50%;" src="{{imageUrl + shopItem.shop_icon}}"/>
         </view>
         <view style="font-size:30rpx;flex:10;" >{{shopItem.shop_name}}</view>
         <icon class="iconfont " style="flex:1;">&#xe6ab;</icon>
@@ -22,7 +16,7 @@
         <view class="item-check {{cartItem.checked?'check':''}}"  bindtap='selectedlist' data-currentGood="{{cartItem}}"></view>
           <view class='list-img'>
           <navigator url='/pages/goodDetail?goodId={{cartItem.goods_id}}&shopId={{cartItem.shop_id}}'>
-            <image style="width:78px;height:78px;border-radius: 4px;" src='{{imageUrl + cartItem.primary_pic_url}}' mode='scaleToFill'></image>
+            <image style="width:78px;height:78px;border-radius: 5px;" src='{{imageUrl + cartItem.primary_pic_url}}' mode='scaleToFill'></image>
             </navigator>
           </view>
         <view class='info-tit'>
@@ -52,10 +46,6 @@
 
    </view> 
 
-   <!-- <view wx:if="{{currentShop==index}}" style="height:100rpx; transition: all 1s linear;"></view> -->
-
-    
- 
 
     <view  style="height:100rpx; transition: all 1s linear;"></view>
     <view class='empty-box' wx:if="{{shopList.length==0}}">
@@ -65,14 +55,22 @@
       <view class='goindex' bindtap='gotoindex'>去商城逛逛吧</view>
     </view>
 </view>
+<view wx:else style="witdh:100%;height:100%;">
+  <view style="position:absolute;top:20%;padding:10%; text-align:center;color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
+    <text style="text-align:center;">提供更优质的服务哦～</text></view>
+  <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
+</view>
 </template>
 <script>
 import wepy from 'wepy';
 import http from '../utils/Base';
 import api from '../utils/API';
 export default class Cart extends wepy.page{
+  config = {
+        "navigationBarTitleText": "购物车"
+    };
     data = {
-    userInfoInServer:{},
+    userInfoInServer: {phone:""},
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
     currentShop:0,//当前置顶店铺
@@ -103,9 +101,9 @@ export default class Cart extends wepy.page{
   }
   onShow(e){
     this.userInfoInServer = wx.getStorageSync("userInfoInServer");
-    var id = wx.getStorageSync('userInfoInServer').id;
     new Promise((resolve,reject)=>{   
-        http.get(api.CartList,{user_id:id}).then(res =>{
+        http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res =>{
+          console.log(res)
           this.allList = res;//触发监听器
           this.$apply();
         })
@@ -118,39 +116,10 @@ export default class Cart extends wepy.page{
     //同步商品数
 
   }
-  onPageScroll(e){
-    // console.log(e) 
-    let pageTopMove = e.scrollTop; 
-    //下滑
-    if(pageTopMove > this.scrollTop_old){
-      if(this.currentShop == 0 ){
-        // console.log(pageTopMove);
-          if( pageTopMove > this.shopHeightValues[0]){
-            this.currentShop = 1;
-            this.shopChangeHeight.push(pageTopMove);
-            this.$apply();
-          }
-      }
-      for(let i=1; i<this.shopHeightValues.length; i++){
-          if( pageTopMove > this.shopHeightValues[i] && this.currentShop == i){
-            this.shopChangeHeight.push(pageTopMove);
-            this.currentShop = i+1;
-            this.$apply();
-          }
-      }
-    }else{
-      if( pageTopMove < this.shopChangeHeight[this.shopChangeHeight.length-1]-100){
-            this.currentShop = this.currentShop-1;
-            this.shopChangeHeight.splice(this.shopChangeHeight.length-1,1);
-            this.$apply();
-        }
-    }
-    this.scrollTop_old = pageTopMove;
-    console.log(this.currentShop);
-  }  
+
   watch = {
     allList (_new,old){
-      console.log(_new)
+      // console.log(_new)
       var that = this;
       that.shopList= [];
       that.cartList= [];
@@ -173,7 +142,7 @@ export default class Cart extends wepy.page{
         }
       }
       this.$apply();
-      console.log(that.shopCheckList)
+      // console.log(that.shopCheckList)
     }
   }
   //提交商品数量到后台
@@ -189,8 +158,16 @@ export default class Cart extends wepy.page{
         user_id:wx.getStorageSync('userInfoInServer').id
       }).then(res=>{
         console.log(res);
-        that.allList = res;
-        this.$apply();
+        if(res.code == 201){
+          wx.showModal({
+              title: '添加失败',
+              content: res.msg,
+              showCancel: false
+          })
+        }else{
+            that.allList = res;
+            this.$apply();
+        }
       })
     }
     methods = {
@@ -285,7 +262,7 @@ export default class Cart extends wepy.page{
               id: currentGood.id,
               user_id:wx.getStorageSync('userInfoInServer').id
             }).then(res=>{
-              console.log(res);
+              // console.log(res);
               that.allList = res;
               that.$apply();
             })
@@ -296,8 +273,6 @@ export default class Cart extends wepy.page{
     
     //提交订单
     goOrder:function(e){
-      var address_id =  wx.getStorageSync("userDefaultAddress").id
-     
       //确认用户绑定手机号
       if(!wx.getStorageSync("userInfoInServer").phone){
         wx.showModal({
@@ -325,33 +300,22 @@ export default class Cart extends wepy.page{
         })
         return;
       }
-      //下单前确认后台购物车中的数据
-       if(!address_id){
-        http.get(api.AddressList,{user_id:wx.getStorageSync("userInfoInServer").id}).then(res=>{
-            console.log(res)
-            wx.setStorageSync("userDefaultAddress",res[0]);
-            address_id = res[0].id;
-            http.post(api.OrderSubmit,{address_id:address_id,
-                                  shop_id:e.currentTarget.dataset.currentshop.id,
-                                  user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
-              console.log(res);
-              wx.showModal({
-                title: '提交成功',
+      //跳转确认购物车不为空
+       http.get(api.CartCheckout,{address_id:wx.getStorageSync("userDefaultAddress").id,
+            shop_id: e.currentTarget.dataset.currentshop.id,
+            user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+            if(res.msg){
+              wx.showToast({
+                title:res.msg,
+                icon:'none'
               })
-              this.onShow()
-            })
+            }else{
+              // 后台购物车中的数据
+              wx.navigateTo({
+                url:'/pages/orderCheck?addressId=' + wx.getStorageSync("userDefaultAddress").id + '&shopId=' + e.currentTarget.dataset.currentshop.id,
+              })
+            }   
         })
-      }else{
-         http.post(api.OrderSubmit,{address_id:address_id,
-                                  shop_id:e.currentTarget.dataset.currentshop.id,
-                                  user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
-              console.log(res);
-              wx.showModal({
-                title: '提交成功',
-              })
-              this.onShow()
-            })
-      }
     },
     gotoindex(e){
       wepy.reLaunch({
@@ -359,6 +323,37 @@ export default class Cart extends wepy.page{
       })
     }
   }
+  //监听页面滚动
+  /*onPageScroll(e){
+    // console.log(e) 
+    let pageTopMove = e.scrollTop; 
+    //下滑
+    if(pageTopMove > this.scrollTop_old){
+      if(this.currentShop == 0 ){
+        // console.log(pageTopMove);
+          if( pageTopMove > this.shopHeightValues[0]){
+            this.currentShop = 1;
+            this.shopChangeHeight.push(pageTopMove);
+            this.$apply();
+          }
+      }
+      for(let i=1; i<this.shopHeightValues.length; i++){
+          if( pageTopMove > this.shopHeightValues[i] && this.currentShop == i){
+            this.shopChangeHeight.push(pageTopMove);
+            this.currentShop = i+1;
+            this.$apply();
+          }
+      }
+    }else{
+      if( pageTopMove < this.shopChangeHeight[this.shopChangeHeight.length-1]-100){
+            this.currentShop = this.currentShop-1;
+            this.shopChangeHeight.splice(this.shopChangeHeight.length-1,1);
+            this.$apply();
+        }
+    }
+    this.scrollTop_old = pageTopMove;
+    console.log(this.currentShop);
+  } */ 
 }
 </script>  
   
@@ -375,8 +370,7 @@ export default class Cart extends wepy.page{
 .car-item-box{
   width:100%;
   margin-bottom:30rpx;
-  
-  /* border-bottom-style: 1px solid red; */
+
 }
 .car-item-box:last-child{
   padding-bottom: 100rpx;
@@ -400,8 +394,11 @@ export default class Cart extends wepy.page{
     align-items:center;
     color:#ff6700;
     background-color: #fff;
-      transition: all 4s linear;
-  transform: rotate(0);
+    transition: all 4s linear;
+    transform: rotate(0);
+    border-top-left-radius:20rpx;
+    border-top-right-radius:20rpx;
+    border-style: 1px solid #eee;
 }
 
 
@@ -477,12 +474,10 @@ export default class Cart extends wepy.page{
 }
 
 .product-item {
-  /* border-bottom: 1px solid #aaa; */
+  border-top: 1rpx solid #eee; 
   padding: 24rpx 24rpx;
   background: #fff;
   position: relative;
-   border-bottom-left-radius: 30rpx;
-  border-bottom-right-radius: 30rpx;
 }
 .product-item:last-child{
   border-bottom-left-radius: 30rpx;
@@ -635,12 +630,11 @@ export default class Cart extends wepy.page{
 .footer-pay {
   width: 100%;
   height: 90rpx;
-  /* position: fixed; */
   bottom: 0;
   display: -webkit-flex;
   display: flex;
   z-index: 14;
-  margin-top:10rpx;
+  /* margin-top:10rpx; */
 }
 
 .footer-pay view {
@@ -682,6 +676,7 @@ export default class Cart extends wepy.page{
 }
 
 .footer-pay .item {
+  background-color:#fff;
   display:flex;
   justify-content:space-around;
   line-height: 90rpx;

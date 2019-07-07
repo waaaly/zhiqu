@@ -66,6 +66,9 @@ import wepy from 'wepy';
 import http from '../utils/Base';
 import api from '../utils/API';
 export default class shopHome extends wepy.page{
+  config = {
+        "navigationBarTitleText": "我的商铺"
+    };
     data ={
       imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
       myShop:{}
