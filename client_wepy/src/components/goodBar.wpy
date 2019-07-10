@@ -202,12 +202,20 @@ export default class goodBar extends wepy.component{
           content: '确认将该商品移出购物车吗?',
           success: function (res) {
               if (res.confirm) {
+                // 从后台中删除该商品
                 http.post(api.CartDelete,{
                   id: that.cart_id,
                   user_id:wx.getStorageSync('userInfoInServer').id
                 }).then(res=>{
                   that.checkInCart = false;
                   that.$apply();
+                  http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(e =>{
+                    // console.log(e)
+                    if(e.length==0){
+                       that.showRedDot = false;
+                       that.$apply();
+                    }
+                  })
                 })
               }
             }

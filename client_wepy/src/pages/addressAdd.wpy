@@ -31,7 +31,6 @@
         <view class="addr-details">
             <view class="label">详细地址</view>
             <view class="label-right">
-                <!--<input class="input" type="text" placeholder="街道门牌信息"/>-->
                 <textarea name="address" auto-height placeholder="更详细的地址小趣能更好的服务哦～"  value="{{addressEdit.address}}" id="3" bindinput="getInput"/>
             </view>
         </view>
@@ -132,7 +131,9 @@ export default class addressAdd extends wepy.page{
         if (options.address) {
             var temp = JSON.parse(options.address);  
             this.addressEdit= temp; 
-            this.disDefault = false;
+            this.disDefault = false;//可以勾选默认地址
+            this.showArea = true;//显示服务区域
+            this.areaid = this.addressEdit.area_id;
         }
         /*用户在首页定位携带当前地址传过来*/
         if (options.currentAddress) {     

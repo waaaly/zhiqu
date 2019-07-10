@@ -3,7 +3,7 @@
 <view class='hear'>
   <view style="display:flex;padding:20rpx;align-items:center;" >
     <text @tap="chooseCity" style="color:#666;">{{city}}</text>
-    <image style="width:20rpx;height:20rpx;margin:0 20rpx 0 20rpx;" src="../images/icons/xiangxia.png"/>
+    <image @tap="chooseCity" style="width:20rpx;height:20rpx;margin:0 20rpx 0 20rpx;" src="../images/icons/xiangxia.png"/>
     <view style="background-color:#eee;padding:10rpx;position:relative;flex:2;display:flex;align-items:center;">
       <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
       <input type="text" class="weui-search-bar__input" placeholder="搜索我的地址"/>
@@ -26,7 +26,7 @@
   </view>
   <!-- <view class='defalut'>默</view> -->
   <scroll-view scroll-y="true" class="addressScroll" >
-      <view wx:for="{{userAddressInServer}}" bindtap="edit" data-id="{{index}}" class="item" >
+      <view wx:for="{{userAddressInServer}}" bindtap="click" data-id="{{index}}" class="item" >
          
          <view style="color:#ff6b5d;">{{item.area_name}}</view>
           <view style="padding-left:45rpx;">{{item.name}}
@@ -87,10 +87,17 @@ export default class addressChoose extends wepy.page {
             url: '/pages/addressAdd',
             })
         },
-        edit:function(e){
+        click:function(e){
             var clickAddressObj = this.data.userAddressInServer[e.currentTarget.dataset.id];
-            wx.setStorageSync('userDefaultAddress',clickAddressObj);
-            wx.navigateBack();                       
+            clickAddressObj.is_default = 1;
+            http.post(api.AddressSetDefault,{id:clickAddressObj.id}).then(res=>{  
+                  wx.showToast({
+                    title: "设置成功",
+                    duration: 1000
+                  })
+                  wx.setStorageSync('userDefaultAddress',clickAddressObj);
+                  wx.navigateBack();     
+              })                                
       },
       chooseCity(e){
         wx.navigateTo({

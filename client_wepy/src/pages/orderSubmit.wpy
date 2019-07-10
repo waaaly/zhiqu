@@ -1,18 +1,28 @@
 <template>
-    <orderDetail></orderDetail>
-    <view class="pay_box">
+  <scroll-view scroll-y="true" class="scroll" >
+      <image src='../images/orderDone.png'  style="width:100%;"/>
+      <orderDetail></orderDetail>
+      <view class="pay_box">
         <form report-submit bindsubmit="wePay">
             <button form-type="submit" class="type_green">立即支付</button>
         </form>
     </view>
+  </scroll-view>
 
 </template>
 <style>
+.scroll{
+  z-index: -999;
+  height:95%; 
+  /* display: flex;
+  flex-direction:column; */
+}
 .pay_box{
-    position:absolute;
-    bottom:50rpx;
+    padding:50rpx;
+    /* position:absolute; */
+    /* bottom:50rpx;
     left: 50rpx;
-    right: 50rpx;
+    right: 50rpx; */
 }
 .type_green{
     background-color:#09bb07;
@@ -38,6 +48,7 @@ export default class orderSubmit extends wepy.page{
         })
         http.post(api.OrderSubmit,{address_id:e.addressId,
                         shop_id:e.shopId,
+                        postscript:e.postscript,
                         user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
             console.log(res);
             this.orderId = res.id;
@@ -47,32 +58,34 @@ export default class orderSubmit extends wepy.page{
     methods = {
         wePay(e){
              http.get(api.WechatPay,{order_id:this.orderId,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
-                console.log(res);
+                // console.log(res);
                 wepy.requestPayment({ 
-                    timeStamp: res.timeStamp.toString(), 
+                    timeStamp: res.timeStamp, 
                     nonceStr: res.nonceStr, 
                     package: res.package, 
                     signType: res.signType, 
                     paySign: res.paySign, 
-                    success: function(res) { 
+                    success: function(res1) { 
+                        console.log('..hfiehiuf...')
                         wx.showModal({
-                            title: '绑定手机',
+                            title: '支付成功',
                             showText: "算了没钱",
                             confirmText: "继续剁手",
                             confirmColor:"skybule",
-                            content: "支付成功~",
-                            success:function(res){
-                                // if(res.confirm){
+                            content: "您已完成支付～",
+                            success:function(res2){                              
                                 wx.navigateTo({
                                     url: '/pages/cart',
-                                })
-                                // }
+                                })                              
                             }
                         })
                     }, 
                     fail: function(res) { 
                         console.log('付款失败') 
                         console.log(res) 
+                    },
+                    complete:function(res){
+                        console.log(res)
                     }
                 })
             })

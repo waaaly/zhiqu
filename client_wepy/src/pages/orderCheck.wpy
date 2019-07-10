@@ -3,14 +3,14 @@
   <view class="comfire_order">
     <view class="address" @tap="goAddress">
       <view class="address_info">
+        <text class="defult" wx:if="{{address.is_default==1}}">[默认]</text>
         <view class="title">
           <view class="user_info">
             <text class="name">{{address.name}}</text>
-            <text class="phone">{{address.mobile}}</text>
-            <text class="phone">{{address.area_name}}</text>
+            <text class="mobile">{{address.mobile}}</text>
+            <text class="area_name">{{address.area_name}}</text>
           </view>
           <view class="active_address">
-            <text class="defult" wx:if="{{address.isdefault==1}}"> [默认]</text>
             {{address.full_region}}{{address.area_name}}{{address.address}}
           </view>
         </view>
@@ -26,11 +26,11 @@
     </view>
    <!--商品区域-->
 
-    <view class="order-goods-list-container" bindtap="detail" data-wpydetail-a="{{order.orderId}}">
+    <view class="order-goods-list-container"  >
       <block wx:for="{{orderGoodsInfos}}" wx:for-index="index" wx:for-item="item" wx:key="goodsId">
         <view class="{{!order.orderId || index == 0 || expand[order.orderId] ? '' : 'order-goods-fold'}}">
           
-  <view class="order-goods-container row-between">
+  <view class="order-goods-container row-between" @tap="goodDetail({{item.goods_id}})">
     <!--商品图片-->
     <image class="order-goods-image" mode="aspectFill" src="{{imageUrl + item.primary_pic_url}}"/>
 
@@ -64,7 +64,7 @@
         <view class="right">商家配送</view>
       </view>
       <view class="block">
-        <view class="left">买家留言:</view>
+        <view class="left">买家留言</view>
         <view class="right input_box">
           <input bindinput="bindKeyInput" placeholder="对本次交易的说明"/>
         </view>
@@ -102,6 +102,7 @@ export default class orderCheck extends wepy.page{
       shopInfo:{},//訂單對應的商家信息
       orderGoodsInfos:[],//訂單中的商品列表
       totalPrice:0.00,//該訂單的真正價格
+      postscript:'',//买家留言
     }
     onLoad(e){
         //修改页面标题
@@ -139,8 +140,19 @@ export default class orderCheck extends wepy.page{
       //向后台提交订单
       submitOrder(e){
          wx.navigateTo({
-           url: '/pages/orderSubmit?addressId='+this.addressId+'&shopId='+this.shopId,
+           url: '/pages/orderSubmit?addressId='+this.addressId+'&shopId='+this.shopId+'&postscript='+this.postscript,
         }) 
+      },
+      //买家留言
+      bindKeyInput(e){
+        // console.log(e)
+        this.postscript = e.detail.value;
+      },
+      //点击商品
+      goodDetail(goodId){
+            wx.navigateTo({
+                url: '/pages/goodDetail?goodId=' + goodId + '&shopId='+this.shopInfo.id,
+        })
       }
     }
 } 
@@ -167,7 +179,8 @@ page{
   justify-content: space-between;
   height: 103rpx;
   align-items: center;
-  padding: 0rpx 35rpx;
+  padding-right:30rpx;
+  padding-left:5rpx;
 }
 
 .address .address_info .title {
@@ -179,15 +192,38 @@ page{
 }
 
  .address .address_info .user_info {
+   display:flex;
+   justify-content: space-between;
+   color: #1a1a1a;
+}
+
+ .address .address_info .user_info .name{
   color: #1a1a1a;
+  font-size:30rpx;
+  padding:5rpx;
+}
+
+.address .address_info .user_info .mobile{
+  color: #1a1a1a;
+  padding:5rpx;
+}
+
+.address .address_info .user_info .area_name{
+  color: #ff6b5d;
+  padding:5rpx;
 }
 
 .address .address_info .active_address {
   margin-top: 20rpx;
+  color:#666;
+  text-align:center;
+  font-size:25rpx;
 }
 
 .address .address_info .defult {
+  font-size:35rpx;
   color: #ea4a3a;
+  margin-bottom:80rpx;
 }
 
 .address .address_info {
@@ -430,8 +466,10 @@ color:#fff;
 }
 
 .pay_box {
-  margin-top: 104rpx;
-  padding: 0 22rpx;
+    position:absolute;
+    bottom:50rpx;
+    left: 50rpx;
+    right: 50rpx;
 
 }
 

@@ -108,10 +108,11 @@ background-size:200rpx 200rpx;
   border-radius: 10rpx;
   padding: 20rpx 5rpx;
   margin: 20rpx;
+  border-radius:20rpx;
 }
 /*地址操作*/
 .addressDel{
-  font-size:13px;
+  font-size:28rpx;
   display: flex;
   flex-direction: column;
   padding:10rpx 0rpx;color:#666;
@@ -418,9 +419,12 @@ export default class myFunc extends wepy.page {
                     <view style="margin-left:12rpx;color:blue;font-size:28rpx;color:#ff6b5d" wx:if="{{item.is_default}}">[默认地址]</view>
                     <view style='margin-left:15rpx;display:flex;flex-direction:row'>
                       <view style='display: flex;flex-direction: column;width:75%;border-right: 2rpx solid #eee;'>
-                        <view style="">{{item.name}}</view>
+                        <view style="display:flex;justify-content:space-between;padding-right:10rpx;">
+                          <text>{{item.name}}</text>
+                          <text style='color:#ff6b5d;font-size:30rpx;'>{{item.area_name}}</text>
+                        </view>
                         <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.mobile}}</view>
-                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.full_region}}  {{item.address}}</view>   
+                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.full_region}} {{item.area_name}} {{item.address}}</view>   
                       </view>
                     <view class="addressDel">
                       <view data-item="{{item}}" 

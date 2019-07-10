@@ -7,7 +7,7 @@ export default class Tips{
 
     //弹出成功提示框
     static showSuccess(title,durationTime = 500){
-        wx.wx.showModal({
+        wx.wx.showModel({
             title: title,
             icon:'success',
             mask:true,
@@ -25,7 +25,7 @@ export default class Tips{
     //弹出确认操作窗口不含取消
     static showComfire(text, title='提示'){
         return new Promise((resolve,reject) =>{
-            wx.showModal({
+            wx.showModel({
                 title:title,
                 content:text,
                 showCancel:false,
@@ -42,7 +42,7 @@ export default class Tips{
     //弹出确认窗口包含取消操作
     static showModel(text, payload = {}, title='提示'){
         return new promise((resolve,reject) =>{
-            wx.showModal({
+            wx.showModel({
                 title:title,
                 content:text,
                 showCancel:true,

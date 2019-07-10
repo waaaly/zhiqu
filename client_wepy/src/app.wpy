@@ -82,112 +82,80 @@ import 'wepy-async-function'
 
 export default class extends wepy.app {
   config = {
-    pages: [
-      'pages/cart',
-      'pages/orderCheck',
-      'pages/my',
-      'pages/orderSubmit',
-      'pages/authorize',
-      
-      
-      
-      
-      
-      'pages/shopOrder',
-      'pages/shopHome',
-      'pages/shopStatus',
-      'pages/index',
-      
-      
-      'pages/addressAdd',
-      
-      
-      
-      
-      
-      'pages/classify',
-      'pages/addressChoose',
-      'pages/cityChoose',
-      
-      
-      
-      
-      
-      'pages/my-order',
-      'pages/my-asset',
-      
-      'pages/my-func',
-      
-      
-      
-      
-      
-        
-      
-      
-      
-      'pages/goodDetail',
-      
-      
-      
-      'pages/shoper',
-      
-      
-      
-      
-      
-      
-      
-      'pages/bindPhone',
-      
-      
-      
-      
-      'pages/search',
-      'pages/scan'
-    ],
-    window: {
-      backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#ffb65d',
-      navigationBarTitleText: '智趣Shop',
-      navigationBarTextStyle: 'black'
-    },
-    tabBar: {
-    "color": "#a9b7b7",
-    "selectedColor": "#ff6b5d",
-    "borderStyle": "black",
-    "list": [
-      {
-        "selectedIconPath": "/images/1-on.png",
-        "iconPath": "/images/1-off.png",
-        "pagePath": "pages/index",
-        "text": "首页"
+        pages: [
+          'pages/authorize',
+          'pages/my',
+          
+          'pages/cart',
+          'pages/orderCheck',
+          
+          'pages/orderSubmit',
+          'pages/shopOrder',
+          'pages/shopHome',
+          'pages/shopStatus',
+          'pages/index',         
+          'pages/addressAdd',         
+          'pages/classify',
+          'pages/addressChoose',
+          'pages/cityChoose',         
+          'pages/my-order',
+          'pages/my-asset',          
+          'pages/my-func',         
+          'pages/goodDetail',         
+          'pages/shoper',         
+          'pages/bindPhone',  
+          'pages/search',
+          'pages/scan'
+        ],
+        window: {
+          backgroundTextStyle: 'light',
+          navigationBarBackgroundColor: '#ffb65d',
+          navigationBarTitleText: '智趣Shop',
+          navigationBarTextStyle: 'black'
+        },
+        tabBar: {
+        "color": "#a9b7b7",
+        "selectedColor": "#ff6b5d",
+        "borderStyle": "black",
+        "list": [
+          {
+            "selectedIconPath": "/images/1-on.png",
+            "iconPath": "/images/1-off.png",
+            "pagePath": "pages/index",
+            "text": "首页"
+          },
+          // {
+          //   "selectedIconPath": "/images/2-on.png",
+          //   "iconPath": "/images/2-off.png",
+          //   "pagePath": "pages/classify",
+          //   "text": "分类"
+          // },
+          {
+            "selectedIconPath": "/images/3-on.png",
+            "iconPath": "/images/3-off.png",
+            "pagePath": "pages/cart",
+            "text": "购物车"
+          },
+          {
+            "selectedIconPath": "/images/4-on.png",
+            "iconPath": "/images/4-off.png",
+            "pagePath": "pages/my",
+            "text": "我的"
+          }
+        ]
       },
-      // {
-      //   "selectedIconPath": "/images/2-on.png",
-      //   "iconPath": "/images/2-off.png",
-      //   "pagePath": "pages/classify",
-      //   "text": "分类"
-      // },
-      {
-        "selectedIconPath": "/images/3-on.png",
-        "iconPath": "/images/3-off.png",
-        "pagePath": "pages/cart",
-        "text": "购物车"
+      permission: {
+        "scope.userLocation": {
+          "desc": "您的位置信息将用于小程序位置信息的效果展示"
+        },
       },
-      {
-        "selectedIconPath": "/images/4-on.png",
-        "iconPath": "/images/4-off.png",
-        "pagePath": "pages/my",
-        "text": "我的"
-      }
-    ]
-  },
-  permission: {
-    "scope.userLocation": {
-      "desc": "您的位置信息将用于小程序位置信息的效果展示"
-    }
-  },
+      networkTimeout: {
+        "request": 10000,
+        "downloadFile": 10000
+      },
+      requiredBackgroundModes: [
+        "audio"
+      ],
   }
 
   globalData = {

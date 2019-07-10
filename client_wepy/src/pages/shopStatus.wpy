@@ -54,7 +54,7 @@
 
     </view>
 
-    <text class="tips">提示：{{time.checked == false ? '全天营业无需设置开业、打烊时间': '请点击设置开业、打烊时间'}}</text>
+    <text class="tips">提示：{{time.checked == false ? '请点击设置开业、打烊时间': '全天营业无需设置开业、打烊时间'}}</text>
 
     <!--操作栏-->
     
@@ -183,13 +183,14 @@ color:#fff;
 
 <script>
   import wepy from 'wepy';
-
-
+  import http from '../utils/Base';
+  import api from '../utils/API';
   export default class shopStatus extends wepy.page {
       config = {
         "navigationBarTitleText": "营业设置"
     };
     data = {
+      shopId:0,
         status:{
             Text:'营业中',
             checked:true,
@@ -198,12 +199,14 @@ color:#fff;
             Text:'全天营业',
             checked:true,
             timeStart:'00:00',
-            timeEnd:'23:59'
+            timeStartNum:0,
+            timeEnd:'23:59',
+            timeEndNum:0,
         }
         
     };
-    async onLoad () {
-   
+    async onLoad (e) {
+      this.shopId = e.shop_id;
     };
     methods = {
         statusInput(e){
@@ -227,26 +230,28 @@ color:#fff;
             }
         },
         timeStart(e){
-            console.log(e)
             this.time.timeStart = e.detail.value;
+            let strArr = e.detail.value;
+             strArr = strArr.split(':');
+             let str = '';
+             for(let i = 0;i < strArr.length; i++){
+               str = str + strArr[i];
+             }
+            console.log(str)
+            this.time.timeStartNum = parseInt(str);
             this.$apply();
         },
         timeEnd(e){ 
-            this.time.timeEnd = e.detail.value;
-            this.$apply();
-            if(this.timeEnd < this.timeStart){
-                 wx.showModal({
-                title:'提示',
-                content:'开业时间要早于歇业时间！',
-                // success:function(res){
-                // console.log(res)
-                // if(res.confirm){
-                //     console.log('用户点击了确定')
-                // }else {
-                //     console.log('用户点击了取消')
-                // }
-                })
-            }
+             this.time.timeEnd = e.detail.value;
+             let strArr = e.detail.value;
+             strArr = strArr.split(':');
+             let str = '';
+             for(let i = 0;i < strArr.length; i++){
+               str = str + strArr[i];
+             }          
+            console.log(str)
+            this.time.timeEndNum = parseInt(str);
+            this.$apply();  
         },
         cancel(e){
             wx.navigateBack({
@@ -254,48 +259,37 @@ color:#fff;
             })
         },
 
-      async submit() {
-        if (!this.validate()) {
-          return;
-        }
-        const data = {};
-        if (this.input.day) {
-          data.beginTime = '00:00';
-          data.endTime = '23:59';
-        } else {
-          data.beginTime = this.input.beginTime;
-          data.endTime = this.input.endTime;
-        }
-        data.status = this.input.status ? 'NORMAL' : 'CLOSE';
-        await Tips.confirm('确认修改？');
-        await shop.setStatus(data);
-        await Tips.success('修改成功');
-        Event.emit(Event.SHOP_INFO_UPDATE);
-        wepy.navigateBack();
+      enter() {
+        var that = this;
+         if(this.time.timeEndNum < this.time.timeStartNum){
+              wx.showModal({
+                showCancel:'fasle',
+                title:'提示',
+                content:'开业时间必须早于歇业时间！',
+            })
+          }else{
+            wx.showModal({
+              title:'修改提示',
+              cancelText:'算了',
+              confirmText:'确认修改',
+              confirmColor:'skybule',
+              content:'您确定要修改商铺的营业状态吗？',
+              success:function(res){
+                if(res.confirm){
+                  http.post(api.OpenSetting,{
+                    shop_id:that.shopId,
+                    state:that.status.checked,
+                    business_start_time:that.time.timeStart+':00',
+                    business_end_time:that.time.timeEnd+':00'})
+                }else{
+
+                }
+              }
+            })
+          }
       }
     };
-    getShopPeriod() {
-    };
-    validate() {
-      const rules = [
-        {
-          value: this.input.beginTime,
-          method: 'required',
-          message: '开业时间不能为空'
-        },
-        {
-          value: this.input.endTime,
-          method: 'required',
-          message: '打烊时间不能为空'
-        },
-        {
-          value: this.input.beginTime,
-          method: 'before',
-          param: this.input.endTime,
-          message: '开业时间需要早于打烊时间'
-        }];
-      return this.check(rules);
-    }
+
     events = {};
     components = {
 

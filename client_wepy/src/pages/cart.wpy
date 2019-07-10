@@ -297,6 +297,11 @@ export default class Cart extends wepy.page{
           confirmText: "前往设置",
           confirmColor: "skybule",
           content: "您还没有设置默认地址哟～",
+          success:function(e){
+            wx.navigateTo({
+              url: '/pages/my-func?id=1',
+            })
+          },
         })
         return;
       }
