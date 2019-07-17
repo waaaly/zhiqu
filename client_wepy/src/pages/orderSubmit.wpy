@@ -1,6 +1,7 @@
 <template>
   <scroll-view scroll-y="true" class="scroll" >
-      <image src='../images/orderDone.png'  style="width:100%;"/>
+      <!-- <image src="{{imageUrl + 'zq/orderIsOk.png'}}"  style="width:100%;"/> -->
+      <image src="/images/icons/orderIsOk.jpg"  style="width:100%;height:120px"/>
       <orderDetail></orderDetail>
       <view class="pay_box">
         <form report-submit bindsubmit="wePay">
@@ -18,7 +19,7 @@
   flex-direction:column; */
 }
 .pay_box{
-    padding:50rpx;
+    padding:0 50rpx;
     /* position:absolute; */
     /* bottom:50rpx;
     left: 50rpx;
@@ -39,6 +40,7 @@ export default class orderSubmit extends wepy.page{
         orderDetail:orderDetail,
     }
     data = {
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         orderId:0,
     }
     onLoad(e){
@@ -59,24 +61,30 @@ export default class orderSubmit extends wepy.page{
         wePay(e){
              http.get(api.WechatPay,{order_id:this.orderId,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
                 // console.log(res);
-                wepy.requestPayment({ 
+                wx.requestPayment({ 
                     timeStamp: res.timeStamp, 
                     nonceStr: res.nonceStr, 
                     package: res.package, 
                     signType: res.signType, 
                     paySign: res.paySign, 
                     success: function(res1) { 
-                        console.log('..hfiehiuf...')
                         wx.showModal({
                             title: '支付成功',
-                            showText: "算了没钱",
+                            cancelText: "算了没钱",
                             confirmText: "继续剁手",
-                            confirmColor:"skybule",
+                            confirmColor:"#ff6b5d",
                             content: "您已完成支付～",
-                            success:function(res2){                              
-                                wx.navigateTo({
-                                    url: '/pages/cart',
-                                })                              
+                            success:function(res2){ 
+                                // console.log(res2)
+                                if(res2.confirm){
+                                    wx.reLaunch({
+                                        url: '/pages/cart',
+                                    }) 
+                                } else{
+                                    wx.reLaunch({
+                                        url: '/pages/cart',
+                                    }) 
+                                }                                                         
                             }
                         })
                     }, 
@@ -84,9 +92,6 @@ export default class orderSubmit extends wepy.page{
                         console.log('付款失败') 
                         console.log(res) 
                     },
-                    complete:function(res){
-                        console.log(res)
-                    }
                 })
             })
         }    

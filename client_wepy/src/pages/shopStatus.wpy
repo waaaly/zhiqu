@@ -272,7 +272,7 @@ color:#fff;
               title:'修改提示',
               cancelText:'算了',
               confirmText:'确认修改',
-              confirmColor:'skybule',
+              confirmColor:'#ff6b5d',
               content:'您确定要修改商铺的营业状态吗？',
               success:function(res){
                 if(res.confirm){

@@ -6,22 +6,47 @@
     export default class orderDetail extends wepy.component{
       data = {
         isShopOrder:false,
+        isUserOrder:false,
         order:{}
       }
         events = {
             'orderSubmit':(order,$event)=>{
                 console.log(order);
                 this.order = order;
+                this.isShopOrder = false;
+                this.isUserOrder = false;
+            },
+            'userOrder':(order,$event)=>{
+                this.order = order;
+                this.isShopOrder = false;
+                this.isUserOrder = true;
             },
             'shopOrder':(order,$event)=>{
-
+                this.isShopOrder = true;
+                this.isUserOrder = false;
             }
+        }
+        methods = {
+          tel(phone) {
+            wx.makePhoneCall({
+              phoneNumber: phone,
+            })
+          }
         }
     }
 </script>
 
 <template>
 <view>
+   <!--订单状态-->
+    <view wx:if="{{isUserOrder}}" class="order-status-bar row">
+      <view class="status-box column">
+        <image class="icon-lg" src="/images/icons/status-{{order.status}}.png"/>
+        <text class="xxl">{{order.order_status_text}}</text>
+        <!-- 订单文本描述/需要抽取到Service中 -->
+        <text class="muted" style="margin-left:10px;">{{order.statusDesc}}</text>
+      </view>
+    </view>
   <!--地址展现-->
   <view class="address-box row">
       <!--左侧图标-->
@@ -32,7 +57,7 @@
       <view class="info-box column" style="width:100%;">
           <view class="row-between" style="color:#262626;font-size:30rpx;">
               <text>联系人：{{order.consignee}}</text>
-              <view class="row" bindtap="phone">
+              <view class="row" @tap="tel({{order.mobile}})">
               <image class="icon" src="/images/icons/call.png"/>
               <text class="primary" style="margin-left:10rpx">{{order.mobile}}</text>
               </view>
@@ -48,7 +73,7 @@
     <image class="hr-address" src="/images/icons/address-hr.png"/>
   
   <!--订单项目-->
-  <view wx:if="{{isShopOrder}}" class="order-item-container column">
+  <view wx:if="{{isShopOrder||isUserOrder}}" class="order-item-container column">
     <!--基本信息-->
     <view  class="order-header-container colunm">
       <view class="row-between">
@@ -57,7 +82,7 @@
           <text  style="font-size:26rpx;margin-left:10rpx;">{{order.consignee}}</text>
         </view>
         <view>
-          <text class="primary" style="font-size:26rpx;">等待接单</text>
+          <text class="primary" style="font-size:26rpx;">{{order.order_status_text}}</text>
         </view>
       </view>
 
@@ -80,44 +105,43 @@
       <view style="height:1px;background-color:#f5f5f5;margin:0 80rpx;"></view>
     <view class="weui-cell">
       <view class="weui-cell__bd">订单状态</view>
-      <view class="weui-cell__ft">待付款</view>
+      <view class="weui-cell__ft">{{order.order_status_text}}</view>
     </view>
   </view>
   <!--订单项目end-->
 
   <!--商品区域-->
-  <view wx:if="{{isShopOrder}}" class="order-goods-list-container" bindtap="detail" data-wpydetail-a="{{order.orderId}}">
-    <block wx:for="{{order.orderGoodsInfos}}" wx:for-index="index" wx:for-item="item" wx:key="goodsId">
-      <view class="{{!order.orderId || index == 0 || expand[order.orderId] ? '' : 'order-goods-fold'}}">    
+  <view wx:if="{{isShopOrder||isUserOrder}}" >
+    <block wx:for="{{order.goodsList}}" wx:for-index="index" wx:for-item="item" wx:key="goodsId">
+      <view class="order-goods-fold">    
         <view class="order-goods-container row-between">
           <!--商品图片-->
-          <image class="order-goods-image" mode="aspectFill" src="{{item.imageUrl}}"/>
+          <image class="order-goods-image" mode="aspectFill" src="{{item.list_pic_url}}"/>
           <!--商品说明-->
           <view class="order-goods-title-container column">
-            <text>{{item.goodsName}}</text>
-            <text class="muted">{{item.skuText}}</text> 
+            <text>{{item.goods_name}}</text>
           </view>
           <!--商品信息-->
           <view class="order-goods-buy-container column">
-            <text>￥{{item.goodsPrice}}</text>
-            <text class="muted">x{{item.count}}</text>
+            <text>￥{{item.actual_price}}</text>
+            <text class="muted">x{{item.number}}</text>
           </view>
         </view>
         <view class="hr"/>
       </view>
     </block>
-    <view  wx:if="{{order.orderId && order.orderGoodsInfos.length > 1}}" class="goods-fold-btn row-center" catchtap="expand" data-wpyexpand-a="{{order.orderId}}">
+    <!-- <view  >
       <text class="muted" wx:if="{{!expand[order.orderId]}}">查看全部 {{order.orderGoodsInfos.length}} 件商品</text>
       <text class="muted" wx:else>收起商品</text>
-    </view>
+    </view> -->
   </view>
   <!--商品区域end-->
 
   <!--汇总信息-->
-  <view wx:if="{{isShopOrder}}" class="order-footer-container row-end">
-    <text style="margin-right:20rpx;font-size:28rpx;color:#262626;">共{{4}}件商品</text>
+  <view wx:if="{{isShopOrder||isUserOrder}}" class="order-footer-container row-end">
+    <!-- <text style="margin-right:20rpx;font-size:28rpx;color:#262626;">共{{4}}件商品</text> -->
     <text style="font-size:28rpx;color:#262626;">合计:</text>
-    <text style="font-size:32rpx;color:#ff6200;margin-right:20rpx;">￥{{20}}</text>
+    <text style="font-size:32rpx;color:#ff6200;margin-right:20rpx;">￥{{order.goods_price}}</text>
     <text style="font-size:28rpx;color:#262626;">(含运费￥{{0}})</text>
   </view>
   <!--汇总信息end-->
@@ -177,7 +201,9 @@
 </template>
 
 <style>
+.order-status-bar { background-color: #FFF; height: 70rpx; padding: 40rpx 30rpx; border-bottom: 1px solid #EDEDED; }
 
+.order-status-bar .status-box { margin-left: 30rpx; }
 
 .order-trace-bar { padding: 25rpx; background-color: #FFF; border-bottom: 1px solid #EDEDED; }
 
@@ -296,4 +322,34 @@
 .major{
     color:#ff6200;
 }
+
+.order-goods-container {
+  background-color:#FAFAFA;
+  padding:10rpx 20rpx 15rpx 25rpx;
+}
+
+.order-goods-container text{
+  font-family:MicroSoft Yahei;
+  font-size:28rpx;
+  color:#262626;
+}
+
+
+.order-goods-image {
+  width:150rpx;
+  height:150rpx;
+}
+
+.order-goods-title-container {
+  -webkit-flex:1;
+  flex:1;
+  height:100%;
+  padding-left:28rpx;
+}
+
+.order-goods-buy-container {
+  text-align:right;
+}
+
+
 </style>

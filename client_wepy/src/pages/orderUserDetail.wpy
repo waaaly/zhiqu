@@ -1,0 +1,27 @@
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+import orderDetail from '../components/orderDetail';
+export default class orderUserDetail extends wepy.page{
+    components = {
+        orderDetail :orderDetail,
+    }
+    data = {
+
+    }
+    onLoad(e){
+        http.get(api.OrderDetail,{
+            user_id:wx.getStorageSync('userInfoInServer').id,
+            order_id:e.orderId
+        }).then(res=>{
+            console.log(res)
+            this.$broadcast('userOrder',res);
+        })
+    }
+}
+</script>
+
+<template>
+    <orderDetail></orderDetail>
+</template>

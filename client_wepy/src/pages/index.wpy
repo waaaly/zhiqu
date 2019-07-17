@@ -3,13 +3,13 @@
  <view class="weui-search-bar__form" style="margin-top:{{form_MT}}px;width:{{form_W}}px;">
     
     <view class="weui-search-title" bindtap="goChooseAddress" style="top:{{title_top}}px;left:{{title_left}}px;right:{{title_right}}px;">
-        <image style="height:40rpx;width:40rpx;" src='../images/icons/dingwei.png'/>
-        <text style="width:{{titleText_W}}%;font-size:30rpx;color:#666;text-overflow:ellipsis;overflow:hidden;">{{address}}</text>
+        <image style="height:40rpx;width:40rpx;margin-right:15rpx;" src='../images/icons/dingwei1.jpg'/>
+        <text style="width:{{titleText_W}}%;font-size:30rpx;color:#000;text-overflow:ellipsis;overflow:hidden;">{{address}}</text>
         <image style="width:20rpx;height:20rpx;margin:0 20rpx 0 20rpx;" src="../images/icons/xiangxia.png"/>
-        <image style="height:40rpx;width:40rpx;position:absolute;right:{{sao_R}}px" src="../images/icons/saoyisao.png"
-        @tap="scan"/>
+        <!-- <image style="height:40rpx;width:40rpx;position:absolute;right:{{sao_R}}px" src="../images/icons/saoyisao.png"
+        @tap="scan"/> -->
     </view>
-    <navigator class="weui-search-bar__box" style="width:{{search_W}}%;margin-left:{{search_ML}}px;right:{{search_R}}px" url='/pages/search'>
+    <navigator class="weui-search-bar__box" style="width:{{search_W}}%;margin-left:{{search_ML}}px;" url='/pages/search'><!--right:{{search_R}}px-->
       <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
       <input type="text" class="weui-search-bar__input" placeholder="输入关键词进行搜索"/>
       <view class="weui-icon-clear" wx:if="{{wxSearchData.value != ''}}" @tap="wxSearchClear">
@@ -30,14 +30,15 @@
   <view style=' align-items: center; display:flex;flex-direction:column;justify-content:space-between'>
     <text style="font-size:50rpx;color:#ffb65d;font-weight:bold;font-size:50rpx">ACTIVITY AREA</text>
     <text style="color:block;font-size:50rpx;margin-bottom:30rpx;">- 活动专区 -</text>
-    <text style="color:#666;font-size:20rpx;margin-bottom:30rpx;">这里可以写一些有趣的引导用户的引导小语</text>
+    <text style="color:#ba9b9b;font-size:20rpx;margin-bottom:30rpx;">智趣之中，总有你喜欢的一物，我们会展示越来越贴切的商品</text>
   </view> 
                   <!-- 活动专区 热门商品 -->
 
     <view wx:if="{{notDefaultAddress}}" style="text-align:center;">
-      <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
+      <image src="{{imageUrl+'zq/noneServer.png'}}"/>
+      <!-- <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
       <text style="color:#ff6b5d;">换个地址试试呢～</text>
-      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator>
+      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator> -->
     </view>
     <view wx:else>
       <goodHot1 :hotGood.sync="hotGood1"></goodHot1>
@@ -53,9 +54,10 @@
   
                   <!-- 推荐商家 -->
   <view wx:if="{{notDefaultAddress}}" style="text-align:center;">
-   <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
+    <image src="{{imageUrl+'zq/noneServer.png'}}"/>
+   <!-- <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
       <text style="color:#ff6b5d;">换个地址试试呢～</text>
-      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator>
+      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator> -->
   </view>
   
     <view wx:else class='index-content'>
@@ -167,8 +169,8 @@ export default class Index extends wepy.page{
               title: '绑定手机',
               showText: "下次再说",
               confirmText: "前往绑定",
-              confirmColor:"skybule",
-              content: "您目前还未绑定手机哦~完成绑定后可以获取更多优质的服务",
+              confirmColor:"#ff6b5d",
+              content: "您目前还未绑定手机哦~完成绑定后可以获取更多优质的服务呢！",
               success:function(res){
                 if(res.confirm){
                   wx.navigateTo({
@@ -241,7 +243,7 @@ export default class Index extends wepy.page{
         this.title_right =  0 - 10*(e.scrollTop/45);
         this.search_W =100- 50*(e.scrollTop)/45;
         this.search_R =40*(e.scrollTop)/45;
-        this.titleText_W =80 -28*(e.scrollTop)/45;
+        this.titleText_W =80 -35*(e.scrollTop)/45;
         this.sao_R = -20*(e.scrollTop)/45;
         this.$apply();
       }else{
@@ -251,7 +253,7 @@ export default class Index extends wepy.page{
         this.title_right =  -10;
         this.search_W = 50;
         this.search_R =40;
-        this.titleText_W =28;
+        this.titleText_W =35;
         this.sao_R = -20;
         this.$apply();
       }
@@ -310,7 +312,7 @@ page{
   display:flex;
   position:relative;
   padding:10px 0 15px 0;
-  margin:10px 10px 0 10px;
+  /* margin:10px 10px 0 10px; */
   /* overflow: hidden; */
   text-overflow:ellipsis;
   white-space: nowrap;
@@ -414,7 +416,7 @@ page{
   margin-top: 25px;
 }
 .wrap-swiper{
-  padding-top:90px;
+  padding-top:80px;
 }
 .index-icon {
   display: flex;
@@ -502,7 +504,6 @@ page{
 }
 
 .index-content {
-  padding-top: 12rpx;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -511,7 +512,7 @@ page{
   justify-content: space-between;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  padding: 15rpx;
+  padding: 30rpx;
 }
 
 .goAddress{

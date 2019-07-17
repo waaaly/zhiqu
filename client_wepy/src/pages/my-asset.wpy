@@ -11,9 +11,7 @@
     <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
       <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
         <scroll-view style="height:100%" scroll-y>
-            <black wx:for="{{allOrderList}}">
-              <template is="orderList" data="{{...item}}"/>
-            </black>                    
+            <image src="{{StaticImgUrl+'noneMsg.png'}}" mode="widtgFix" style="width:100%;height:400px;"/>                  
         </scroll-view>
       </view>
     </view>
@@ -26,6 +24,7 @@
 import wepy from "wepy";
 export default class myOrder extends wepy.page{
   data = {
+    StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
     stv: {
       windowWidth: 0,
       lineWidth: 0,
@@ -33,7 +32,7 @@ export default class myOrder extends wepy.page{
       tStart: false
     },
     activeTab: 0,
-    tabs:['我的积分','信用体系','我的卡券'],
+    tabs:['我的积分','我的卡券'],
   }
   onLoad(e){
     try {
@@ -116,7 +115,7 @@ export default class myOrder extends wepy.page{
   position: relative;
   width: 100%;
   height: 100%;
-  background: #fafafa;
+  background: #f4f4f4;
 }
 .stv-container .scroll-view .scroll-view-wrapper {
   position: absolute;

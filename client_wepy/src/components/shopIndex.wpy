@@ -62,7 +62,7 @@ export default class shopIndex extends wepy.component{
 
 
 .index-content .item {
-  width: 49.5%;
+  width: 48%;
   margin-bottom: 15px;
 }
 

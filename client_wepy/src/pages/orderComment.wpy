@@ -1,0 +1,415 @@
+
+
+<style>
+ .star-on {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTRGNkRGNzA2QjgyMTFFNkFFQjVFRkIyNzZERjNFOEQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NTRGNkRGNzE2QjgyMTFFNkFFQjVFRkIyNzZERjNFOEQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo1NEY2REY2RTZCODIxMUU2QUVCNUVGQjI3NkRGM0U4RCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo1NEY2REY2RjZCODIxMUU2QUVCNUVGQjI3NkRGM0U4RCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PpQH5+oAAAHMSURBVHjaxJe/TgJBEMY5pVBrQAspiVpoAY2CxEJ7CxJDZbkJBVpowxvYQGJiI6WNIYRXIDERHsCOQKGxIIJUFKhB1283gyHk0Lu5O5zkxy7772N2Z+cOQ177uLanP4W840z2+/h2QiVLeI4pGgaHmqIRnqVwBswTGc4CBuOMF8AzCND3V70DQr557XF6TNRH9fQstjprsc1V4TiImrRHEWRxL4WzzD5HwhGQ+qU/Ba8jdqJ6G2UILIMg1UNUH7UF6epYsU/QJV6o7BCjto6fksENXRM3TP3AFWLTpF9du2O11WVwAHo+762ntYQsj864BnZAy0PRltYQsjYZXE26LnUPROt6bSGb06K6S9tecVG0Qtvb/es6DcARyLsgmtdrCTmw+jz+AufgEVwyEo2afwrBK24CKYIPhqfvNJeduaLM+704JadbFk46ON9dJ8IJB8KJ/xJme7w+8aYxbg90DEmqm1kAT6s1jrCZt31wBmLgnohRW9+O13M2tqoElAcFMPxpFXIICtRXsnpUVjxugH16oWtPHS1kG6RpbIPrsXoBWAU5sAWqlkNKyCrNyek1ikbIzl8YlQA2wBMrnoVU2e4Corcol8yGfAswAGyVaSErvYjsAAAAAElFTkSuQmCC);
+}
+
+@media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3) {
+   .star-on {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAsCAYAAADxRjE/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTRGNkRGNkM2QjgyMTFFNkFFQjVFRkIyNzZERjNFOEQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NTRGNkRGNkQ2QjgyMTFFNkFFQjVFRkIyNzZERjNFOEQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo1NEY2REY2QTZCODIxMUU2QUVCNUVGQjI3NkRGM0U4RCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo1NEY2REY2QjZCODIxMUU2QUVCNUVGQjI3NkRGM0U4RCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqM4pwoAAALTSURBVHja1Jk9aBRBFMd3DyVERQtzagyiGMWgQVEEE3KEFIIi2hxiFwiC60fa1GlMm/r8aFJYiZAmiBamsjhBEMEmYEQ5MNHEQvEzCY7/2fsHLsvdZnZ3Xm4c+DG7s7Oz/3v35r2ZXV/d9aTKTdal2F6BSjywLyj6Detu26JzQoIHwDEyYHtwKdHDDY6tFAn32As+gE08XwH7wUeX3SOoEezxOHDZ0ptp5fZI+xytveyipYt1BHtsK7o6EW+lvNY00Toe98dc7183ZjdB9LClPhs2EbczpG1dp98PhsRvLkzEIQPBHvsMueAefs3iyHQh5TfDPfRD86ANFEDSUa6D52ARLMBFVFrRW8BusIuC2imqtm0P67xF1/obCq8yz/oz+MQfNbemLVA/tejDOHkG9nn/R6msWvoIeAIOOC74PThf6x76r38MTjoq+BW4APeYj07EbeAROOeY4KfgMgR/rxfydOMlMOGQ4IlQEwU3itN6+XgVjDkgeCzUEqjlJHH6GrgjuC2LC4M3IPZ+2uRyETwErRsk+Be4AsFTWTPiGTDFZCNZFkMjBeqFrTR+iLG8U0jwrI7BEPzW9tojz1h+2rLgl4zBCxKrPD1oScDKJVPBaZemvQKiE42ZRnRBQHSiMZP69E7OcInSBhf5ImHpHsFw1yPlHgVB0QUp0X2CovskfFq/p/uaIJ3PsjZNRjp974gujrJa+pSh4CVw26u+Term8ZLBfa18hlX3MPn7psFxMAp+k1G2TdtykSSi4xKA3ikPgrNgps71GV4bZN9MSSaXcXYrvvPoAg943qgo9uniPSptBDGdiAdrJtZqeR0u1D2vnCEu6w3GiUh7JybjOxuW7o3sI0e40it76UuZY4xwTGMXySV0jUlwFIx71Q9AWcsKrDrOMSdNXcRUdAd36foTRMV6WglUBRT5jA5bPt0C/ojkwej76Xt+C9pin/VPgAEA+uC+HhbvvDEAAAAASUVORK5CYII=);
+  }
+}
+
+ .star-off {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAdCAYAAAC9pNwMAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkMwOTcxNjk2QjgzMTFFNkFFQjVFRkIyNzZERjNFOEQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkMwOTcxNkE2QjgzMTFFNkFFQjVFRkIyNzZERjNFOEQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDoyQzA5NzE2NzZCODMxMUU2QUVCNUVGQjI3NkRGM0U4RCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoyQzA5NzE2ODZCODMxMUU2QUVCNUVGQjI3NkRGM0U4RCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pr/SWFMAAAG/SURBVHjaxJY/S8NAGIcbGyG1hXYIJt0sLqVkc1Jc/BSuTp38NrroorOItEK3iouoCIIURQdtt1qXYlU0YKv+XnkLIVza5JK0B08vufTyvPc/ytbOXkIy5elns7zxLFNZTcgni3Mp8YykNAMWiO3d/cwkxSWgMKVJiZOg6LgvotXJSYgXgea417gsdrHlsyxSsQF0QbmO7jbiFFuSz0KJs6Aw4nkBrc4G2UDmQcqFJrhWfDRiHfJf5F/A5tx9/Y/Km8EaL5MoEgU4x4jSAJxSlE1Q46jiTuSoYX9vDse4A6rgLUYpvbsKacc9uXqgAl5ikNI7K5D2vGa1zd3eilDa4u61xy2nPqiDRgRSekcd0r7f85iWxCV4Bys+lpKo/jmEd7IbyD34kWjpgOtK71y65PpWPfZ03+J8iPE1w4iNaYnNaYhzri8NZ+qCY6br8R8NB0ZO5vNWFPE3uAa3jtl+xGfxEpgVvOM1rPgJXIBPZyHWKgXQQOsekS+7vr9ojjwEFQ8nFkV8BtqjxgwBUEAnCIDW7yoPlRl0jOngT4MrcDhO6gqgzXWobhqBpIK0mMoPwIfMdObuv+HuFzr+BBgA06Z0wbQa03AAAAAASUVORK5CYII=);
+}
+
+@media (-webkit-min-device-pixel-ratio:3),(min-device-pixel-ratio:3) {
+   .star-off {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC0AAAAsCAYAAADxRjE/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MkMwOTcxNjU2QjgzMTFFNkFFQjVFRkIyNzZERjNFOEQiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MkMwOTcxNjY2QjgzMTFFNkFFQjVFRkIyNzZERjNFOEQiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo1NEY2REY3MjZCODIxMUU2QUVCNUVGQjI3NkRGM0U4RCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDoyQzA5NzE2NDZCODMxMUU2QUVCNUVGQjI3NkRGM0U4RCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PigKqswAAAKoSURBVHja7JnPS1RRFMffDGPMTGEWw/R0EbZwwFeLSggXtWsR9E+0cuV/Yxvb1L6FE4pEuBB0IWElEqNoCxmixVhgo2iDUn1PnInLy3md+7xH74AHvrx5c3995r5z7z3nTWZi8nmgZBFfa0mVxseeWHecC/TspgQ6jWWVgAegK6yBboGOOnz2FroIDRr3g/yd19DDsX6z/J230J0Ah12O5Rr6RgdXKHKZl9BRyrIzg74K9SeU93Mdr6AjR3VODfoCVBHUq3BdL6ArwpAgJ/xxpwIdKdV1Dl3g2IL24D6Ldn3chtoWnj57YT1wxghNcwxCyvPeal4LsfKMo6f0C/oBHRii+/3Y9U8ZQtkjgr6Mm8fQpaA7bI/c4zs0C+12ATAxzrZX/A70CnoElTwF/gq9hnvsmwuRfGca+uwhMDFNE/Bxu8ch/RpowyPgDZ7hw6Qc8Sc0Tw4P3T1j4PfQcjz5TTrFlhn8gcPtzWYbXADseppsfJ19/aFy5m7aETQH4PpJTkRqPMMbvLbRGDNJwDbHeAOqQk1FYOq7CuCGy9ijyeDbCsDbDCyalGyKx1dTgK4BWOx+aaK8awrQVn2mgQ4VoENN6Lxl7CyOsRFX57Wgy4q7R1kLOlSEDs+hjbo2sXbT8jAqwa9FPDbxRElYn6LEFegD39+BbgsmKMdjNFxCSx7fF2iRMyEzWvwE3Q/+/69A6Bo6aXVTprwEbXYo3+Ggawga5Yw+9Q7iYqbXoLdQS9DHJkeN94Lj32OHLhdib/Dve+dvHEAtCIHb1uI2Ve7DtCIWY6+rmS7H8sh30EdedGmNfHcKugWNQD3GWE0XM91+bFvQS2j1hMB/dxpEd6vc55bURaQzfZGz9LrGqQJwykXfwDWuB4I/laQzPacFHIOv81iJ9luAAQDJc5t9CPDJEAAAAABJRU5ErkJggg==);
+  }
+}
+
+page {
+  width: 100%;
+  height: 100%;
+  background: #f0f0f0;
+}
+.service {
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 20rpx;
+  background: #fff;
+}
+.score {
+  width: 100%;
+  height: 100rpx;
+  border-bottom: 1px solid #ccc;
+}
+.star {
+  float: left;
+  width: 50px;
+  height: 100rpx;
+  text-align: center;
+  line-height: 100rpx;
+}
+.star image{
+  width: 40rpx;
+  height: 40rpx;
+  margin-top: 30rpx;
+}
+.score .left {
+  width: 100rpx;
+  line-height: 100rpx;
+  font-size: 30rpx;
+  float: left;
+}
+.score .right {
+  width: 610rpx;
+  font-size: 30rpx;
+  float: left;
+  color: #888;
+  padding-top:10rpx;
+}
+
+.score .right .rtxt {
+  display: inline-block;
+  height: 100rpx;
+  line-height: 100rpx;
+  margin-left: 15rpx;
+  color: #c00;
+  font-weight: bold;
+}
+.labelColor {
+  color: #c00;
+  border: 1px solid #c00 !important;
+}
+.content {
+  width: 100%;
+  overflow: hidden;
+  border-bottom:1px solid #ccc;
+  padding:0 0 26rpx 0;
+  box-sizing: border-box;
+} 
+.content .left {
+  width: 100rpx;
+  font-size: 30rpx;
+  float: left;
+  padding-top: 20rpx;
+}
+.content .right {
+  width: 610rpx;
+  font-size: 24rpx;
+  float: left;
+  color: #888;
+}
+.content .right text {
+  font-size: 24rpx;
+  padding: 13rpx 24rpx;
+  float: left;
+  border: 1px solid #888;
+  border-radius: 10rpx;
+  margin-right: 34rpx;
+  margin-top: 20rpx;
+}
+.picture {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+}
+.picture .left {
+  width: 100rpx;
+  font-size: 30rpx;
+  float: left;
+  padding-top: 20rpx;
+}
+.picture .right {
+  width: 610rpx;
+  font-size: 24rpx;
+  float: left;
+  color: #888;
+  box-sizing: border-box;
+  padding-top:36rpx; 
+}
+.picture .right .add {
+  width: 120rpx;
+  height: 120rpx;
+  margin-right: 10rpx;
+}
+.According{
+  width:120rpx;
+  height:120rpx;
+  float:left;
+  margin-right:10rpx;
+  margin-bottom: 10rpx;
+}
+.parcel{
+ width:120rpx;
+  height:120rpx;
+  float:left;
+  margin-right:10rpx;
+   margin-bottom: 10rpx;
+  position: relative;
+}
+.deleteimg{
+  width:30rpx;
+  height:30rpx;
+  position: absolute;
+  right:0;
+  top:0;
+  z-index: 2;
+}
+.conts{
+  width: 100%;
+  height: auto;
+  background: #fff;
+}
+textarea {
+  width: 687rpx;
+}
+.areas{
+  height:315rpx;
+  font-size: 30rpx;
+  padding-top: 30rpx;
+  margin: 0 auto;
+  overflow: hidden;   
+  position: relative; 
+}
+.currentWordNumber{
+  font-size: 28rpx;
+  position: absolute;
+  left: 0%;
+  bottom: 0rpx;
+  color: #c00;
+}
+.hint{
+   font-size: 28rpx;
+   position: absolute;
+   top: 120rpx;
+   left: 30rpx;
+   color: #FF6600;
+}
+.btn {
+  width: 600rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  color: #fff;
+  background: #c00;
+  position: fixed;
+  left:75rpx;
+  bottom: 37rpx;
+} 
+button:after {
+  border: 0;
+}
+</style>
+
+<script>
+
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API'; 
+export default class orderComment extends wepy.page{
+
+  data = {
+    current:0,
+    attitude:true,
+    time: true,
+    efficiency: true,
+    environment:true,
+    professional:true,
+    userStars: [
+      "star-on",
+      "star-on",
+      "star-on",
+      "star-on",
+      "star-on",
+    ],
+    wjxScore:5,
+    // textarea
+    min: 5,//最少字数
+    max: 300, //最多字数 (根据自己需求改变) 
+    pics:[],
+  }
+  onLoad(e){
+
+  }
+  methods = {
+      // 星星点击事件
+        starTap: function (e) {
+            var that = this;
+            var index = e.currentTarget.dataset.index; // 获取当前点击的是第几颗星星
+            var tempUserStars = this.data.userStars; // 暂存星星数组
+            if(tempUserStars[index]=="star-on"){
+                tempUserStars[index] = "star-off";
+            }else{
+                tempUserStars[index] = "star-on";
+            }
+            let score = 0;
+            for(let item of tempUserStars){
+                if(item == "star-on"){
+                    score += 1;
+                }
+            }
+            that.wjxScore = score;
+            that.userStars = tempUserStars;
+            that.$apply();
+        },
+        // 标签
+        label:function(e){
+            console.log(e)
+            var that = this;
+           
+            that.attitude=!e.currentTarget.dataset.index
+            
+        },
+        label1: function (e) {
+            console.log(e)
+            var that = this;
+            
+            that.time= !e.currentTarget.dataset.index
+            
+        },
+        label2: function (e) {
+            console.log(e)
+            var that = this;
+            
+            that.efficiency=!e.currentTarget.dataset.index
+            
+        },
+            label3: function (e) {
+            console.log(e)
+            var that = this;
+            
+            that.environment=!e.currentTarget.dataset.index
+            
+        },
+            label4: function (e) {
+            console.log(e)
+            var that = this;
+           
+                that.professional=!e.currentTarget.dataset.index
+            
+            },
+            // 留言
+            //字数限制  
+        inputs: function (e) {
+            // 获取输入框的内容
+            var value = e.detail.value;
+            // 获取输入框内容的长度
+            var len = parseInt(value.length);
+            //最多字数限制
+            if (len > this.data.max) return;
+            // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行
+            
+                that.currentWordNumber=len //当前字数  
+            
+            },
+            // 图片
+            choose: function (e) {//这里是选取图片的方法
+            var that = this;
+            var pics = that.data.pics;
+            wx.chooseImage({
+            count: 5 - pics.length, // 最多可以选择的图片张数，默认9
+            sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
+            sourceType: ['album', 'camera'], // album 从相册选图，camera 使用相机，默认二者都有
+            success: function (res) {
+
+                var imgsrc = res.tempFilePaths;
+                pics = pics.concat(imgsrc);
+                console.log(pics);
+                // console.log(imgsrc);
+                
+                that.pics=pics;
+                // console.log(pics),
+                
+            },
+            fail: function () {
+                // fail
+            },
+            complete: function () {
+                // complete
+            }
+            })
+
+        },
+        uploadimg: function () {//这里触发图片上传的方法
+            var pics = this.data.pics;
+            console.log(pics);
+            app.uploadimg({
+            url: 'https://........',//这里是你图片上传的接口
+            path: pics//这里是选取的图片的地址数组
+            });
+        },
+        // 删除图片
+        deleteImg: function (e) {
+            var pics = this.data.pics;
+            var index = e.currentTarget.dataset.index;
+            pics.splice(index, 1);
+
+            that.pics=pics
+            
+        },
+        // 预览图片
+        previewImg: function (e) {
+            //获取当前图片的下标
+            var index = e.currentTarget.dataset.index;
+            //所有图片
+            var pics = this.data.pics;
+            wx.previewImage({
+            //当前显示图片
+            current: pics[index],
+            //所有图片
+            urls: pics
+            })
+        },
+  }
+
+}
+</script>
+
+<template>
+  <!--服务评价-->
+  <view class="service">
+    <!--评分-->
+    <view class='score'>
+      <view class='left'>
+        评分
+      </view>
+      <view class='right'>
+         <view wx:for="{{userStars}}" bindtap="starTap" data-index="{{index}}"  class="star"  wx:key="index">
+         <view class="{{item}}" style="height:45px;width:45px;"></view>
+       </view>
+       <text class='rtxt'>{{wjxScore}}.0分</text>
+     </view>
+   </view>
+   <!--内容-->
+   <view class='content'>
+     <view class='left'>
+       内容
+     </view>
+     <view class='right'>
+       <text bindtap='label' class="{{attitude===true ? 'labelColor':''}}" data-index="{{attitude}}">服务态度好</text>
+       <text bindtap='label1' class="{{time===false? 'labelColor':''}}" data-index="{{time}}">送货时间短</text>
+       <text bindtap='label2' class="{{efficiency===false?'labelColor':''}}" data-index="{{efficiency}}">效率高</text>
+       <text bindtap='label3' class="{{environment===false?'labelColor':''}}" data-index="{{environment}}">商品很好</text>
+       <text bindtap='label4' class="{{professional===false?'labelColor':''}}" data-index="{{professional}}">很专业</text> 
+     </view>
+   </view>
+   <!--图片-->
+   <view class='picture'>
+     <view class='left'>
+       图片
+     </view>
+     <view class='right'>
+        <view class="parcel" wx:for="{{pics}}" wx:key="{{index}}">
+            <image src="{{pics[index]}}" class="According" data-index="{{index}}" mode="aspectFill" bindtap="previewImg"></image>
+            <image src="/images/icons/broken.png" class='deleteimg' catchtap="deleteImg" data-index="{{index}}"></image>
+        </view>
+       <image src='/images/icons/broken.png' class='add' bindtap='choose'></image>
+     </view>
+   </view>
+ </view>
+ <!--textarea-->
+ <view class="conts">
+     <textarea class="areas" placeholder='更多评价请写在这里（最多300字）' minlength="{{min}}" maxlength="{{max}}" bindinput="inputs"> 
+         <!-- <text class="currentWordNumber">{{currentWordNumber|0}}/{{max}}</text> -->
+     </textarea>
+ </view>
+ <!--提交评价-->
+ <button class='btn'>提交评价</button>
+</template>

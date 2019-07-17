@@ -76,5 +76,5 @@ module.exports = {
     RegionList: ApiRootUrl + 'region/list', //获取区域列表
 
    
-
+    QRcode:ApiRootUrl + 'qrcode',//生成小程序码
 }

@@ -67,7 +67,7 @@
           <view class=" title border-1px">商家信息</view>
           <view class="">
             <view class="info-item" >商家地址：{{shopInfo.shop_address}}</view>
-             <view class="info-item" >联系方式：{{shopInfo.phone}}</view>
+             <view class="info-item" @tap="tel({{shopInfo.phone}})">联系方式：{{shopInfo.phone}}</view>
               <view class="info-item" >营业时间：{{shopInfo.business_start_time}}-{{shopInfo.business_end_time}}</view>
           </view>
         </view>
@@ -96,6 +96,13 @@ export default class shopInfo extends wepy.component{
     }
     onLoad(e){
 
+    }
+    methods = {
+      tel(phone) {
+        wx.makePhoneCall({
+          phoneNumber: phone,
+        })
+      }
     }
 }
 </script>

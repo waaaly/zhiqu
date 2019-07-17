@@ -15,7 +15,7 @@
         <image class='Icon' src="{{StaticImgUrl+'relocation.png'}}"/>
         <text  bindtap="userChooseAddress"  style="font-size:28rpx;color:#ff6b5d;">重新定位</text>  
       </view>
-      <view style="background-color:#fff;padding:12rpx;color:#ff6b5d">
+      <view style="background-color:#fff;padding:12rpx;margin-left:60rpx;color:#ff6b5d">
         <text >{{currentAddress}}</text>
       </view>  
   </view>
@@ -29,10 +29,10 @@
       <view wx:for="{{userAddressInServer}}" bindtap="click" data-id="{{index}}" class="item" >
          
          <view style="color:#ff6b5d;">{{item.area_name}}</view>
-          <view style="padding-left:45rpx;">{{item.name}}
+          <view >{{item.name}}
             <text style="margin-left:30rpx;font-size:30rpx;margin-right:10rpx;color:#666;">{{item.mobile}}</text> 
           </view>
-          <view style="font-size:30rpx;padding-left:45rpx;color:#666;">{{item.full_region}}{{item.area_name}}{{item.address}}</view>  
+          <view style="font-size:30rpx;color:#666;">{{item.full_region}}{{item.area_name}}{{item.address}}</view>  
            
       </view>
       
@@ -122,14 +122,11 @@ page{
   flex-direction: column;
 }
 .hear {
-  z-index: 99;
+  /* z-index: 99; */
   position: fixed;
   background:#fff; 
   top: 0;
   width: 100%;
-  /* border-bottom-left-radius: 20rpx;
-  border-bottom-right-radius: 20rpx;  */
-  
   height: 23%;
 }
 .currentLocation {
@@ -169,7 +166,7 @@ page{
   height: 67%;
   background:#fff;
   position: absolute;
-  top: 23%;
+  top: 21%;
   width: 100%;
 }
 .weui-icon-search_in-box {
@@ -191,7 +188,7 @@ page{
   background-color:#eee;
   display: flex;
   flex-direction: row;
-  padding: 15rpx 10rpx;
+  padding: 15rpx 20rpx;
 }
 .defalut{
   border-radius:50%;

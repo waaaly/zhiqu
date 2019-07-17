@@ -1,8 +1,9 @@
 <template>
-<block wx:for="{{goodList}}" wx:for-item="item" wx:key="index" wx:for-index="index">
-     <view @tap.shop="goGoodDetail({{item}})" style="align-items:center;padding:0 10px;margin:10px 0px;display:flex;flex-direction:row;background:#fff;">
+<view style="background-color:#eee;padding-top:10px;">
+    <block wx:for="{{goodList}}" wx:for-item="item" wx:key="index" wx:for-index="index">
+     <view @tap.shop="goGoodDetail({{item}})" class="list">
         <image style="border-radius:20rpx;width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
-        <view style="padding-top:10px;margin-left:5%;position:relative;width:70%;">
+        <view style="margin-left:5%;width:70%;">
             <view style="color:#ff6b5d;font-size:40rpx;display:flex;{{item.shop_name == undefine?'display:none;':''}}">
                 <image style="width:50rpx;height:50rpx;border-radius:50%;" src="{{imageUrl + item.shop_icon}}"/>
                 <text style="margin-left:20rpx;font-size:30rpx;color:#ff6b5d;">{{item.shop_name}}</text>                
@@ -12,21 +13,27 @@
                     <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
               mode='widthFix'/>
                 </view>
-                <view wx:else @tap.stop="collect({{item}})" class="shoucang iconfont">&#xe628;</view>
+                <!-- <view wx:else @tap.stop="collect({{item}})" class="shoucang iconfont">&#xe628;</view> -->
             </view>
             <view class="goodText">
                 <text>{{item.goods_desc}}</text>
             </view>
             <view class="titleContent">
-                <view class="title">{{item.retail_price}}元</view>
+                <view class="title">¥{{item.retail_price}}元</view>
                 <!-- <view class="smalltitle">{{item.extra_price}}元</view> -->
-                <view @tap.stop="addCart({{item}})" class="add iconfont"></view>
+                <!-- <view @tap.stop="addCart({{item}})" class="add iconfont"></view> -->
+                <view @tap.stop="addCart({{item}})" class="add iconfont">
+                    <image style="width:45rpx;height:45rpx;" mode="widthFix" src="/images/icons/cart.jpg"/>
+                </view>
             </view>              
         </view>
     </view>
 </block>
-<view wx:if="{{goodList.length==0&&ready}}" 
-    style="width:100%;height:80%;display:flex;justify-content:center;align-items:center;color:#ff6b5d;">该分类暂无数据</view>
+    <view wx:if="{{goodList.length==0&&ready}}" 
+        style="width:100%;height:80%;display:flex;justify-content:center;align-items:center;color:#ff6b5d;">该分类暂无数据
+    </view>
+</view>
+
 </template>
 
 <script>
@@ -190,6 +197,16 @@ export default class classifyGood extends wepy.component{
 page{
     height:100%;
 }
+.list{
+    border:1px solid #ff6b5d;
+    border-radius:15rpx;
+    position:relative;
+    padding:20px 10px;
+    margin:0 10px 10px 10px;
+    display:flex;
+    flex-direction:row;
+    background:#fff;
+}
 .itemName{
     font-size:30rpx;
     position: relative;
@@ -202,7 +219,6 @@ page{
     position: absolute;
     top:0;
     right: 8rpx;
-
   font-size: 40rpx;
   color: #ff6b5d;
 }
@@ -212,13 +228,16 @@ page{
    text-overflow:ellipsis;
    overflow:hidden;
    margin-right: 10rpx;
+   margin-top: 20rpx;
 }
 .titleContent{
+    position: absolute;
+    bottom:10px;
     display:flex;
     align-items: center;
     margin-top:10rpx;
-    /* position: absolute; */
-    /* bottom:3rpx; */
+    justify-content: space-between;
+    width: 100%;
 }
  .title {
   color:coral;
@@ -248,7 +267,7 @@ page{
   font-size: 40rpx;
   color: #ff6b5d;
   position: absolute;
-  right: 3rpx;
-  /* bottom:1rpx; */
+  left: 390rpx;
+  bottom:-8rpx;
 }
 </style>

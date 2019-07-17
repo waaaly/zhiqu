@@ -8,7 +8,8 @@ export default class shopOrder extends wepy.page{
         orderDetail:orderDetail,    
     }
     data = {
-        orderList:[1],//等待商家确认接单的列表
+        StaticImgUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
+        orderList:[],//等待商家确认接单的列表
         orderStatus:0,//记录订单的状态
     }
     config = {
@@ -66,27 +67,46 @@ export default class shopOrder extends wepy.page{
             })
         },
         refundOrder(price,orderSn,desc,showModel,orderIndex){
-            if(showModel){
+            var that = this;
+            if(this.orderStatus == 22){
                     wx.showModal({
                     title:'拒绝接单',
-                    confirmColor: "skybule",
+                    confirmColor: "#ff6b5d",
                     content:'您出于某种原因无法接受用户订单，请点击退款按钮将金额返回至用户账户！',
                     comfireText:'确认退款',
                     success:function(e){
                         if(e.confirm){
                             http.get(api.Refund,{actual_price:price,order_sn:orderSn,refund_desc:desc}).then(res=>{
-                                console.log(res)
+                                console.log(res);
+                                if(res.msg){
+                                    wx.showToast({
+                                        title:res.msg,
+                                        icon:'false'
+                                    })
+                                    if(res.msg=='退款成功'){
+                                        that.orderList.splice(orderIndex,1);
+                                        that.$apply();
+                                    } 
+                                }  
                             })
                         }
                     }
                 })
             }else{
                 http.get(api.Refund,{actual_price:price,order_sn:orderSn,refund_desc:desc}).then(res=>{
-                    console.log(res)
+                    if(res.msg){
+                        wx.showToast({
+                            title:res.msg,
+                            icon:'false'
+                        })
+                        if(res.msg=='退款成功'){
+                            that.orderList.splice(orderIndex,1);
+                            that.$apply();
+                        }       
+                    }
                 })
             }
-            this.orderList.splice(orderIndex,1);
-            this.$apply();
+           
         }
     }
 }
@@ -95,7 +115,8 @@ export default class shopOrder extends wepy.page{
 <template>
   <view class="container">
     <block wx:for="{{orderList}}" wx:for-index="orderIndex">
-        <view  style="display:flex;flex-direction: column;padding:5px;margin:5px;border-radius:20rpx;background-color:#fff;">
+        <navigator  style="display:flex;flex-direction: column;padding:5px;margin:5px;border-radius:20rpx;background-color:#fff;"
+                    url="{{'/pages/orderUserDetail?orderId=' + item.id}}">
             <view style="display:flex;justify-content:space-between;">
                 <text style="color:#666;font-size:10px;">SN:{{item.order_sn}}</text>   
                 <text style="color:#666;font-size:10px;">{{item.add_time}}</text>
@@ -112,14 +133,16 @@ export default class shopOrder extends wepy.page{
                 <text wx:if="{{item.order_status==19}}" style="margin-bottom:10rpx;" class="muted">用户申请退款请您确认！</text>
             </view>
             <view style="display:flex;justify-content:flex-end;border-top:1px solid #eee;">
-                <view wx:if="{{item.order_status==22}}" class="actionBtn" @tap="refundOrder({{item.order_sn}},{{item.actual_price}},{{refund_desc}},1,{{orderIndex}})">无法接单</view>
-                <view wx:if="{{item.order_status==22}}" class="actionBtn" @tap="receOrder({{item.id}},{{orderIndex}})">确认接单</view>
-                <view wx:if="{{item.order_status==32}}" class="actionBtn" @tap="completeOrder({{item.id}},{{orderIndex}})">确认送达</view>
-                <view wx:if="{{item.order_status==19}}" class="actionBtn" @tap="refundOrder({{item.order_sn}},{{item.actual_price}},{{refund_desc}},0,{{orderIndex}})">确认退款</view>
+                <view wx:if="{{item.order_status==22}}" class="actionBtn" @tap.stop="refundOrder({{item.actual_price}},{{item.order_sn}},{{refund_desc}},true,{{orderIndex}})">无法接单</view>
+                <view wx:if="{{item.order_status==22}}" class="actionBtn" @tap.stop="receOrder({{item.id}},{{orderIndex}})">确认接单</view>
+                <view wx:if="{{item.order_status==32}}" class="actionBtn" @tap.stop="completeOrder({{item.id}},{{orderIndex}})">确认送达</view>
+                <view wx:if="{{item.order_status==19}}" class="actionBtn" @tap.stop="refundOrder({{item.actual_price}},{{item.order_sn}},{{refund_desc}},false,{{orderIndex}})">确认退款</view>
             </view>
-        </view>
+        </navigator>
     </block>
-    <block wx:if="{{orderList.length == 0}}">暂无相关订单</block>
+    <block wx:if="{{orderList.length == 0}}">
+         <image src="{{StaticImgUrl+'noneMsg.png'}}" mode="widtgFix" style="width:100%;height:400px;margin-top:100px;"/>
+    </block>
 </view>
 </template>
 

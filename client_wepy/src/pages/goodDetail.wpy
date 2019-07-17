@@ -103,7 +103,7 @@
     duration="1000" style='height:{{swiper_H}}px;width:{{swiper_W}}px;' indicator-active-color='#ff6d5b'>
       <block wx:for="{{goodObj.list_pic_url}}" wx:for-item="item" wx:key="index">
         <swiper-item>
-          <image   src="{{imageUrl+item}}" style="width:100%;"  bindload='imgLoaded'/>
+          <image   src="{{imageUrl+item}}" style="width:100%;height:100%"  bindload='imgLoaded'/>
         </swiper-item>
       </block>
     </swiper>
@@ -154,7 +154,7 @@ export default class goodDetail extends wepy.page{
     data = {
         swiper_H:0,
         swiper_W:0,
-        buttonTop:200,//上边界
+        buttonTop:550,//上边界
         buttonLeft:0,//商家悬浮钮左边界
         offsetLeft:0,//商家悬浮钮初始边界，用来判断用户的单击动作
         offsetTop:0,//

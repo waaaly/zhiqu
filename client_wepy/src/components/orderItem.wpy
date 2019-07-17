@@ -1,7 +1,6 @@
 <template>
 <view class="page">
     <view wx:for="{{orderList}}" wx:for-item="item" wx:for-index="orderIndex" class='mainView'>
-        <text style='color:#666;font-size:20rpx;justify-content:flex-start;'>SN:{{item.order_sn}}</text>
         <navigator class='firsetCol' url="{{'../pages/shoper?shop_id=' + item.shopInfo.id}}">
             <image class='shangjiaIcon'
                     src="{{imageUrl + item.shopInfo.shop_icon}}"/>
@@ -10,27 +9,32 @@
               <image style='width:25rpx;height:25rpx'
                       src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
             </view>                       
-            <navigator class='dingtaizhuangtai' > 
-              <text>{{item.order_status_text}}</text>
-              <text>{{item.add_time}}</text>           
+            <navigator class='dingtaizhuangtai' url="{{'/pages/orderUserDetail?orderId=' + item.id}}"> 
+              <text style="color:#ff6b5d;">{{item.order_status_text}}</text>          
            </navigator>   
         </navigator>
         <view class='line'></view>
-        <navigator wx:for="{{item.goodsList}}" wx:for-item="goodItem" wx:for-index="goodIndex" class='secondCol'>
-            <image style='width:50px;height:50px' src='{{goodItem.list_pic_url}}'/> 
-            <view style="display:flex;justify-content:space-between;">
-                <text style="font-size:35rpx;color:#262626;">{{goodItem.goods_name}}</text>
-            </view>
-            <view style="display:flex;flex-direction:column;">
-                <text style="display:flex;justify-content:flex-end;color:#ff6b5d;font-size:30rpx;">{{goodItem.actual_price}}</text>
+        <navigator wx:for="{{item.goodsList}}" wx:for-item="goodItem" 
+                    wx:for-index="goodIndex" class='secondCol' >
+            <image style='width:60px;height:60px;border-radius:5px;' src='{{goodItem.list_pic_url}}'/> 
+            <view style="font-size:30rpx;color:#262626;flex:2;margin-left:20rpx;">{{goodItem.goods_name}}</view>
+            <view style="display:flex;flex-direction:column;margin-top:20rpx">
+                <text style="display:flex;justify-content:flex-end;color:#666;font-size:25rpx;">¥{{goodItem.actual_price}}</text>
                 <text style="display:flex;justify-content:flex-end;color:#666;font-size:25rpx;">x{{goodItem.number}}</text>
-                <text style="display:flex;justify-content:flex-end;color:#666;font-size:25rpx;">小计:{{goodItem.number*goodItem.actual_price}}</text>
-                <text wx:if="{{goodIndex+1==item.goodsList.length}}" style="margin-top:10rpx;color:#ff6b5d;font-size:30rpx;float:right;text-align:center">总计：{{item.goods_price}}元</text>
+                <!-- <text style="display:flex;justify-content:flex-end;color:#ff6b5d;font-size:30rpx;">小计:{{goodItem.number*goodItem.actual_price}}</text> -->
             </view>
         </navigator>
 
-        
         <view class='line'></view>
+        
+        <view style="display:flex;justify-content:space-between;margin-top:20rpx;padding-right:45rpx;padding-left:45rpx;">
+          <navigator style="display:flex;flex-direction:column;" url="{{'/pages/orderUserDetail?orderId=' + item.id}}">
+            <view style="text-align:left;font-size:25rpx;color:#666;">订单编号:{{item.order_sn}}</view> 
+            <view style="text-align:left;font-size:25rpx;color:#666;">下单时间:{{item.add_time}}</view>
+          </navigator> 
+          <view style="text-align:right;color:#ff6b5d;padding:5rpx;font-size:30rpx;">总计：{{item.goods_price}}元</view>
+        </view>
+        
         <view class="thirdCol ">
             <block wx:if="{{item.order_status == 10}}" >
               <view wx:for="{{['前往支付', '取消订单']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
@@ -71,9 +75,41 @@ export default class orderItem extends wepy.page{
       action(text,index){
         console.log(index);
         if(text == '前往支付'){
-          // http.get(api.Refund,{}).then(res=>{
-          //   console.log(res);
-          // })
+          http.get(api.WechatPay,{order_id:this.orderList[index].id,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+                // console.log(res);
+                wx.requestPayment({ 
+                    timeStamp: res.timeStamp, 
+                    nonceStr: res.nonceStr, 
+                    package: res.package, 
+                    signType: res.signType, 
+                    paySign: res.paySign, 
+                    success: function(res1) { 
+                        wx.showModal({
+                            title: '支付成功',
+                            cancelText: "算了没钱",
+                            confirmText: "继续剁手",
+                            confirmColor:"#ff6b5d",
+                            content: "您已完成支付～",
+                            // success:function(res2){ 
+                            //     // console.log(res2)
+                            //     if(res2.confirm){
+                            //         wx.reLaunch({
+                            //             url: '/pages/cart',
+                            //         }) 
+                            //     } else{
+                            //         wx.reLaunch({
+                            //             url: '/pages/cart',
+                            //         }) 
+                            //     }                                                         
+                            // }
+                        })
+                    }, 
+                    fail: function(res) { 
+                        console.log('付款失败') 
+                        console.log(res) 
+                    },
+                })
+            })
         }
         if(text == '取消订单'){
           http.post(api.OrderCancel,{order_id:this.orderList[index].id}).then(res=>{
@@ -98,9 +134,9 @@ export default class orderItem extends wepy.page{
           //   console.log(res);
           // })
         }
-        if(text == '查询结果'){
-          http.get(api.RefundRes,{}).then(res=>{
-            console.log(res);
+        if(text == '前往评价'){
+          wx.navigateTo({
+            url: '/pages/orderComment',
           })
         }
       }
@@ -121,7 +157,8 @@ export default class orderItem extends wepy.page{
   margin: 10rpx;
   border-width: 1rpx;
   border-color: #fff;
-  border-radius: 5px;
+  border-radius: 15rpx;
+  border:1px solid #ffb65d;
   background: #fff;
 }
 
@@ -129,7 +166,7 @@ export default class orderItem extends wepy.page{
   margin: 10rpx;
   display: flex;
   align-items: center;
-  padding-left: 10rpx;
+  padding-left: 45rpx;
   padding-right: 10rpx;
   flex-direction: row;
 }
@@ -145,18 +182,17 @@ export default class orderItem extends wepy.page{
   white-space: nowrap;
   display: flex;
   align-items: center;
+  flex:2;
 }
 
 .dingtaizhuangtai{
   white-space: nowrap;
   color: #666;
-  position: absolute;
-  right: 10rpx;
-  padding-right: 10rpx;
   display: flex;
   flex-direction: column;
   text-align:right;
-  font-size:25rpx;
+  font-size:30rpx;
+  padding-right:30rpx;
 }
 
 .line{
@@ -166,11 +202,11 @@ export default class orderItem extends wepy.page{
 }
 
 .secondCol{
-  height: 150rpx;
+  padding:10rpx 45rpx;
   margin: 10rpx;
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* align-items: center; */
   justify-content:space-between;
 }
 
@@ -184,7 +220,7 @@ export default class orderItem extends wepy.page{
 }
 
 .forItem{
-  font-size: 24rpx;
+  font-size: 30rpx;
   color:#fff;
   padding:10rpx;
   margin:20px;

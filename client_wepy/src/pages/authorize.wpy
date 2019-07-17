@@ -25,7 +25,7 @@ page {
 </style>
 
 <template>
-  <view class="authorize-contianer">
+  <view wx:if="{{init}}" class="authorize-contianer">
     <image class="authorize-icon" src="/images/authorize.png"></image>
     <view class="auth-item">商城申请获取以下权限：</view>
     <view class="auth-item">获取你的公开信息（头像、昵称等）</view>
@@ -40,62 +40,35 @@ import http from '../utils/Base';
 import api from '../utils/API';
 
 export default class Authorize extends wepy.page {
+  data = {
+    init :false,
+  }
   config = {
     navigationBarTitleText: '授权登录',
   }
   async onLoad() { 
-//     const APP_ID ='wx6be14b9c1bbe7bc0';//输入小程序appid  
-//     const APP_SECRET ='7fef21202585b20d59cce7067fcade57';//输入小程序app_secret  
-//     var OPEN_ID=''//储存获取到openid  
-//     var SESSION_KEY=''//储存获取到session_key  
-
-//     var that=this;  
-//     wx.login({ 
-//        success:function(res){ 
-//          console.log(res.code)
-//           wx.request({  
-//             //获取openid接口  
-//           url: 'https://api.weixin.qq.com/sns/jscode2session',  
-//           data:{  
-//             appid:APP_ID,  
-//             secret:APP_SECRET,  
-//             js_code:res.code,  
-//             grant_type:'authorization_code'  
-//           },  
-//           method:'GET',  
-//           success:function(res){  
-//             console.log(res.data)  
-//             OPEN_ID = res.data.openid;//获取到的openid  
-//             SESSION_KEY = res.data.session_key;//获取到session_key  
-//           }   
-//     })
-//        }
-//       })
-//      
-
-
-
-
-
+    var that = this;
     wx.getStorage({
-            key: 'userCode',
-            success: function(res){      
-                wepy.reLaunch({
-                              url: '/pages/index'
-                            })
-            },
-            fail: function() {
-                wx.login({
-                    success:(res)=>{
-                        // that._code = res.code;
-                        wx.setStorageSync('userCode',res.code);
-                    },
-                    fail:(res)=>{
-                        Tips.showComfire('获取用户Code失败,请重试!')
-                    }
-                })
-            },  
-        });
+        key: 'userCode',
+        success: function(res){      
+            wepy.reLaunch({
+              url: '/pages/index'
+            })
+        },
+        fail: function() {
+            that.init = true;
+            that.$apply();
+            wx.login({
+                success:(res)=>{
+                    // that._code = res.code;
+                    wx.setStorageSync('userCode',res.code);
+                },
+                fail:(res)=>{
+                    Tips.showComfire('获取用户Code失败,请重试!')
+                }
+            })
+        },  
+    });
   }
   async onGotUserInfo(e) { 
     wx.getSetting({

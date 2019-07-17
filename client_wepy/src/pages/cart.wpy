@@ -1,6 +1,400 @@
+<style>
+
+ page{
+    background-color:#f0f0f0;
+} 
+.container {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+.shopListBox{
+  width:100%;
+  margin-bottom:30rpx;
+
+}
+.shopListBox:last-child{
+  padding-bottom: 100rpx;
+}
+.shopListBox .footer-pay .itemdisbase {
+  background: #999;
+  color: #fff;
+}
+.shop-top{
+  position:fixed;
+  top:0;
+  left: 0;
+  right:0;
+  z-index:1024;
+
+}
+
+.shop-info{
+    display:flex;
+    /* position: relative; */
+    align-items:center;
+    color:#ff6700;
+    background-color: #fff;
+    transition: all 4s linear;
+    transform: rotate(0);
+    border-top-left-radius:20rpx;
+    border-top-right-radius:20rpx;
+    border-style: 1px solid #eee;
+}
+
+
+.footer-pay .item4{background:#bebebe !important;}
+.addlist {
+  width: 700rpx;
+  padding: 0 25rpx;
+  line-height: 60rpx;
+  height: 60rpx;
+  font-size: 30rpx;
+  position: relative;
+  padding-top: 30rpx
+}
+
+.addlist::after {
+  content: "";
+  position: absolute;
+  right:25rpx;
+  top: 50%;
+  width: 16rpx;
+  height: 12rpx;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: translate3d(0, -50%, 0) rotate(135deg);
+  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
+  opacity: 1;
+}
+
+.orderaddress {
+  border-bottom: 5px solid #f5f5f5;
+}
+
+.orderaddress .tetx {
+  line-height: 70rpx;
+  font-size: 32rpx;
+  border-bottom: 1px solid #f5f5f5;
+  padding-left: 15rpx;
+  display: block;
+}
+
+.addressinfo {
+  width: 720rpx;
+  padding: 15rpx;
+  position: relative;
+}
+
+.addressinfo text {
+  display: block;
+  font-size: 30rpx;
+  line-height: 1.5;
+}
+
+.addressinfo .icon {
+  content: "";
+  position: absolute;
+  right: 12rpx;
+  top: 50%;
+  width: 16rpx;
+  height: 12rpx;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: translate3d(0, -50%, 0) rotate(135deg);
+  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
+  opacity: 0.5;
+}
+
+.ord {
+  padding-top: 10rpx;
+}
+
+.order-price {
+  padding-bottom: 100rpx;
+}
+
+.goodListBox {
+  border-top: 1rpx solid #eee; 
+  padding: 24rpx 24rpx;
+  background: #fff;
+  position: relative;
+}
+.goodListBox:last-child{
+  border-bottom-left-radius: 30rpx;
+  border-bottom-right-radius: 30rpx;
+}
+/* .goodListBox::after {
+   content: "";
+    position: absolute;
+    bottom:0;
+    left: 20px;
+    right: 20px;
+    height: 0;
+    border-bottom: 2px solid #cccccc;
+} */
+/* .goodListBox:last-child::after {
+   content: "";
+    position: absolute;
+    bottom:0;
+    left: 20px;
+    right: 20px;
+    height: 0;
+    border-bottom: 2px solid red;
+} */
+.goodBox {
+  display: -webkit-flex;
+  display: flex;
+  position: relative;
+}
+
+
+.goodBox .item-check {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 180rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
+  background-size: 40rpx 40rpx;
+}
+
+.goodBox .check ,.item2 .check {
+  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
+  background-size: 40rpx 40rpx;
+}
+
+.shopCheck {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 100rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
+  background-size: 40rpx 40rpx;
+}
+.list-img {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  display: block;
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+  margin-right: 20rpx;
+  /* border: 1px solid #eee;
+  border-radius: 2px; */
+}
+
+.list-img img {
+  height: 100%;
+}
+
+
+
+.info-tit {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  text-align: left;
+}
+
+ .name {
+  font-size: 32rpx;
+  line-height: 1.2;
+  color: #666;
+  margin-bottom: 12rpx;
+  margin-right: 30rpx;
+  display: -webkit-box;
+  display: box;
+  -webkit-box-align: start;
+  box-align: start;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+
+ .price-without {
+  font-size: 32rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+  padding-top: 10rpx;
+}
+
+ .xm-input-number {
+  border: 1rpx solid #eee;
+  width: 227rpx;
+  display: flex;
+  z-index: 11;
+  align-items: center;
+  height: 60rpx;
+}
+
+ .input-sub,  .input-add {
+  height: 60rpx;
+  line-height: 60rpx;
+  float: left;
+  width: 60rpx;
+  text-align: center;
+  background: #fafafa;
+}
+
+ .input-num {
+  width: 50rpx;
+  float: left;
+  height: 60rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.delete {
+  padding-top:20rpx;
+  width: 60rpx;
+  height: 60rpx;
+  margin-left: 50rpx;
+}
+
+.price-without{width:100%;display:block}
+.price-without text {
+  margin-right: 6rpx;
+}
+
+
+
+.footer-pay {
+  width: 100%;
+  height: 90rpx;
+  bottom: 0;
+  display: -webkit-flex;
+  display: flex;
+  z-index: 14;
+  /* margin-top:10rpx; */
+}
+
+.footer-pay view {
+  line-height: 90rpx;
+  text-align: center;
+  -webkit-felx: 2;
+  flex: 2;
+}
+
+.footer-pay .item3 {
+  background: #f37d6a;
+  color: #fff;
+  font-size: 32rpx;
+}
+
+.footer-pay .item2 {
+  background: #f4f4f4;
+  color: #333;
+  font-size: 32rpx;
+  border-right: 1px solid #f1f1f1;
+  -webkit-felx: 1;
+  flex: 1;
+}
+
+.footer-pay .item-pri {
+  display: block;
+  color: #999;
+  font-size: 28rpx;
+  height: 60rpx;
+  line-height: 90rpx;
+}
+
+.footer-pay .all {
+  font-size: 36rpx;
+  display: block;
+  color: #ff6700;
+  height: 60rpx;
+  line-height: 90rpx;
+}
+
+.footer-pay .item {
+  background-color:#fff;
+  display:flex;
+  justify-content:space-around;
+  line-height: 90rpx;
+  text-align: center;
+  -webkit-felx: 2;
+  flex: 4;
+  border-bottom:1px solid #ff6b5d
+}
+
+.item-check {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  flex: none;
+  border: none;
+  width: 60rpx;
+  height: 100rpx;
+  position: relative;
+  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
+  background-size: 40rpx 40rpx;
+  float: left;
+}
+
+.empty-box {
+  padding: 30rpx 30rpx;
+  width: 690rpx;
+}
+
+.empty-box image {
+  /* width: 40%; */
+  margin: 0 auto;
+  display: block;
+
+}
+
+.empty-box .span {
+  font-size: 36rpx;
+  padding: 18rpx 0;
+  display: block;
+  text-align: center;
+  margin-left:35rpx;
+margin-top:30rpx;
+
+}
+
+.empty-box .goindex {
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 32rpx;
+  margin-top:100rpx;
+
+}
+
+.bindphone{
+  width: 50%;
+  height: 70rpx;
+  line-height: 70rpx;
+  text-align: center;
+  background: #f37d6a;
+  color: #fff;
+  margin: 0 auto;
+  font-size: 32rpx;
+  margin-top:700rpx;
+}
+
+</style>
+
+
+
 <template>
+<view wx:if="{{init}}">
 <view  wx:if="{{userInfoInServer.phone!=null}}" class='container' >
-  <view class='car-item-box' wx:for="{{shopList}}" wx:for-item="shopItem" wx:for-index="shopIndex" wx:key="index"  id="{{shopIndex}}">
+  <!-- 商家列表 -->
+  <view class='shopListBox' wx:for="{{shopList}}" wx:for-item="shopItem" wx:for-index="shopIndex" wx:key="index"  id="{{shopIndex}}">
+    
     <!-- 商家头-->
     <view  class="shop-info {{currentShop==index ? 'shop-top' : ''}} " @tap="goShoper('{{shopItem}}')" >
         <view class=" {{shopCheckList[shopIndex]==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}" @tap.stop="selectedShop"></view>
@@ -10,56 +404,60 @@
         <view style="font-size:30rpx;flex:10;" >{{shopItem.shop_name}}</view>
         <icon class="iconfont " style="flex:1;">&#xe6ab;</icon>
     </view>
+
     <!-- 商品列表 -->
-    <view class="product-item " wx:for="{{cartList[shopIndex]}}" wx:for-item="cartItem" wx:for-index="cartIndex" >
-      <view class='item-box'>
+    <view class="goodListBox " wx:for="{{cartList[shopIndex]}}" wx:for-item="cartItem" wx:for-index="cartIndex" >
+      <view class='goodBox'>
         <view class="item-check {{cartItem.checked?'check':''}}"  bindtap='selectedlist' data-currentGood="{{cartItem}}"></view>
           <view class='list-img'>
           <navigator url='/pages/goodDetail?goodId={{cartItem.goods_id}}&shopId={{cartItem.shop_id}}'>
             <image style="width:78px;height:78px;border-radius: 5px;" src='{{imageUrl + cartItem.primary_pic_url}}' mode='scaleToFill'></image>
             </navigator>
           </view>
-        <view class='info-tit'>
+         <view class='info-tit'>
           <text class='name'>{{cartItem.goods_name}}</text>
-          <text class='price-without'>售价:<text>{{cartItem.retail_price}}</text>
-        </text>
-          <view class='xm-input-number'>
-            <view class='input-sub' bindtap='subnum' data-currentGood="{{cartItem}}" data-currentshop="{{shopItem}}">-</view>
-            <input class='input-num' value='{{cartItem.number}}' disabled='true' type='number'/>
-            <view class='input-add' bindtap='addnum' data-currentGood="{{cartItem}}" data-currentshop="{{shopItem}}">+</view>
+          <view style="display:flex;align-items:center;">
+              <view class='price-without'>¥:{{cartItem.retail_price}}</view>
+              <view class='xm-input-number'>
+                <view class='input-sub' bindtap='subnum' data-currentGood="{{cartItem}}" data-currentshop="{{shopItem}}">-</view>
+                <input class='input-num' value='{{cartItem.number}}' disabled='true' type='number'/>
+                <view class='input-add' bindtap='addnum' data-currentGood="{{cartItem}}" data-currentshop="{{shopItem}}">+</view>
+              </view>
+              <view class='delete' bindtap='delecart' data-currentGood="{{cartItem}}">
+                <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
+                  mode='widthFix'/> 
+              </view>
           </view>
-          <view class='delete' bindtap='delecart' data-currentGood="{{cartItem}}">
-            <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
-              mode='widthFix'/>
-          </view>
-        </view>
+        </view>      
       </view>
     </view>
+
     <!--结算购买-->
     <view class='footer-pay'>
       <view class='item'>
-        <text class='item-pri'>共 {{totalList[shopIndex].num}}件 </text>
+        <!-- <text class='item-pri'>共 {{totalList[shopIndex].num}}件 </text> -->
         <text class='all'>总金额:  {{totalList[shopIndex].money}}元</text>
       </view>
-      <view class='item3'><view bindtap='goOrder' data-currentshop="{{shopItem}}">前往结算</view></view>
+      <view class='item3'>
+        <view bindtap='goOrder' data-currentshop="{{shopItem}}">前往结算</view>
+      </view>
     </view>
-
-   </view> 
-
-
-    <view  style="height:100rpx; transition: all 1s linear;"></view>
+  </view>
+    <!--购物车空-->
     <view class='empty-box' wx:if="{{shopList.length==0}}">
-      <image src="{{StaticImgUrl+'kongkongruye.jpg'}} "
+      <image src="{{StaticImgUrl+'noneCart.png'}} "
         mode='widthFix'/>
-      <text class='span'>购物车空空如也</text>
       <view class='goindex' bindtap='gotoindex'>去商城逛逛吧</view>
     </view>
+
 </view>
-<view wx:else style="witdh:100%;height:100%;">
-  <view style="position:absolute;top:20%;padding:10%; text-align:center;color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
-    <text style="text-align:center;">提供更优质的服务哦～</text></view>
-  <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
-</view>
+  
+  <view wx:else style="witdh:100%;height:100%;">
+    <view style="position:absolute;top:20%;padding:10%; text-align:center;color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
+      <text style="text-align:center;">提供更优质的服务哦～</text></view>
+    <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
+  </view>
+  </view>
 </template>
 <script>
 import wepy from 'wepy';
@@ -70,6 +468,7 @@ export default class Cart extends wepy.page{
         "navigationBarTitleText": "购物车"
     };
     data = {
+      init:false,
     userInfoInServer: {phone:""},
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
@@ -100,11 +499,13 @@ export default class Cart extends wepy.page{
      
   }
   onShow(e){
-    this.userInfoInServer = wx.getStorageSync("userInfoInServer");
+    
     new Promise((resolve,reject)=>{   
         http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res =>{
           console.log(res)
+          this.userInfoInServer = wx.getStorageSync("userInfoInServer");
           this.allList = res;//触发监听器
+          this.init = true;
           this.$apply();
         })
     })
@@ -279,7 +680,7 @@ export default class Cart extends wepy.page{
           title: '提交失败',
           cancelText: '下次再说',
           confirmText: "前往绑定",
-          confirmColor: "skybule",
+          confirmColor: "#ff6b5d",
           content: "您还没有绑定手机号哟～",
           success:function(e){
             wx.navigateTo({
@@ -295,7 +696,7 @@ export default class Cart extends wepy.page{
           title: '提交失败',
           cancelText: '下次再说',
           confirmText: "前往设置",
-          confirmColor: "skybule",
+          confirmColor: "#ff6b5d",
           content: "您还没有设置默认地址哟～",
           success:function(e){
             wx.navigateTo({
@@ -328,428 +729,6 @@ export default class Cart extends wepy.page{
       })
     }
   }
-  //监听页面滚动
-  /*onPageScroll(e){
-    // console.log(e) 
-    let pageTopMove = e.scrollTop; 
-    //下滑
-    if(pageTopMove > this.scrollTop_old){
-      if(this.currentShop == 0 ){
-        // console.log(pageTopMove);
-          if( pageTopMove > this.shopHeightValues[0]){
-            this.currentShop = 1;
-            this.shopChangeHeight.push(pageTopMove);
-            this.$apply();
-          }
-      }
-      for(let i=1; i<this.shopHeightValues.length; i++){
-          if( pageTopMove > this.shopHeightValues[i] && this.currentShop == i){
-            this.shopChangeHeight.push(pageTopMove);
-            this.currentShop = i+1;
-            this.$apply();
-          }
-      }
-    }else{
-      if( pageTopMove < this.shopChangeHeight[this.shopChangeHeight.length-1]-100){
-            this.currentShop = this.currentShop-1;
-            this.shopChangeHeight.splice(this.shopChangeHeight.length-1,1);
-            this.$apply();
-        }
-    }
-    this.scrollTop_old = pageTopMove;
-    console.log(this.currentShop);
-  } */ 
 }
 </script>  
   
-<style>
-
- page{
-    background-color:#f4f4f4;
-} 
-.container {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-.car-item-box{
-  width:100%;
-  margin-bottom:30rpx;
-
-}
-.car-item-box:last-child{
-  padding-bottom: 100rpx;
-}
-.car-item-box .footer-pay .itemdisbase {
-  background: #999;
-  color: #fff;
-}
-.shop-top{
-  position:fixed;
-  top:0;
-  left: 0;
-  right:0;
-  z-index:1024;
-
-}
-
-.shop-info{
-    display:flex;
-    /* position: relative; */
-    align-items:center;
-    color:#ff6700;
-    background-color: #fff;
-    transition: all 4s linear;
-    transform: rotate(0);
-    border-top-left-radius:20rpx;
-    border-top-right-radius:20rpx;
-    border-style: 1px solid #eee;
-}
-
-
-.footer-pay .item4{background:#bebebe !important;}
-.addlist {
-  width: 700rpx;
-  padding: 0 25rpx;
-  line-height: 60rpx;
-  height: 60rpx;
-  font-size: 30rpx;
-  position: relative;
-  padding-top: 30rpx
-}
-
-.addlist::after {
-  content: "";
-  position: absolute;
-  right:25rpx;
-  top: 50%;
-  width: 16rpx;
-  height: 12rpx;
-  border-left: 1px solid currentColor;
-  border-top: 1px solid currentColor;
-  transform: translate3d(0, -50%, 0) rotate(135deg);
-  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
-  opacity: 1;
-}
-
-.orderaddress {
-  border-bottom: 5px solid #f5f5f5;
-}
-
-.orderaddress .tetx {
-  line-height: 70rpx;
-  font-size: 32rpx;
-  border-bottom: 1px solid #f5f5f5;
-  padding-left: 15rpx;
-  display: block;
-}
-
-.addressinfo {
-  width: 720rpx;
-  padding: 15rpx;
-  position: relative;
-}
-
-.addressinfo text {
-  display: block;
-  font-size: 30rpx;
-  line-height: 1.5;
-}
-
-.addressinfo .icon {
-  content: "";
-  position: absolute;
-  right: 12rpx;
-  top: 50%;
-  width: 16rpx;
-  height: 12rpx;
-  border-left: 1px solid currentColor;
-  border-top: 1px solid currentColor;
-  transform: translate3d(0, -50%, 0) rotate(135deg);
-  -webkit-transform: translate3d(0, -50%, 0) rotate(135deg);
-  opacity: 0.5;
-}
-
-.ord {
-  padding-top: 10rpx;
-}
-
-.order-price {
-  padding-bottom: 100rpx;
-}
-
-.product-item {
-  border-top: 1rpx solid #eee; 
-  padding: 24rpx 24rpx;
-  background: #fff;
-  position: relative;
-}
-.product-item:last-child{
-  border-bottom-left-radius: 30rpx;
-  border-bottom-right-radius: 30rpx;
-}
-/* .product-item::after {
-   content: "";
-    position: absolute;
-    bottom:0;
-    left: 20px;
-    right: 20px;
-    height: 0;
-    border-bottom: 2px solid #cccccc;
-} */
-.product-item:last-child::after {
-   content: "";
-    position: absolute;
-    /* top:0; */
-    bottom:0;
-    left: 20px;
-    right: 20px;
-    /* width: 200%; */
-    height: 0;
-    border-bottom: 2px solid red;
-}
-.item-box {
-  display: -webkit-flex;
-  display: flex;
-  position: relative;
-}
-
-
-.item-box .item-check {
-  -webkit-box-flex: 0;
-  -webkit-flex: none;
-  flex: none;
-  border: none;
-  width: 60rpx;
-  height: 180rpx;
-  position: relative;
-  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
-  background-size: 40rpx 40rpx;
-}
-
-.item-box .check ,.item2 .check {
-  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
-  background-size: 40rpx 40rpx;
-}
-
-.shopCheck {
-  -webkit-box-flex: 0;
-  -webkit-flex: none;
-  flex: none;
-  border: none;
-  width: 60rpx;
-  height: 100rpx;
-  position: relative;
-  background: url(https://s1.mi.com/m/images/m/check_press.png) 50% 50% no-repeat;
-  background-size: 40rpx 40rpx;
-}
-.list-img {
-  -webkit-box-flex: 0;
-  -webkit-flex: none;
-  flex: none;
-  display: block;
-  position: relative;
-  width: 180rpx;
-  height: 180rpx;
-  margin-right: 20rpx;
-  /* border: 1px solid #eee;
-  border-radius: 2px; */
-}
-
-.list-img img {
-  height: 100%;
-}
-
-
-
-.info-tit {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1 1 auto;
-  flex: 1 1 auto;
-  text-align: left;
-}
-
-.info-tit .name {
-  font-size: 32rpx;
-  line-height: 1.2;
-  color: #666;
-  margin-bottom: 12rpx;
-  margin-right: 30rpx;
-  display: -webkit-box;
-  display: box;
-  -webkit-box-align: start;
-  box-align: start;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-}
-
-.info-tit .price-without {
-  font-size: 32rpx;
-  color: #999;
-  margin-bottom: 12rpx;
-  padding-top: 10rpx;
-}
-
-.info-tit .xm-input-number {
-  top: 115rpx;
-  /* right: 258rpx; */
-  border: 1rpx solid #eee;
-  width: 227rpx;
-  position: absolute;
-  z-index: 11;
-}
-
-.info-tit .input-sub, .info-tit .input-add {
-  height: 60rpx;
-  line-height: 60rpx;
-  float: left;
-  width: 60rpx;
-  text-align: center;
-  background: #fafafa;
-}
-
-.info-tit .input-num {
-  width: 107rpx;
-  float: left;
-  height: 60rpx;
-  text-align: center;
-  font-size: 30rpx;
-}
-
-.delete {
-  width: 60rpx;
-  height: 60rpx;
-  position: absolute;
-  right: 30rpx;
-  bottom: 6rpx;
-}
-.price-without{width:100%;display:block}
-.price-without text {
-  margin-right: 6rpx;
-}
-
-
-
-.footer-pay {
-  width: 100%;
-  height: 90rpx;
-  bottom: 0;
-  display: -webkit-flex;
-  display: flex;
-  z-index: 14;
-  /* margin-top:10rpx; */
-}
-
-.footer-pay view {
-  line-height: 90rpx;
-  text-align: center;
-  -webkit-felx: 2;
-  flex: 2;
-}
-
-.footer-pay .item3 {
-  background: #f37d6a;
-  color: #fff;
-  font-size: 32rpx;
-}
-
-.footer-pay .item2 {
-  background: #f4f4f4;
-  color: #333;
-  font-size: 32rpx;
-  border-right: 1px solid #f1f1f1;
-  -webkit-felx: 1;
-  flex: 1;
-}
-
-.footer-pay .item-pri {
-  display: block;
-  color: #999;
-  font-size: 28rpx;
-  height: 60rpx;
-  line-height: 90rpx;
-}
-
-.footer-pay .all {
-  font-size: 36rpx;
-  display: block;
-  color: #ff6700;
-  height: 60rpx;
-  line-height: 90rpx;
-}
-
-.footer-pay .item {
-  background-color:#fff;
-  display:flex;
-  justify-content:space-around;
-  line-height: 90rpx;
-  text-align: center;
-  -webkit-felx: 2;
-  flex: 4;
-  border-bottom:1px solid #ff6b5d
-}
-
-.item-check {
-  -webkit-box-flex: 0;
-  -webkit-flex: none;
-  flex: none;
-  border: none;
-  width: 60rpx;
-  height: 100rpx;
-  position: relative;
-  background: url(https://s1.mi.com/m/images/m/check_normal.png) no-repeat center center;
-  background-size: 40rpx 40rpx;
-  float: left;
-}
-
-.empty-box {
-  padding: 80rpx 30rpx;
-  width: 690rpx;
-}
-
-.empty-box image {
-  width: 40%;
-  margin: 0 auto;
-  display: block;
-
-}
-
-.empty-box .span {
-  font-size: 36rpx;
-  padding: 18rpx 0;
-  display: block;
-  text-align: center;
-  margin-left:35rpx;
-margin-top:30rpx;
-
-}
-
-.empty-box .goindex {
-  width: 50%;
-  height: 70rpx;
-  line-height: 70rpx;
-  text-align: center;
-  background: #f37d6a;
-  color: #fff;
-  margin: 0 auto;
-  font-size: 32rpx;
-  margin-top:200rpx;
-
-}
-
-.bindphone{
-  width: 50%;
-  height: 70rpx;
-  line-height: 70rpx;
-  text-align: center;
-  background: #f37d6a;
-  color: #fff;
-  margin: 0 auto;
-  font-size: 32rpx;
-  margin-top:700rpx;
-}
-
-</style>
-

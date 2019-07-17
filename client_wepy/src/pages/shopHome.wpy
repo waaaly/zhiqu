@@ -102,8 +102,12 @@ export default class shopHome extends wepy.page{
       serviceOrderNum:0,//待送达订单
       text:'⚠️Tips:当有用户新下单时，系统会通过短信息提醒您，请您注意查收~',
     }
-    onLoad(){
-             
+    onLoad(e){
+          if(e.newOrder){
+            wepy.playBackgroundAudio({
+              dataUrl: this.imageUrl + 'voice/newOrderNotify.mp3',
+            });
+          }
     }
     onShow(e){
       //获取商铺信息
@@ -127,7 +131,7 @@ export default class shopHome extends wepy.page{
               showCancel:false,
               title:'新订单提醒',
               content:'您有新的订单，请您前往处理～',
-              confirmColor:'skybule',
+              confirmColor:'#ff6b5d',
               confirmText:'立即处理',
               success:function(e){
                 isEnable = true;

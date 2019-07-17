@@ -111,18 +111,31 @@ export default class orderCheck extends wepy.page{
         })
         this.addressId = e.addressId;
         this.shopId = e.shopId;
-        http.get(api.CartCheckout,{address_id:e.addressId,
-                          shop_id:e.shopId,
-                          user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
-               console.log(res);
-               this.shopInfo = res.cartListInfo.shopInfo;
-               this.orderGoodsInfos = res.cartListInfo.cartList;
-               this.totalPrice =  res.cartListInfo.TotalPrice;
-               this.$apply();
-        })
+        this.$apply();
     }
     onShow(e){
         this.address = wx.getStorageSync('userDefaultAddress');
+        http.get(api.CartCheckout,{address_id:this.addressId,
+                  shop_id:this.shopId,
+                  user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+            console.log(res);
+            if(res.msg){
+              wx.showModal({
+                title:'提示',
+                content:'您的订单已提交，请勿重复操作！',
+                success: function() {
+                  wepy.reLaunch({
+                      url: '/pages/cart'
+                    })
+                }
+              })
+            }else{
+                this.shopInfo = res.cartListInfo.shopInfo;
+                this.orderGoodsInfos = res.cartListInfo.cartList;
+                this.totalPrice =  res.cartListInfo.TotalPrice;
+            }
+            this.$apply();
+        })
     }
     methods = {
       //修改收货地址
