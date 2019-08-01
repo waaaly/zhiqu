@@ -7,11 +7,10 @@
     </view>
     <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
   </view>
-  <view class="scroll-view">
+  <view wx:if="{{init}}" class="scroll-view">
     <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
       <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
         <scroll-view style="height:100%" scroll-y>
-
             <view wx:if="{{OrderList==0}}" > 
               <image style="width:100%;" mode='widthFix' src="{{imageUrl+'zq/noneOrder.png'}}"/>   
               <navigator open-type="switchTab" 
@@ -19,8 +18,9 @@
                           url="/pages/index">去发现更多好货~
               </navigator>       
             </view>
+
             <view wx:else>
-              <orderItem wx:if="{{init}}"></orderItem>
+              <orderItem ></orderItem>
             </view> 
               
         </scroll-view>
@@ -44,7 +44,8 @@ export default class myOrder extends wepy.page{
     init:false,
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     activeTab: 0,
-    tabs:['全部订单','待付款','待收货','已完成'],
+    tabs:['全部订单','待付款','待收货','已完成'],              //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
+                                                          //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
     OrderList:[],
     stv: {
       windowWidth: 0,
@@ -73,88 +74,83 @@ export default class myOrder extends wepy.page{
            
             this.OrderList=res;
             this.$broadcast('orderList',this.OrderList);
-            this.init = true;
             this.$apply();
           })}
     else if(this.activeTab == 2){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{
           
           this.OrderList=res;
           this.$broadcast('orderList',this.OrderList);
-          this.init = true;
           this.$apply();
         })}
     else if(this.activeTab == 3){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
          
           this.OrderList=res;
           this.$broadcast('orderList',this.OrderList);
-          this.init = true;
           this.$apply();
         }) } 
         
   }
+  events = {
+    'myOrder':(recve)=>{
+      this.init = true;
+      this.$apply();
+    }
+  }
    watch = {
      activeTab(newValue, oldValue) {
-       this.init = false;
-       this.$apply();
-      //  console.log(`num value: ${oldValue} -> ${newValue}`);
-       //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
-   //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
-   switch(newValue){
-
-      case 0://全部订单
+      switch(newValue){
+          case 0://全部订单
+              {
+                http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res=>{   
+                  this.OrderList=res; 
+                  this.$broadcast('orderList',this.OrderList);               
+                  this.$apply();   
+                })
+                break;
+              }
+            
+          case 1://带支付，待付款
+            {
+              http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
+                
+                this.OrderList=res; 
+                this.$broadcast('orderList',this.OrderList);             
+                this.$apply();  
+              })
+              break;
+            } 
+    
+            
+          case 2:// 商家确认接单，用户等待收获
           {
-            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res=>{   
+            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{            
               this.OrderList=res; 
               this.$broadcast('orderList',this.OrderList);
-              this.init = true;
-              this.$apply();   
+              this.$apply();  
             })
             break;
-          }
-        
-      case 1://带支付，待付款
-        {
-          http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
+          }  
             
-            this.OrderList=res; 
-            this.$broadcast('orderList',this.OrderList);
-            this.init = true;
-            this.$apply();  
-          })
-          break;
-        } 
- 
-        
-      case 2:// 商家确认接单，用户等待收获
-      {
-        http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{
-          
-          this.OrderList=res; 
-          this.$broadcast('orderList',this.OrderList);
-          this.init = true;
-          this.$apply();  
-        })
-        break;
-      }  
-        
-      case 3://订单完成，待评价
-      {
-        http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-         
-          this.OrderList=res; 
-          this.$broadcast('orderList',this.OrderList);
-          this.init = true;
-          this.$apply();   
-        }) 
-        break;
-      } 
-      } 
-      console.log(this.OrderList)
-    }
-    
+          case 3://订单完成，待评价
+          {
+            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
+            
+              this.OrderList=res; 
+              this.$broadcast('orderList',this.OrderList);
+              this.$apply();   
+            }) 
+            break;
+          } 
+          } 
+        }
   }
   methods = {
       handlerTabTap(e) {
+          this.init = false;
+          // wx.showNavigationBarLoading({
+
+          // })
+          this.$apply();
           this._updateSelectedPage(e.currentTarget.dataset.index);
       },
   }

@@ -28,7 +28,7 @@
         <view class='line'></view>
         
         <view style="display:flex;justify-content:space-between;margin-top:20rpx;padding-right:45rpx;padding-left:45rpx;">
-          <navigator style="display:flex;flex-direction:column;" url="{{'/pages/orderUserDetail?orderId=' + item.id}}">
+          <navigator style="display:flex;flex-direction:column;padding-bottom:10px;" url="{{'/pages/orderUserDetail?orderId=' + item.id}}">
             <view style="text-align:left;font-size:25rpx;color:#666;">订单编号:{{item.order_sn}}</view> 
             <view style="text-align:left;font-size:25rpx;color:#666;">下单时间:{{item.add_time}}</view>
           </navigator> 
@@ -43,7 +43,7 @@
               <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
             <block wx:if="{{item.order_status == 32}}" >
-              <view wx:for="{{['确认收货' ,'申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}}),{{orderIndex}}'>{{actionItem}}</view>
+              <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}}),{{orderIndex}}'>{{actionItem}}</view>
             </block>
             <block wx:if="{{item.order_status == 40}}" >
               <view wx:for="{{['前往评价']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
@@ -66,9 +66,14 @@ export default class orderItem extends wepy.page{
     }
     events = {
       'orderList':(orderList,$event)=>{
-        console.log(orderList);
         this.orderList = orderList;
         this.$apply();
+        this.$emit('myOrder', true);//通知父亲，接收到数据
+      }
+    }
+    watch = {
+      orderList(_new,old){
+        
       }
     }
     methods = {
@@ -86,22 +91,10 @@ export default class orderItem extends wepy.page{
                     success: function(res1) { 
                         wx.showModal({
                             title: '支付成功',
-                            cancelText: "算了没钱",
-                            confirmText: "继续剁手",
+                            cancelShow: "false",
+                            confirmText: "我知道了",
                             confirmColor:"#ff6b5d",
                             content: "您已完成支付～",
-                            // success:function(res2){ 
-                            //     // console.log(res2)
-                            //     if(res2.confirm){
-                            //         wx.reLaunch({
-                            //             url: '/pages/cart',
-                            //         }) 
-                            //     } else{
-                            //         wx.reLaunch({
-                            //             url: '/pages/cart',
-                            //         }) 
-                            //     }                                                         
-                            // }
                         })
                     }, 
                     fail: function(res) { 
@@ -126,14 +119,17 @@ export default class orderItem extends wepy.page{
         }
         if(text == '申请退款'){
           http.post(api.UserRefund,{order_id:this.orderList[index].id,refund_desc:'买错了'}).then(res=>{
-            console.log(res);
+            if(res.msg){
+              wx.showToast({
+                title:res.msg,
+                icon:'none',
+              })
+              // this.orderList.splice(index,1);
+              this.$apply();
+            }
           })
         }
-        if(text == '确认收货'){
-          // http.get(api.Refund,{}).then(res=>{
-          //   console.log(res);
-          // })
-        }
+
         if(text == '前往评价'){
           wx.navigateTo({
             url: '/pages/orderComment',
@@ -160,6 +156,7 @@ export default class orderItem extends wepy.page{
   border-radius: 15rpx;
   border:1px solid #ffb65d;
   background: #fff;
+  padding-bottom:10px;
 }
 
 .firsetCol{

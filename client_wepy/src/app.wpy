@@ -83,12 +83,16 @@ import 'wepy-async-function'
 export default class extends wepy.app {
   config = {
         pages: [
+          'pages/chooseArea',
+          'pages/my',
+          
+          
           'pages/authorize',
           'pages/orderComment',
           
           'pages/orderUserDetail',
           
-          'pages/my',
+          
           
           'pages/cart',
           'pages/orderCheck',
@@ -148,6 +152,7 @@ export default class extends wepy.app {
           }
         ]
       },
+      // debug:true,
       permission: {
         "scope.userLocation": {
           "desc": "您的位置信息将用于小程序位置信息的效果展示"

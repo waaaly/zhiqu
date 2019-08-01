@@ -65,17 +65,7 @@ export default class shopComment extends wepy.component{
       seller:{}
     }
     onLoad(e){
-      wx.request({
-            url: 'https://www.easy-mock.com/mock/5c0515eef57279499b6ac104/getsellers',
-            data: {},
-            method: 'GET',
-            success:(res)=>{
-                this.seller = res.data.seller[0];
-                this.$apply();
-                console.log(this.seller);
-                this.$broadcast('initStar', '36',this.seller.score);
-            }
-        })
+     
     }
 }
 </script>

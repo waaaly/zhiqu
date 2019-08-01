@@ -65,15 +65,7 @@ export default class shopGood extends wepy.component{
         classMap:['decrease', 'discount', 'special', 'invoice', 'guarantee'],
     }
     onLoad(e){
-    wx.request({
-      url: 'https://www.easy-mock.com/mock/5c0515eef57279499b6ac104/getgoods',
-      methods: 'GET',
-      success: (res) => {
-        this.goods = res.data.goods;
-        this.$apply();
-        console.log(res);
-      }
-    })
+    
     }
 
     methods = {

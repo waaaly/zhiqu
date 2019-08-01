@@ -1,31 +1,37 @@
 <template>
-<view style="{{}} ">
-     <view  style="display:flex; " >
+<view class="main">
+     <view  class="col">
        <view style="width:65%;padding:40rpx;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[0].goodsInfo.id}}" data-shopid="{{hotGood[0].shopInfo.id}}">
-        <image style="width:100%;margin-bottom:15rpx;" src='{{imageUrl + hotGood[0].goodsInfo.hot_pic_url}}' mode="widthFix"/>
-        <view style="font-size:28rpx;">{{hotGood[0].goodsInfo.goods_name}}</view>
-        <view style="font-size:20rpx;color:#666;line-height: 1.5;">{{hotGood[0].goodsInfo.goods_desc}}</view>
+        <image style="width:100%;margin-bottom:15rpx;" src='{{imageUrl + hotGood[0].goodsInfo.hot_pic_url}}' mode="widthFix"/>    
+        <view style="display:flex;flex-direction:column;">
+          <text style="font-size:28rpx;">{{hotGood[0].goodsInfo.goods_name}}</text>
+          <text style="font-size:20rpx;color:#666;line-height: 1.5;" class="text">{{hotGood[0].goodsInfo.goods_desc}}</text>
+        </view>
        </view>
-       <view  style="width:50%;margin-right:5%;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[1].goodsInfo.id}}" data-shopid="{{hotGood[1].shopInfo.id}}">
-         <view style="">
-           <view style="font-size:28rpx;text-align:right;">{{hotGood[1].goodsInfo.goods_name}}</view>
-           <view style="font-size:20rpx;color:#666;text-align:right;">{{hotGood[1].goodsInfo.goods_desc}}</view>
+       <view  style="width:50%;padding-top:5%;margin-right:5%;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[1].goodsInfo.id}}" data-shopid="{{hotGood[1].shopInfo.id}}">
+         <view style="display:flex;flex-direction:column;">
+           <text style="font-size:28rpx;text-align:left;">{{hotGood[1].goodsInfo.goods_name}}</text>
+           <text style="font-size:20rpx;color:#666;text-align:left;" class="text">{{hotGood[1].goodsInfo.goods_desc}}</text>
          </view>
-          <image style="width:100%;height:50%;margin-top:20rpx;position:absolute;" mode="widthFix" src='{{imageUrl + hotGood[1].goodsInfo.hot_pic_url}}'/>
+         <view style="margin-top:10%;">
+            <image style="width:100%;height:50%;" mode="widthFix" src='{{imageUrl + hotGood[1].goodsInfo.hot_pic_url}}'/>
+         </view>   
        </view>
      </view>
     
      <view  style="{{hotGood.length>2?'display:flex;width:100%;margin-top:-40rpx;':'display:none'}}" >
         <view style="width:65%;padding:40rpx;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[2].goodsInfo.id}}" data-shopid="{{hotGood[2].shopInfo.id}}">
-        <image style="width:100%;margin-bottom:15rpx;" mode="widthFix" src='{{imageUrl + hotGood[2].goodsInfo.hot_pic_url}}'/>
-        <view style="font-size:28rpx;">{{hotGood[2].goodsInfo.goods_name}}</view>
-        <view style="font-size:20rpx;color:#666;">{{hotGood[2].goodsInfo.goods_desc}}</view>
+          <image style="width:100%;margin-bottom:15rpx;" mode="widthFix" src='{{imageUrl + hotGood[2].goodsInfo.hot_pic_url}}'/>
+          <view style="display:flex;flex-direction:column;">
+            <text style="font-size:28rpx;">{{hotGood[2].goodsInfo.goods_name}}</text>
+            <text style="font-size:20rpx;color:#666;" class="text">{{hotGood[2].goodsInfo.goods_desc}}</text>
+          </view>
        </view>
-       <view  style="width:50%;margin-right:5%;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[3].goodsInfo.id}}"  data-shopid="{{hotGood[3].shopInfo.id}}">
-         <image style="width:100%;height:50%;margin-top:20rpx;position:absolute;bottom:100rpx;" mode="widthFix" src='{{imageUrl + hotGood[3].goodsInfo.hot_pic_url}}'/>
-         <view style="">
-           <view style="font-size:28rpx;text-align:right;">{{hotGood[3].goodsInfo.goods_name}}</view>
-           <view style="font-size:20rpx;color:#666;text-align:right;">{{hotGood[3].goodsInfo.goods_desc}}</view>
+       <view  style="width:50%;padding-top:8%;margin-right:5%;position:relative;" bindtap="goHotGood" data-goodId="{{hotGood[3].goodsInfo.id}}"  data-shopid="{{hotGood[3].shopInfo.id}}">
+         <image style="width:100%;height:50%;margin-top:20rpx;" mode="widthFix" src='{{imageUrl + hotGood[3].goodsInfo.hot_pic_url}}'/>
+         <view style="display:flex;flex-direction:column;">
+           <text style="font-size:28rpx;text-align:left;">{{hotGood[3].goodsInfo.goods_name}}</text>
+           <text style="font-size:20rpx;color:#666;text-align:left;" class="text">{{hotGood[3].goodsInfo.goods_desc}}</text>
          </view>
        </view>
      </view>
@@ -57,15 +63,32 @@ export default class goodHot extends wepy.component{
         }
     }
     methods = {
-           goHotGood(e){
-    //   console.log(this.hotGood);
-        let URL='/pages/goodDetail?goodId=';
-        URL = URL + e.currentTarget.dataset.goodid + '&shopId=' +e.currentTarget.dataset.shopid;
-        console.log(URL);
-        wx.navigateTo({
-            url: URL,
-      })
-    },
+      goHotGood(e){
+          let URL='/pages/goodDetail?goodId=';
+          URL = URL + e.currentTarget.dataset.goodid + '&shopId=' +e.currentTarget.dataset.shopid;
+          console.log(URL);
+          wx.navigateTo({
+              url: URL,
+        })
+      },
     }
 }
 </script>
+<style>
+.main{
+  display: flex;
+  flex-direction: column;
+}
+.col{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.text{
+    display: -webkit-box;  
+    -webkit-line-clamp: 3; 
+    -webkit-box-orient: vertical; 
+   overflow:hidden;
+}
+
+</style>

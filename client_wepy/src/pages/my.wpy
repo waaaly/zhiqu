@@ -1,11 +1,71 @@
 <template>
+    
+    <block wx:if="{{login}}">
+        
+        <view wx:if="{{userInfoInServer.role == 0}}" class="avatar-wrapper">
+            <view  class="background">
+                <image src="{{userInfoInServer.avatar}}"  class="_img "/>
+            </view>
+            <view class="avatar" bindtap="gotoSetting">
+                <image style="z-index:1024;border-radius:50%;" src="{{userInfoInServer.avatar}}"/>
+            </view>
+            <view class="userInfo">
+                <text style="padding:5px;border-bottom:#eee solid 1px;">{{userInfoInServer.name}}</text>
+                <view class="order">
+                    <navigator wx:for="{{order}}" class="orderItem" url="{{item.url}}">                     
+                            <view><image src="{{item.icon}}" style="width:50rpx;height:50rpx;"/></view>
+                            <view style="font-size:30rpx;">{{item.text}}</view>               
+                    </navigator>
+                </view>
+            </view>
+        </view>
+
+        
+    </block>
+    
+    <view wx:else class="gradual" >
+        <view style="display:flex;justify-content:center;width:70px;height:70px;border-radius:50%;border:2px solid #ffb65d;background-color:#fff;z-index:1024;padding:2px;">
+            <image style="height:60px;width:60px;" src="/images/icons/yonghu.png"/>
+        </view>
+        <text style="margin:10px;color:#fff;">游客,您好!</text>
+        <navigator @tap="login" url="/pages/authorize" style="z-index:1;padding:5px;color:#fff;border:1px solid #fff;border-radius:5px;">登陆/注册</navigator> 
+    </view>
+  
+    <block  wx:for="{{menuItems}}" wx:for-index="itemIndex">
+        <view class="wrapperItem" >
+            <view bindtap="naviTo" data-itemname="{{itemIndex}}" class="weui-cell weui-cell_access" >
+                <view class="itemtext">
+                    <image src="{{item.icon}}" class="image"/>
+                    {{item.text}}
+                </view>
+                <view class="tips">{{item.touch==false?'展开':'收起'}}{{item.tips}}
+                    <image wx:if="{{item.touch}}" style="transform: rotate(90deg);" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+                    <image wx:else src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+                </view>
+            </view>
+            <view class="weui-flex" style="{{item.touch==false?'display:none':''}}">
+                <block wx:for="{{item.items}}" wx:for-item="childItems">
+                    <view bindtap="childNavTo"  data-url="{{childItems.url}}" data-fathertext="{{item.text}}" class="weui-cells" hover-class="none" style="flex-grow: 1">
+                        <view class="weui-cell_hd" style="text-align:center;">
+                            <image src="{{childItems.icon}}" class="image"/>
+                        </view>
+                        <view style="font-size:25rpx;text-align: center;">{{childItems.text}}</view>
+                    </view>
+                </block>
+            </view>
+        </view>
+    </block>
+
+      
+
+    
 <view wx:if="{{init}}">
     <view wx:if="{{userInfoInServer.phone!=null}}" class="mine-wrapper">
         <!-- 用户头像展示 -->
         <view class="background">
         <image src="{{userInfo.avatarUrl}}" width="100%" height="100%" class="_img "/>
         </view>
-        <view class="avatar-wrapper" style="{{userRole?'border-bottom:1px solid #ff6b5d;margin-bottom:70px;border-radius: 100px ;':''}}">
+        <view class="avatar-wrapper" style="{{userRole?'border-bottom:1px solid #ff6b5d;margin-bottom:100px;border-radius: 100px ;':''}}">
             <view>
                 <view class="avatar" bindtap="gotoSetting">
                     <image style="border-radius:50%;" src="{{userInfo.avatarUrl? userInfo.avatarUrl:'http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/bangzhufankui.png' }}"></image>
@@ -70,19 +130,25 @@ export default class my extends wepy.page{
         "navigationBarTitleText": "我的"
     };
     data = {
+        login:false,
         init:false,
         haveOrder:false,
         shop_name:'',
         shop_id:'',
         userRole:0,//用户身份：0消费者，1：商家
-        userInfo:null,
-        userInfoInServer: {phone:""},
+        order: [
+                    { text: '待付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'我的订单/待付款.png' },
+                    // { text: '待送货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待审核.png' },
+                    { text: '待收货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待收货.png' },
+                    { text: '已完成', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
+                ],
+        userInfoInServer: {},
         menuItems: {
             order: {
                 
                 text: '我的订单',
                 tabs: ['全部订单', '待付款', '待收货', '已完成'],
-                touch:false,
+                touch:true,
                 icon: StaticImgUrl + '我的订单/hear.png',
                 tips: '全部订单',
                 items: [
@@ -96,7 +162,7 @@ export default class my extends wepy.page{
                 
                 text: '常用功能',
                 tabs: ['我的收藏', "我的地址",  "意见反馈"],
-                touch:false,
+                touch:true,
                 icon: StaticImgUrl +'常用功能/hear.png',
                 tips: '全部功能',
                 items: [
@@ -109,7 +175,7 @@ export default class my extends wepy.page{
                 
                 text: '我的资产',
                 tabs: ['我的积分', '我的卡券'],
-                touch:false,
+                touch:true,
                 icon: StaticImgUrl +'我的资产/hear.png',
                 tips: '所有资产',
                 items: [
@@ -122,7 +188,7 @@ export default class my extends wepy.page{
                 
                 text: '系统设置',
                 tabs: ['使用指引', '清除缓存', '版本信息'],
-                touch:false,
+                touch:true,
                 icon: StaticImgUrl +'系统设置/hear.png',
                 tips: '系统设置',
                 items: [
@@ -139,39 +205,54 @@ export default class my extends wepy.page{
         wx.showShareMenu({
             withShareTicket: true
         })
-
-        http.get(api.UserInfo,{user_id:wx.getStorageSync("userInfoInServer").id}).then(res=>{
-            console.log(res);
-            this.userRole = res.role;
-            wx.setStorageSync('userInfoInServer', res);
-            var str = wx.getStorageSync('userInfo');
-            this.userInfo = JSON.parse(str);
-            this.init = true;
-            this.$apply();
-            if(res.role){
-                http.get(api.MyShop,{bind_phone:wx.getStorageSync("userInfoInServer").phone}).then(result =>{ 
-                    this.shop_name = result.shop_name;
-                    this.shop_id = result.id;
-                    this.$apply();
-                    http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
-                    if(res){
-                        this.haveOrder = true;
-                        this.$apply();
-                        }
-                    })   
-                })
-            }       
-        })
+        
+        // http.get(api.UserInfo,{user_id:wx.getStorageSync("userInfoInServer").id}).then(res=>{
+        //     console.log(res);
+        //     this.userRole = res.role;
+        //     wx.setStorageSync('userInfoInServer', res);
+        //     var str = wx.getStorageSync('userInfo');
+        //     this.userInfo = JSON.parse(str);
+        //     this.init = true;
+        //     this.$apply();
+        //     if(res.role){
+        //         http.get(api.MyShop,{bind_phone:wx.getStorageSync("userInfoInServer").phone}).then(result =>{ 
+        //             this.shop_name = result.shop_name;
+        //             this.shop_id = result.id;
+        //             this.$apply();
+        //             http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
+        //             if(res){
+        //                 this.haveOrder = true;
+        //                 this.$apply();
+        //                 }
+        //             })   
+        //         })
+        //     }       
+        // })
     }
     onShow(){
-      this.userInfoInServer = wx.getStorageSync("userInfoInServer");
-      if(this.shop_id){
-          http.get(api.NotifyOrder,{shop_id:this.shop_id},false).then(res=>{
-              if(res){
-                  this.haveOrder = true;
-              }
-          })   
-      } 
+        //读取用户信息
+        wx.getStorage({
+            key:'userInfoInServer',
+            success:(res)=>{
+                this.login = true;
+                delete this.menuItems.order;
+                this.userInfoInServer = res.data;
+                this.$apply();
+            }
+        })
+
+
+    //   this.userInfoInServer = wx.getStorageSync("userInfoInServer");
+    //   if(this.shop_id){
+    //       http.get(api.NotifyOrder,{shop_id:this.shop_id},false).then(res=>{
+    //           if(res){
+    //               this.haveOrder = true;
+    //           }else{
+    //               this.haveOrder = false;
+    //           }
+    //           this.$apply();
+    //       })   
+    //   } 
     }
     methods = {
         //管理我的商铺
@@ -186,6 +267,7 @@ export default class my extends wepy.page{
             this.menuItems[name].touch = !this.menuItems[name].touch ; 
             this.$apply();
         },
+
         //点击子列表元素
         childNavTo(e){
         //   console.log(e.currentTarget);
@@ -261,8 +343,19 @@ export default class my extends wepy.page{
 
 <style>
 page{
-    background-color: #fff;
+    background-color: #eee;
 }
+.gradual{
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    position: relative;
+    height:180px;
+    /* z-index:-1024; */
+    background: linear-gradient(#ffb65d, #ff6b5d); 
+    margin-bottom:10px;
+}
+
 .mine-wrapper{
     height: 100%;
     width:100%;
@@ -277,12 +370,58 @@ page{
   height: 100%;
   z-index: -1;
   filter: blur(20rpx);
+  padding: 10px;
 }
 
 .background ._img{
     height: 100%;
     width: 100%;
 }
+
+.userInfo{
+    width:80%;
+    position:absolute;
+    top:50%;
+    border-radius:5px;
+    margin:10px;
+    color:#ff6b5d;
+    text-align:center;
+    background:#fff;
+    left:30px;
+    padding-top:40px;
+    z-index:1;
+    display:flex;
+    flex-direction: column;
+}
+
+.order{
+    display:flex;
+    align-items: center;
+    justify-content:space-between;
+    padding:5px 20px;
+}
+
+.orderItem{
+    position:relative;
+    z-index:10;
+}
+
+.orderItem::after{
+    content: "";
+    position:absolute;
+    top:25%;
+    left:80px;
+    width:2px ;
+    height:50%;
+    background-color:#eee;
+}
+
+.orderItem:last-child{
+    border: none;
+    outline: medium;
+    border-radius: 0;
+}
+
 .myShop{
     background-color:#fff;
     border-radius:5px;
@@ -294,17 +433,7 @@ page{
     right:10%;
     left:10%;
 }
-.bindphone{
-  width: 50%;
-  height: 70rpx;
-  line-height: 70rpx;
-  text-align: center;
-  background: #f37d6a;
-  color: #fff;
-  margin: 0 auto;
-  font-size: 32rpx;
-  margin-top:700rpx;
-}
+
 
 .wrapper {
   background: #eee;
@@ -314,9 +443,12 @@ page{
   background-color: #fff;
   line-height: 1.41176471;
   font-size: 17px;
-  padding: 15px;
+  padding:5px 10px 10px 10px;
   border-radius: 15rpx;
   margin-bottom:15rpx;
+  margin-left:15rpx;
+  margin-right:15rpx;
+
 }
 
  .weui-cell:after {
@@ -364,7 +496,7 @@ page{
 }
 .tips{
   position:absolute;
-  right: 20rpx;
+  right: -5px;
   font-size:25rpx;
   display: flex;
   color:#bbb;
@@ -378,9 +510,13 @@ page{
 .avatar-wrapper {
     padding: 25px 0;
 	position: relative;
+    display: flex;
+    flex-direction: column;
+    margin-bottom:90px;
 }
 
 .avatar-wrapper .avatar {
+    z-index:2;
   margin: 0 auto;
   text-align: center;
 }
@@ -402,12 +538,25 @@ page{
   height: 20px;
 }
 
-.weui-cells::after {
-  content: none;
-  border-bottom: none;
+/* .weui-cells{
+    position:relative;
 }
 
-.weui-cells::before {
-  border-top: none;
+.weui-cells::after{
+    content: "";
+    position:absolute;
+    top:20%;
+    left:140px;
+    width:2px;
+    height:50%;
+    background-color:#eee;
 }
+
+.weui-cells:last-child{
+    border: none;
+    outline: medium;
+    border-radius: 0;
+} */
+
+
 </style>

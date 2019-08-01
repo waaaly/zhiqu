@@ -74,7 +74,7 @@ page{
 .one-scene text {
   position:relative;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   /* padding-top: 200rpx; */
 }
 
@@ -203,6 +203,7 @@ export default class myFunc extends wepy.page {
     classifyGood:classifyGood,
   }
   data = {
+    init:false,
     StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
     stv: {
       windowWidth: 0,
@@ -212,7 +213,7 @@ export default class myFunc extends wepy.page {
     },
     activeTab: 0,
     tabs:['我的收藏','我的地址','意见反馈'],
-    CollectList:[],//收藏列表
+    CollectList:null,//
     userAddress:[],//地址列表
     yijianList://意见列表
     [
@@ -228,7 +229,7 @@ export default class myFunc extends wepy.page {
   }
   onLoad(e){
     try {
-        var res = wx.getSystemInfoSync()
+        var res = wx.getSystemInfoSync();
         this.windowWidth = res.windowWidth;
         this.data.stv.lineWidth = this.windowWidth / this.data.tabs.length;
         this.data.stv.windowWidth = res.windowWidth;
@@ -244,17 +245,57 @@ export default class myFunc extends wepy.page {
   }
   onShow(){
     http.get(api.AddressList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{     
-        console.log(res);
+        // console.log(res);
         this.userAddress = res;
-        this.$apply();
-        
+        this.$apply();  
       })
       
     http.get(api.CollectList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{ 
-        console.log(res);    
-        this.CollectList = res;
-        this.$apply(); 
-        this.$broadcast('collectGoodList', this.CollectList);    
+        console.log(res);  
+        if(res.length != 0){
+            let shop = []; 
+            let good = [];
+            for(let item of res){
+              shop.push(item.shopInfo.shop_name);
+              good.push(item.goodsInfo);
+            }
+            //插入商家信息
+            for(let i = 0;i<good.length;i++){
+              good[i]['collectionId'] = res[i].collectionId;
+              good[i]['shop_name']=res[i].shopInfo.shop_name;
+              good[i]['shop_id']=res[i].shopInfo.id;
+              good[i]['shop_icon']=res[i].shopInfo.shop_icon;
+            }
+            //去重复
+            for(var i=0; i<shop.length; i++){
+                for(var j=i+1; j<shop.length; j++){
+                    if(shop[i]==shop[j]){         //第一个等同于第二个，splice方法删除第二个
+                        shop.splice(j,1);
+                        j--;
+                    }
+                }
+            }
+            
+            var collectList={};//最终要构造的对象
+            var tempObj={};//第二层的对象
+            
+            for(let i=0;i<shop.length;i++){
+              for(let j=0;j<good.length;j++){
+                if(good[j].shop_name == shop[i]){
+                  tempObj[j] = good[j];
+                }           
+              }
+              collectList[shop[i]]= tempObj;
+              tempObj = {};
+            }
+            this.$broadcast('collectGoodList', collectList); 
+            this.init = true;
+            this.CollectList = collectList;
+        }else{
+            this.init = true;
+            this.CollectList = null;
+        } 
+        this.$apply();  
       })
   }
   _updateSelectedPage(page) {
@@ -342,6 +383,7 @@ export default class myFunc extends wepy.page {
       })
     },
     handlerTabTap(e) {
+        // this.init = false;
         this._updateSelectedPage(e.currentTarget.dataset.index);
     },
   } 
@@ -362,7 +404,7 @@ export default class myFunc extends wepy.page {
       <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}" wx:for-item="item" class="one-scene">
         <scroll-view style="height:100%" scroll-y>
           <view wx:if="{{item=='我的收藏'}}">
-            <view wx:if="{{CollectList.length==0}}" >
+            <view wx:if="{{CollectList==null&&init}}" >
                 <image style="width:100%;"  mode="widthFix" src="{{StaticImgUrl+'noneCollect.png'}}"/>
                 <navigator open-type="switchTab" 
                           class='goindex' 

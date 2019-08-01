@@ -103,7 +103,8 @@ export default class shopHome extends wepy.page{
       text:'⚠️Tips:当有用户新下单时，系统会通过短信息提醒您，请您注意查收~',
     }
     onLoad(e){
-          if(e.newOrder){
+      console.log(e)
+          if(e.newOrder==true){
             wepy.playBackgroundAudio({
               dataUrl: this.imageUrl + 'voice/newOrderNotify.mp3',
             });

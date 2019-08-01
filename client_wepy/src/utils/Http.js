@@ -59,7 +59,7 @@ export default class http{
         //异步请求
         return new Promise((resolve,reject)=>{
             wepy.request(param).then(res =>{
-                
+                //200
                 if(this.isSuccess(res)){
                     if(res.data.data == undefined){
                         // console.log(1);
@@ -70,7 +70,24 @@ export default class http{
                         resolve(res.data.data); 
                     }   
                 }else{
-                    reject(this.requestException(res)); 
+                    console.log(res);
+                    if(res.data.message == '用户openid没有获取到'){
+                        wx.showModal({
+                            title: '提示',
+                            content: '您当前尚未登陆无法进行相关操作呢',
+                            confirmColor:'#ff6b5d',
+                            confirmText:'前往登陆',
+                            success: (res=> {
+                                if(res.confirm){
+                                    wx.switchTab({
+                                        url: '/pages/my',
+                                    })
+                                }   
+                            }),
+                        })
+                    }else{
+                        reject(this.requestException(res)); 
+                    }    
                 }
                 Tips.loadDone();
             })

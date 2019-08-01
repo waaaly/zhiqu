@@ -1,7 +1,8 @@
 <template>
-<view style="background-color:#eee;padding-top:10px;">
+<view class="main" style="{{goodList.length==0&&collectList.length==0?'background-color:#fff;':''}}" >
+    <!-- 商品分类和商家商品 -->
     <block wx:for="{{goodList}}" wx:for-item="item" wx:key="index" wx:for-index="index">
-     <view @tap.shop="goGoodDetail({{item}})" class="list">
+     <view @tap.shop="goGoodDetail({{item}})" class="list" style="border-radius:20rpx;margin:5px 10px 10px 10px;">
         <image style="border-radius:20rpx;width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
         <view style="margin-left:5%;width:70%;">
             <view style="color:#ff6b5d;font-size:40rpx;display:flex;{{item.shop_name == undefine?'display:none;':''}}">
@@ -9,14 +10,14 @@
                 <text style="margin-left:20rpx;font-size:30rpx;color:#ff6b5d;">{{item.shop_name}}</text>                
             </view>
             <view class="itemName">{{item.goods_name}}
-                <view wx:if="{{item.collectId}}" class="shoucang" @tap.stop="delInCollect({{item}})">
+                <!-- <view wx:if="{{item.collectId}}" class="shoucang" @tap.stop="delInCollect({{item}})">
                     <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
               mode='widthFix'/>
-                </view>
+                </view> -->
                 <!-- <view wx:else @tap.stop="collect({{item}})" class="shoucang iconfont">&#xe628;</view> -->
             </view>
             <view class="goodText">
-                <text>{{item.goods_desc}}</text>
+                {{item.goods_desc}}
             </view>
             <view class="titleContent">
                 <view class="title">¥{{item.retail_price}}元</view>
@@ -27,10 +28,41 @@
                 </view>
             </view>              
         </view>
-    </view>
-</block>
+     </view> 
+    </block>
+    <!-- 收藏商品 -->
+    <block wx:for="{{collectList}}" wx:for-item="shopItem" wx:key="index" wx:for-index="index" >
+        <view style="{{collectList[index].length!=0?'':'display:none' }}" class="collect">
+            <navigator  class="shopInfo" url="{{'/pages/shoper?shop_id=' + shopItem[0].shop_id}}">
+                <image style="width:50rpx;height:50rpx;border-radius:50%;" src="{{imageUrl+shopItem[0].shop_icon}}"/>
+                <text class="shopInfoText">{{shopItem[0].shop_name}}</text>
+                <image style="width:45rpx;height:45rpx;" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+            </navigator>
+            <view wx:for="{{shopItem}}" @tap.shop="collectGoodDetail({{item.good_id}},{{item.shop_id}})" class="list">
+                <image style="border-radius:20rpx;width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
+                <view style="margin-left:5%;width:70%;">
+                    <view class="itemName">{{item.goods_name}}
+                        <view  class="shoucang" @tap.stop="delInCollect({{item}})">
+                            <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
+                    mode='widthFix'/>
+                        </view>
+                    </view>
+                    <view class="goodText">
+                        {{item.goods_desc}}
+                    </view>
+                    <view class="titleContent">
+                        <view class="title">¥{{item.retail_price}}元</view>
+                        <view @tap.stop="addCart({{item}})" class="add iconfont">
+                            <image style="width:45rpx;height:45rpx;" mode="widthFix" src="/images/icons/cart.jpg"/>
+                        </view>
+                    </view>              
+                </view>
+            </view> 
+        </view>
+    </block>
+    
     <view wx:if="{{goodList.length==0&&ready}}" 
-        style="width:100%;height:80%;display:flex;justify-content:center;align-items:center;color:#ff6b5d;">该分类暂无数据
+    style="width:100%;height:80%;display:flex;justify-content:center;align-items:center;color:#ff6b5d;padding-top:50%;">该分类暂无数据
     </view>
 </view>
 
@@ -50,6 +82,7 @@ export default class classifyGood extends wepy.component{
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
         goodList:[],
+        collectList:{},//收藏列表
     }
     onLoad(e){
         wx.getSystemInfo({
@@ -64,6 +97,14 @@ export default class classifyGood extends wepy.component{
             let URL='/pages/goodDetail?goodId=';
             URL = URL + item.good_id;
             URL = URL + '&shopId=' +item.shop_id;
+            wx.navigateTo({
+                url: URL,
+            })
+        },
+        collectGoodDetail(goodId,shopId){
+            let URL='/pages/goodDetail?goodId=';
+            URL = URL + goodId;
+            URL = URL + '&shopId=' +shopId;
             wx.navigateTo({
                 url: URL,
             })
@@ -85,27 +126,35 @@ export default class classifyGood extends wepy.component{
                     })
                 }) 
         },
-        delInCollect(item,index){
+        delInCollect(item){
+            console.log(item)
+            console.log(this.collectList);
+            var collect_id = item.collectId;
+            var currentShopName = item.shop_name;
+
+            console.log(collect_id)
             new Promise((resolve,reject)=>{
-                    http.post(api.CollectDelete,{
-                        id:item.collectId
-                    }).then(res =>{
-                        console.log(res)
-                        if(res.msg == '删除收藏成功！'){
-                            wx.showToast({
-                                title: res.msg,
-                                icon: ''
-                            })
-                            for(let index in this.goodList){
-                                if(this.goodList[index].collectId==item.collectId){
-                                    this.goodList.splice(index,1);
-                                    this.$apply();
-                                    break;
-                                }
-                            }                        
-                        }
-                    })
-                }) 
+            http.post(api.CollectDelete,{
+                id:collect_id
+                }).then(res =>{
+                    if(res.msg == '删除收藏成功！'){
+                        wx.showToast({
+                            title: res.msg,
+                        })
+                        for(let shopIndex in this.collectList){
+                            if(shopIndex == currentShopName){
+                                    for(let goodIndex in this.collectList[shopIndex]){
+                                        if(this.collectList[shopIndex][goodIndex].collectId == collect_id){
+                                            this.collectList[shopIndex].splice(goodIndex,1);
+                                            this.$apply();
+                                            break;
+                                        }
+                                    }                         
+                            }
+                        }                        
+                    }
+                })
+            }) 
         },
         addCart(item){
             // console.log(item);
@@ -136,54 +185,56 @@ export default class classifyGood extends wepy.component{
         'shoperGoodList': (shoper, $event) => {
             this.ready = true;          
             var goodItem = new Object();
-            var that = this;
-            that.goodList = [];
+            this.goodList = [];
             for(let item of shoper.shop_goods_list){
                 
                 goodItem["good_id"] = item.id;
                 goodItem["primary_pic_url"] = item.primary_pic_url;          
-                goodItem["goods_name"] = item.goods_name;
-                goodItem["goods_desc"] = item.goods_desc;
-                goodItem["retail_price"] = item.retail_price;
-                goodItem["shop_id"] = shoper.shop_info.id;
-                // goodItem["shop_name"] = shoper.shop_info.shop_name;
-                // goodItem["shop_icon"] = shoper.shop_info.shop_icon;
-                that.goodList.push(goodItem);
+                goodItem["goods_name"]      = item.goods_name;
+                goodItem["goods_desc"]      = item.goods_desc;
+                goodItem["retail_price"]    = item.retail_price;
+                goodItem["shop_id"]         = shoper.shop_info.id;
+                this.goodList.push(goodItem);
                 goodItem = {};
             }
-            this.$apply();  
-
-            // for(let item of this.goodList){
-            //     item.goods_desc = item.goods_desc.replace(/<p>/g,"");
-            //     item.goods_desc =item.goods_desc.replace(/<\/p>/g,"");
-                   
+            this.collectList = [];
+            this.$apply();                    
         },
         'classifyGoodList':(classify,$event)=>{
-            this.goodList = classify.goodList;                     
+            this.goodList = classify.goodList;  
+            this.collectList = [];                   
             this.$apply();                  
         },
-        'collectGoodList':(collect,$event)=>{
-            var goodItem = new Object();
-            var that = this;
-            that.goodList = [];
-            for(let item of collect){
-                goodItem["collectId"] = item.collectionId;
-                goodItem["good_id"] = item.goodsInfo.id;
-                goodItem["primary_pic_url"] = item.goodsInfo.primary_pic_url;          
-                goodItem["goods_name"] = item.goodsInfo.goods_name;
-                goodItem["goods_desc"] = item.goodsInfo.goods_desc;
-                goodItem["retail_price"] = item.goodsInfo.retail_price;
-                goodItem["shop_id"] = item.shopInfo.id;
-                goodItem["shop_name"] = item.shopInfo.shop_name;
-                goodItem["shop_icon"] = item.shopInfo.shop_icon;
-                that.goodList.push(goodItem);
-                goodItem = {};
-            }
+        'collectGoodList':(List,$event)=>{
+            
+            var good = new Object();
+            var collectList = new Object();
+            var goodList = [];
+            
+            for(let shopIndex in List){
+                for(let goodIndex in List[shopIndex]){
+                    good["collectId"]       = List[shopIndex][goodIndex].collectionId;
+                    good["good_id"]         = List[shopIndex][goodIndex].id;
+                    good["primary_pic_url"] = List[shopIndex][goodIndex].primary_pic_url;          
+                    good["goods_name"]      = List[shopIndex][goodIndex].goods_name;
+                    good["goods_desc"]      = List[shopIndex][goodIndex].goods_desc;
+                    good["retail_price"]    = List[shopIndex][goodIndex].retail_price;
+                    good["shop_id"]         = List[shopIndex][goodIndex].shop_id;
+                    good["shop_name"]       = List[shopIndex][goodIndex].shop_name;
+                    good["shop_icon"]       = List[shopIndex][goodIndex].shop_icon;
+                    goodList.push(good);
+                    good = {};
+                }
+                this.collectList[shopIndex] = goodList;
+                goodList = [];
+            } 
+            console.log(this.collectList);
             this.$apply();
         },
         'notList':(e,$event)=>{ 
             this.ready = true;          
             this.goodList = [];
+            this.collectList = [];
             // console.log(this.goodList)
             this.$apply();
         }
@@ -194,22 +245,46 @@ export default class classifyGood extends wepy.component{
 
 
 <style>
-page{
-    height:100%;
+.main{
+    background-color:#f3f3f3;
+    padding-top:5px;
+    padding-bottom:10px;
+    height: auto;
+}
+.collect{
+    border: 1px solid #fff;
+    border-radius: 20rpx;
+    margin: 0px 10px 10px 10px;
+    padding:10px 10px;
+    background-color: #fff;
+
+}
+.shopInfo{
+    display: flex;
+}
+.shopInfoText{
+    flex:3;
+    color:#ff6b5d;
+    font-size:35rpx;
+    margin-left:20px;
 }
 .list{
-    border:1px solid #ff6b5d;
-    border-radius:15rpx;
+    /* border:1px solid #ff6b5d; */
+    /* border-radius:15rpx; */
     position:relative;
     padding:20px 10px;
-    margin:0 10px 10px 10px;
+    margin:0 10px 0px 10px;
     display:flex;
     flex-direction:row;
     background:#fff;
 }
+
+.list::last-child{
+    border-bottom-left-radius: 20rpx;
+    border-bottom-right-radius:20rpx
+}
 .itemName{
     font-size:30rpx;
-    position: relative;
 }
 .goodName{
     font-size:35rpx;
@@ -217,25 +292,28 @@ page{
 }
 .shoucang{
     position: absolute;
-    top:0;
-    right: 8rpx;
-  font-size: 40rpx;
-  color: #ff6b5d;
+    top:34rpx;
+    right:-15rpx;
+    font-size:40rpx;
+    font-size: 40rpx;
+    color: #ff6b5d;
 }
 .goodText{
     font-size: 25rpx;
     color:#666;
-   text-overflow:ellipsis;
+   display: -webkit-box;  
+    -webkit-line-clamp: 2;  
+    -webkit-box-orient: vertical; 
    overflow:hidden;
    margin-right: 10rpx;
-   margin-top: 20rpx;
+   margin-top: 10rpx;
+   margin-bottom:10rpx;
 }
 .titleContent{
     position: absolute;
-    bottom:10px;
+    bottom:5px;
     display:flex;
     align-items: center;
-    margin-top:10rpx;
     justify-content: space-between;
     width: 100%;
 }
@@ -243,7 +321,6 @@ page{
   color:coral;
   font-size: 32rpx;
   line-height: 1.5;
-  padding-left: 10rpx;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
@@ -267,7 +344,7 @@ page{
   font-size: 40rpx;
   color: #ff6b5d;
   position: absolute;
-  left: 390rpx;
-  bottom:-8rpx;
+  left: 380rpx;
+  bottom:rpx;
 }
 </style>

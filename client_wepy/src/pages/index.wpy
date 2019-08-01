@@ -93,9 +93,14 @@ export default class Index extends wepy.page{
     goodHot4:goodHot,
   }
   data = {
-    notDefaultAddress:true,//当前是否没有默认地址
+    userAddress:false,//是否使用用户默认地址的服务区域
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
-    address:"正在努力获取您的位置....",
+    address:"智趣社区",
+    city:'广州',//当前城市
+    area:{
+          area_id:1,
+          area_name:'智趣社区'
+        },
     mask1Hidden:{
       data:true,
       twoWay:true
@@ -122,92 +127,99 @@ export default class Index extends wepy.page{
     search_R:0,//
     titleText_W:80,//
     swiper_H:200,//swiper的高度
-    city:'',//当前城市
 
   }
 
-  onLoad(){
+  onLoad(e){
+    var that = this; 
+  
     //显示转发按钮
     wx.showShareMenu({
       withShareTicket: true
     })
-      var that = this;   
-     wx.getSystemInfo({
+
+    //获取系统信息
+    wx.getSystemInfo({
       success: ((res)=> {
-        // console.log(res);
         this.form_W = res.windowWidth - 20;//剪掉padding
         this.swiper_H = res.windowWidth/2;
       })
     })
+
     //轮播图
     new Promise((resolve,reject)=>{
        http.get(api.Swiper,{}).then(res=>{
-        // console.log(res);
+        console.log(res);
         this.imgUrls = res;
       })
-    })      
-      //引入TX地图SDK
-      qqmapsdk = new QQMapWX({
-        key: "EJKBZ-W4HKQ-MYR5T-G4BHS-ATA47-QMFLY", // 必填
-      });
-      //根据当前的经纬度获取用户当前地址信息       
-      qqmapsdk.reverseGeocoder({
-        success (res) {
-          if(!wx.getStorageSync('userDefaultAddress'))
-            that.address = res.result.address;    
-          let s = res.result.address_component.city;//当前所在城市
-          that.city = s.substring(0,s.length-1);
+    })  
+
+    //读取后台用户地址信息
+    if(wx.getStorageSync('userDefaultAddress')){
+      this.userAddress = true;
+      return ;
+    }
+
+    //用户选择的服务区域
+    if(wx.getStorageSync('userSkip')){
+        http.get(api.GetShopArea,{district:'智趣社区'}).then(area=>{
+          that.area.area_id = area.area_id;
+          that.area.area_name = area.area_name;
           that.$apply();
-        },
-        fail: function (e) {
-          console.log(e)
-        },
-        complete:function(e){
-        //是否已经绑定手机
-          if(!wx.getStorageSync('userInfoInServer').phone){
-            wx.showModal({
-              title: '绑定手机',
-              showText: "下次再说",
-              confirmText: "前往绑定",
-              confirmColor:"#ff6b5d",
-              content: "您目前还未绑定手机哦~完成绑定后可以获取更多优质的服务呢！",
-              success:function(res){
-                if(res.confirm){
-                  wx.navigateTo({
-                    url: '/pages/bindPhone',
-                  })
-                }
-              }
-            })
-          }
+        })
+    }else{
+      that.area = JSON.parse(e.area);
+      that.address = that.area.area_name;
+      this.$apply();
+    }
+    
+
+    //推荐商家 
+    new Promise((resolve,reject)=>{
+      http.get(api.ShopList,{area_id:that.area.area_id}).then(res =>{
+        console.log(res);
+        this.shopList = res;
+        this.$apply();
+      })
+    })
+
+    //活动商品
+    new Promise((resolve,reject)=>{
+      http.get(api.HotGood,{area_id:that.area.area_id}).then(res=>{
+        console.log("onload")
+        console.log( res)  
+        for(let x=0;x<4;x++){       
+          if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
+          if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}
+          if(res[x*4+2]!=undefined){this.hotGoodList[x].push(res[x*4+2])}
+          if(res[x*4+3]!=undefined){this.hotGoodList[x].push(res[x*4+3])}         
         }
-      }); 
+      
+        this.hotGood1 = this.hotGoodList[0];
+        this.hotGood2 = this.hotGoodList[1];
+        this.hotGood3 = this.hotGoodList[2];
+        this.hotGood4 = this.hotGoodList[3];
+
+        this.$apply();
+      })
+    })
   }  
   onShow(e){
     var that = this;
-   //查找一个可以提供服务的默认地址
-    wx.getStorage({
-    key: 'userDefaultAddress',
-      success: function(res){ 
-        console.log(res.data)
-        var data = res.data;
-        that.address = data.area_name;
-        that.$apply();
-        that.notDefaultAddress=false;
-      },
-      fail:function(res){
-        that.notDefaultAddress=true;
-      }
-    })
-  }
-  watch = {
-    address(_new,old){
-      //活动专区
-      this.hotGoodList = [[],[],[],[]];
-      this.$apply();
+    if(that.userAddress&&wx.getStorageSync('userDefaultAddress')){
+      //推荐商家 
+      new Promise((resolve,reject)=>{
+        http.get(api.ShopList,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res =>{
+          console.log(res);
+          this.shopList = res;
+          this.$apply();
+        })
+      })
+
+      //活动商品
       new Promise((resolve,reject)=>{
         http.get(api.HotGood,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res=>{
-          console.log("index")
+          console.log("onshow")
           console.log( res)  
           for(let x=0;x<4;x++){       
             if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
@@ -224,14 +236,14 @@ export default class Index extends wepy.page{
           this.$apply();
         })
       })
-      //推荐商家
-      new Promise((resolve,reject)=>{
-        http.get(api.ShopList,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res =>{
-          console.log(res);
-          this.shopList = res;
-          this.$apply();
-        })
-      })
+      that.address = wx.getStorageSync('userDefaultAddress').area_name;
+      that.userAddress = false;
+      that.$apply();
+    }
+  }
+  watch = {
+    address(_new,old){
+      //活动专区 
     }
   }
   onPageScroll(e){
@@ -261,9 +273,9 @@ export default class Index extends wepy.page{
     }
   methods ={
     goChooseAddress(e){
-      
-       let url = '/pages/addressChoose?address='+ this.address + '&city=' + this.city;
-       
+      this.userAddress = true;
+      this.$apply();
+       let url = '/pages/addressChoose?address='+ this.address + '&city=' + this.city;      
        console.log(url)
         wx.navigateTo({
           url: url, 
