@@ -1,7 +1,7 @@
 <template>
-    
+<view wx:if="{{init}}">
     <block wx:if="{{login}}">
-        
+        <!--用户 -->
         <view wx:if="{{userInfoInServer.role == 0}}" class="avatar-wrapper">
             <view  class="background">
                 <image src="{{userInfoInServer.avatar}}"  class="_img "/>
@@ -12,14 +12,34 @@
             <view class="userInfo">
                 <text style="padding:5px;border-bottom:#eee solid 1px;">{{userInfoInServer.name}}</text>
                 <view class="order">
-                    <navigator wx:for="{{order}}" class="orderItem" url="{{item.url}}">                     
+                    <navigator wx:for="{{order.items}}" class="orderItem" url="{{item.url}}">                     
                             <view><image src="{{item.icon}}" style="width:50rpx;height:50rpx;"/></view>
                             <view style="font-size:30rpx;">{{item.text}}</view>               
                     </navigator>
                 </view>
             </view>
         </view>
-
+        <!--商家-->
+        <view wx:if="{{userInfoInServer.role == 1}}" class="avatar-wrapper-shop">
+             <view  class="background">
+                <image src="{{userInfoInServer.avatar}}"  class="_img "/>
+            </view>
+                <view style="position:relative;display:flex;justify-content:center;width:60px;height:60px;border-radius:50%;border:2px solid #ffb65d;background-color:#fff;z-index:1024;padding:2px;">
+                    <image style="border-radius:50%;height:60px;width:60px;" src="{{userInfoInServer.avatar}}"/>
+                </view>
+                <text style="margin:10px;color:#fff;">{{userInfoInServer.name}}</text>
+                <view class="shopInfo" @tap="goMyShop">
+                    <image style="width:100px;height:45px;" src="/images/icons/line.jpg"/>
+                    <view style="color:#ff6b5d;font-size:35rpx;display:flex;flex-direction:column;justify-content:space-between">
+                        <text style="margin-bottom:15px;">我的店铺</text>
+                        <text>{{shop_name}}</text>
+                    </view>
+                    <image wx:if="{{haveOrder}}" style="width:80px;height:80px;" src="/images/icons/newOrder.jpg"/>
+                    <image wx:else style="width:80px;height:80px;" src="/images/icons/noneOrder.jpg"/>
+                    <!-- <image @tap.stop="previewImg" style="width:45px;height:45px;" src="https://tse4-mm.cn.bing.net/th?id=OIP.TwdA5X1c0ShqBqcGudgjTwHaHa&w=200&h=200&c=7&o=5&dpr=1.5&pid=1.7"/> -->
+                </view>
+            </view>    
+       
         
     </block>
     
@@ -56,68 +76,6 @@
         </view>
     </block>
 
-      
-
-    
-<view wx:if="{{init}}">
-    <view wx:if="{{userInfoInServer.phone!=null}}" class="mine-wrapper">
-        <!-- 用户头像展示 -->
-        <view class="background">
-        <image src="{{userInfo.avatarUrl}}" width="100%" height="100%" class="_img "/>
-        </view>
-        <view class="avatar-wrapper" style="{{userRole?'border-bottom:1px solid #ff6b5d;margin-bottom:100px;border-radius: 100px ;':''}}">
-            <view>
-                <view class="avatar" bindtap="gotoSetting">
-                    <image style="border-radius:50%;" src="{{userInfo.avatarUrl? userInfo.avatarUrl:'http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/bangzhufankui.png' }}"></image>
-                </view>
-                <view wx:if="{{userRole}}" class="myShop" @tap="goMyShop">
-                    <view style="display:flex;justify-content:space-between;align-items:center;">
-                        <image style="width:100px;height:45px;" src="/images/icons/line.jpg"/>
-                        <view style="color:#ff6b5d;font-size:35rpx;display:flex;flex-direction:column;justify-content:space-between">
-                            <text style="margin-bottom:15px;">我的店铺</text>
-                            <text>{{shop_name}}</text>
-                        </view>
-                        <image wx:if="{{haveOrder}}" style="width:80px;height:80px;" src="/images/icons/newOrder.jpg"/>
-                        <image wx:else style="width:80px;height:80px;" src="/images/icons/noneOrder.jpg"/>
-                        <!-- <image @tap.stop="previewImg" style="width:45px;height:45px;" src="https://tse4-mm.cn.bing.net/th?id=OIP.TwdA5X1c0ShqBqcGudgjTwHaHa&w=200&h=200&c=7&o=5&dpr=1.5&pid=1.7"/> -->
-                    </view>
-                </view>
-            </view>
-        </view>
-
-        <!-- 个人中心展示 -->
-        <block wx:if="{{userInfoInServer}}" wx:for="{{menuItems}}" wx:for-index="itemIndex">
-            <view class="wrapperItem" >
-                <view bindtap="naviTo" data-itemname="{{itemIndex}}" class="weui-cell weui-cell_access" hover-class="none">
-                    <view class="itemtext">
-                        <image src="{{item.icon}}" class="image"/>
-                        {{item.text}}
-                    </view>
-                    <view class="tips">{{item.touch==false?'展开':'收起'}}{{item.tips}}
-                        <image wx:if="{{item.touch}}" style="transform: rotate(90deg);" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
-                        <image wx:else src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
-                    </view>
-                </view>
-                <view class="weui-flex" style="{{item.touch==false?'display:none':''}}">
-                    <block wx:for="{{item.items}}" wx:for-item="childItems">
-                        <view bindtap="childNavTo"  data-url="{{childItems.url}}" data-fathertext="{{item.text}}" class="weui-flex_item" hover-class="none" style="flex-grow: 1">
-                            <view class="weui-cell_hd" style="text-align:center;">
-                                <image src="{{childItems.icon}}" class="image"/>
-                            </view>
-                            <view style="font-size:25rpx;text-align: center;">{{childItems.text}}</view>
-                        </view>
-                    </block>
-                </view>
-            </view>
-        </block>
-        <!-- <button @tap="cerateCode">生成小程序码</button> -->
-    </view>
-    <view wx:else  style="witdh:100%;height:100%;">
-    <view style="position:absolute;top:20%;padding:10%;text-align:center; color:#ff6b5d;line-height:50px;">您还没有绑定手机号，我们无法为您
-        <text style="text-align:center;">提供更优质的服务哦～</text></view>
-    <navigator class="bindphone"   url="../pages/bindPhone" >前往绑定手机号</navigator>
-    </view>
-
 </view>
 </template>
 <script>
@@ -136,12 +94,19 @@ export default class my extends wepy.page{
         shop_name:'',
         shop_id:'',
         userRole:0,//用户身份：0消费者，1：商家
-        order: [
+        order: {
+            text: '我的订单',
+                tabs: ['全部订单', '待付款', '待收货', '已完成'],
+                touch:true,
+                icon: StaticImgUrl + '我的订单/hear.png',
+                tips: '全部订单',
+                items: [
                     { text: '待付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'我的订单/待付款.png' },
                     // { text: '待送货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待审核.png' },
                     { text: '待收货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待收货.png' },
                     { text: '已完成', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
-                ],
+                ]
+        },
         userInfoInServer: {},
         menuItems: {
             order: {
@@ -205,55 +170,49 @@ export default class my extends wepy.page{
         wx.showShareMenu({
             withShareTicket: true
         })
-        
-        // http.get(api.UserInfo,{user_id:wx.getStorageSync("userInfoInServer").id}).then(res=>{
-        //     console.log(res);
-        //     this.userRole = res.role;
-        //     wx.setStorageSync('userInfoInServer', res);
-        //     var str = wx.getStorageSync('userInfo');
-        //     this.userInfo = JSON.parse(str);
-        //     this.init = true;
-        //     this.$apply();
-        //     if(res.role){
-        //         http.get(api.MyShop,{bind_phone:wx.getStorageSync("userInfoInServer").phone}).then(result =>{ 
-        //             this.shop_name = result.shop_name;
-        //             this.shop_id = result.id;
-        //             this.$apply();
-        //             http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
-        //             if(res){
-        //                 this.haveOrder = true;
-        //                 this.$apply();
-        //                 }
-        //             })   
-        //         })
-        //     }       
-        // })
     }
-    onShow(){
-        //读取用户信息
-        wx.getStorage({
-            key:'userInfoInServer',
-            success:(res)=>{
-                this.login = true;
-                delete this.menuItems.order;
-                this.userInfoInServer = res.data;
-                this.$apply();
-            }
+    async getUserInfo(e){
+        return new Promise((resolve,reject)=>{
+            wx.getStorage({
+                key: 'userInfoInServer',
+                success: (res=>{
+                    this.login = true;
+                    this.userInfoInServer = res.data;
+                    this.$apply();
+                    resolve(res.data)
+                }),
+                fail:(res=>{
+                    reject(res);
+                })
+            })
         })
-
-
-    //   this.userInfoInServer = wx.getStorageSync("userInfoInServer");
-    //   if(this.shop_id){
-    //       http.get(api.NotifyOrder,{shop_id:this.shop_id},false).then(res=>{
-    //           if(res){
-    //               this.haveOrder = true;
-    //           }else{
-    //               this.haveOrder = false;
-    //           }
-    //           this.$apply();
-    //       })   
-    //   } 
     }
+    onShow(e){
+        //读取用户信息
+        this.getUserInfo().then(res=>{
+             http.get(api.MyShop,{bind_phone:wx.getStorageSync("userInfoInServer").phone}).then(result =>{ 
+                    this.shop_name = result.shop_name;
+                    this.shop_id = result.id;
+                    this.init = true;
+                    this.$apply();
+                    http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
+                    if(res){
+                        this.haveOrder = true;
+                        this.$apply();
+                        }
+                    })   
+            })
+            if(res.role){
+                this.menuItems['order'] = this.order;
+            }else{
+                delete this.menuItems.order;
+            }
+            this.$apply();
+        }).catch(res=>{
+                this.init = true;
+        })
+    } 
+    
     methods = {
         //管理我的商铺
         goMyShop(e){
@@ -355,7 +314,16 @@ page{
     background: linear-gradient(#ffb65d, #ff6b5d); 
     margin-bottom:10px;
 }
+.gradualShop{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    height: 180px;
+    background: linear-gradient(#ffb65d, #ff6b5d);
+    margin-bottom: 10px;
 
+}
 .mine-wrapper{
     height: 100%;
     width:100%;
@@ -393,7 +361,16 @@ page{
     display:flex;
     flex-direction: column;
 }
-
+.shopInfo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    top: 70%;
+    background: #fff;
+    border-radius: 15rpx;
+    padding: 5px;
+    width:80%;
+}
 .order{
     display:flex;
     align-items: center;
@@ -507,12 +484,21 @@ page{
   width: 30rpx;
   height: 30rpx;
 }
+
 .avatar-wrapper {
     padding: 25px 0;
 	position: relative;
     display: flex;
     flex-direction: column;
     margin-bottom:90px;
+}
+
+.avatar-wrapper-shop {
+    padding: 25px 0;
+	position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items:center;
 }
 
 .avatar-wrapper .avatar {

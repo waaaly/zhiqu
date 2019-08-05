@@ -165,11 +165,11 @@ export default class shopHome extends wepy.page{
 
 <template>
   <view class="conatiner" >
-    <view class='loop-text'>
+    <!-- <view class='loop-text'>
     <view class="marquee_text" style="left:2px; font-size: 13px;">
       {{text}}
     </view>
-   </view>
+   </view> -->
     <view class="shop-box">
       <image style="width:45rpx;height:45rpx;border-radius:50%;" src="{{imageUrl + myShop.shop_icon}}"/>
       <text class="sm">{{myShop.shop_name}}</text>

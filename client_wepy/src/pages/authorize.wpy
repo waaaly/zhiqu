@@ -83,8 +83,8 @@ export default class Authorize extends wepy.page {
                               duration:1000,
                               complete:(res)=>{
                                 setTimeout(() =>{
-                                    wx.navigateBack({
-                                      delta: 1, // 回退前 delta(默认为1) 页面
+                                    wx.switchTab({
+                                      url: '/pages/my', // 回退前 delta(默认为1) 页面
                                     })
                                 },1050)                              
                               }

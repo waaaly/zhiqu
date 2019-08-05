@@ -75,6 +75,8 @@ module.exports = {
     AddressSetDefault: ApiRootUrl + 'address-default', //直接设为默认地址
     RegionList: ApiRootUrl + 'region/list', //获取区域列表
 
-   
+    UserComment:ApiRootUrl + 'user-comment',//用户提交评论
+    CommentList:ApiRootUrl + 'comment-list',//获取用户评论
+
     QRcode:ApiRootUrl + 'qrcode',//生成小程序码
 }

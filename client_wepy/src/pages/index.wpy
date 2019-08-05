@@ -18,7 +18,7 @@
     </navigator>
   </view>
   <view class='wrap-swiper'>
-      <swiper style="height:{{swiper_H}}px" indicator-dots="{{true}}" autoplay="{{flase}}" interval="{{1500}}" duration="{{1500}}" circular="{{true}}" current="{{current}}" bindchange='testDetails' indicator-active-color='#ff6d5b'>
+      <swiper style="height:{{swiper_H}}px" indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}" duration="{{1500}}" circular="{{true}}" current="{{current}}" indicator-active-color='#ff6d5b'>
         <block wx:for="{{imgUrls}}" wx:key="key">
       <swiper-item>
         <image src="{{imageUrl+item.pic_url}}" style="width:100%;" mode="widthFix"  />
@@ -219,8 +219,9 @@ export default class Index extends wepy.page{
       //活动商品
       new Promise((resolve,reject)=>{
         http.get(api.HotGood,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res=>{
-          console.log("onshow")
-          console.log( res)  
+          this.hotGoodList=[[],[],[],[]];
+          console.log( res)
+          console.log("onshow")  
           for(let x=0;x<4;x++){       
             if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
             if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}

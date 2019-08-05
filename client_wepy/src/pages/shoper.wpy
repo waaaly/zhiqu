@@ -11,7 +11,7 @@
         <classifyGood></classifyGood>
     </block>
     <block wx:if="{{currentTab==1}}">
-        <shopComment></shopComment>
+        <shopComment :shopInfo.sync='shopInfo'></shopComment>
     </block>
     <block wx:if="{{currentTab==2}}">
         <shopInfo :shopInfo.sync='shopInfo'></shopInfo>
@@ -48,13 +48,14 @@ export default class Shoper extends wepy.page {
     }
     onLoad(e){
         console.log(e)
-        
+        //获取商品
         http.get(api.ShopDetail,{shop_id:e.shop_id}).then(res =>{
             console.log(res);   
             this.shopInfo = res.shop_info;
             this.$broadcast('shoperGoodList', res);    
             this.$apply();       
         })
+        
     }
     methods ={
         touchTab(index){

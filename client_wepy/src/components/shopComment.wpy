@@ -2,7 +2,7 @@
     <view class=" ratings" ref="ratings">
     <scroll-view scroll-y style="height:100%" class="_scroll-view data-v-973552be">
       <view class=" ratings-content">
-        <view class=" overview">
+        <!-- <view class=" overview">
           <view class=" overview-left">
             <view class="_h1 data-v-973552be score">{{seller.score}}</view>
             <view class=" title">综合评分</view>
@@ -24,9 +24,7 @@
               <label class=" delivery">{{seller.deliveryTime}}分钟</label>
             </view>
           </view>
-        </view>
-        <template data="{{...$root[$kk+'2'], $root}}" is="4a850dda"></template>
-        <template bindselect="handleProxy" bindtoggle="handleProxy" data-eventid="{{'0'}}" data-comkey="{{$k}}" data="{{...$root[$kk+'3'], $root}}" is="1282dc3d"></template>
+        </view> -->
         <view class=" rating-wrapper">
           <view class="_ul data-v-973552be">
             <view wx:if="{{!(onlyContent && !rating.text) || (selectType === ALL) && (rating.rateType === selectType)}}" class="_li data-v-973552be rating-item" wx:key="index" key="{{index}}" wx:for="{{ratings}}" wx:for-index="index" wx:for-item="rating">
@@ -57,15 +55,28 @@
 <script>
 import wepy from "wepy";
 import star from "../components/star";
+import http from '../utils/Base';
+import api from '../utils/API';
 export default class shopComment extends wepy.component{
   components = {
     star:star,
   }
     data = {
-      seller:{}
+     shopInfo:{
+      type:Object,
+      default:{}
+    }
     }
     onLoad(e){
      
+    }
+    watch = {
+      shopInfo(_new,old){
+        //获取用户评论
+        http.get(api.CommentList,{shop_id:_new.id}).then(res=>{
+            console.log(res);
+        })
+      }
     }
 }
 </script>
