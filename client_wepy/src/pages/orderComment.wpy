@@ -124,22 +124,22 @@ page {
   padding-top:36rpx; 
 }
 .picture .right .add {
-  width: 120rpx;
-  height: 120rpx;
+  width: 150rpx;
+  height: 150rpx;
   margin-right: 10rpx;
 }
 .According{
-  width:120rpx;
-  height:120rpx;
+  width:150rpx;
+  height:150rpx;
   float:left;
   margin-right:10rpx;
   margin-bottom: 10rpx;
 }
 .parcel{
- width:120rpx;
-  height:120rpx;
+ width:150rpx;
+  height:150rpx;
   float:left;
-  margin-right:10rpx;
+  margin-right:20px;
    margin-bottom: 10rpx;
   position: relative;
 }
@@ -195,6 +195,45 @@ textarea {
 button:after {
   border: 0;
 }
+
+.progress_box{
+  position: relative;
+  width:220px;
+  height: 220px;  
+/* // 这里的宽高是必须大于等于canvas圆环的直径 否则绘制到盒子外面就看不见了
+// 一开始设置 width:440rpx; height:440rpx; 发现 在360X640分辨率的设备，下绘制的圆环跑盒子外去了
+// 小程序使用rpx单位适配 ，但是canvas绘制的是px单位的。所以只能用px单位绘制的圆环在盒子内显示 */
+  display: flex;  
+  align-items: center;
+  justify-content: center;
+  background-color: #eee;
+}
+.progress_bg{
+  position: absolute;
+    width:220px;
+  height: 220px; 
+}
+.progress_canvas{ 
+  width:220px;
+  height: 220px; 
+} 
+.progress_text{ 
+  position: absolute; 
+  display: flex;  
+  align-items: center;
+  justify-content: center
+}
+.progress_info{   
+  font-size: 36rpx;
+  padding-left: 16rpx;
+  letter-spacing: 2rpx
+} 
+.progress_dot{
+  width:16rpx;
+  height: 16rpx;  
+  border-radius: 50%;
+  background-color: #fb9126;
+}
 </style>
 
 <script>
@@ -202,6 +241,7 @@ button:after {
 import wepy from 'wepy';
 import http from '../utils/Base';
 import api from '../utils/API'; 
+const uploadFile = require("../utils/Upload.js");
 export default class orderComment extends wepy.page{
 
   data = {
@@ -219,13 +259,28 @@ export default class orderComment extends wepy.page{
       "star-on",
     ],
     wjxScore:5,
-    // textarea
+    textarea:"",//评论内容
+    currentWordNumber:0,//当前字数
     min: 5,//最少字数
     max: 300, //最多字数 (根据自己需求改变) 
     pics:[],
+    pisUrl:[],//oss图片存储地址
+    shopId:"",//当前评价的订单属于哪个商家
+    addPic:true,
   }
   onLoad(e){
-
+    // console.log(e)
+    this.shopId = e.shop_id;
+    this.orderId = e.order_id;
+    this.pics = [];
+    this.picUrl = [];
+  }
+  onShow(e){
+    
+  }
+  onReady(e){
+    this.drawProgressbg(); 
+    
   }
   methods = {
       // 星星点击事件
@@ -277,46 +332,69 @@ export default class orderComment extends wepy.page{
             this.wjxScore = index + 1;
             this.$apply();
         },
-            // 留言
-            //字数限制  
+        // 留言
+        //字数限制  
         inputs: function (e) {
             // 获取输入框的内容
             var value = e.detail.value;
+            this.textarea = value;
             // 获取输入框内容的长度
             var len = parseInt(value.length);
             //最多字数限制
             if (len > this.data.max) return;
-            // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行
-            
-                that.currentWordNumber=len //当前字数  
-            
-            },
-            // 图片
+            // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行          
+            this.currentWordNumber=len //当前字数    
+            this.drawCircle(len/300*2);         
+        },
+        // 图片
         choose: function (e) {//这里是选取图片的方法
             var that = this;
+            var userId = wx.getStorageSync('userInfoInServer').id
+            var perfix = 'front/' + userId;
+
             wx.chooseImage({
-              count: 5 - pics.length, // 最多可以选择的图片张数，默认9
+              count: 3 - that.pics.length, // 最多可以选择的图片张数，默认9
               sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
               sourceType: ['album', 'camera'], // album 从相册选图，camera 使用相机，默认二者都有
               success: function (res) {
                  var imgsrc = res.tempFilePaths;
-                  that.pics = pics.concat(imgsrc);//连接两个或多个数组
-                  console.log(pics);            
+                 
+                 for (let item of imgsrc){
+                    uploadFile(item,userId);
+                    that.picUrl.push(item.replace('http://tmp', perfix));
+                 }
+                  that.pics = that.pics.concat(imgsrc);//连接两个或多个数组 
+                  if(that.pics.length >= 3){
+                    that.addPic = false;
+                  }          
                   that.$apply();       
               }
             })
         },
-        comment: function () {//这里触发图片上传的方法
-           
+        //这里触发图片上传的方法
+        comment: function () {
+          var userId = wx.getStorageSync('userInfoInServer').id;
+          http.post(api.UserComment,{shop_id: this.shopId,
+                    user_id: userId,
+                    order_id: this.orderId,
+                    content: this.textarea,
+                    grade: this.wjxScore,
+                    list_pic_url: this.picUrl,
+          }).then(res=>{
+            console.log(res);
+            if(res.msg){
+              wx.showToast({
+                title:res.msg,
+              })
+            }
+          })
         },
         // 删除图片
         deleteImg: function (e) {
             var pics = this.data.pics;
             var index = e.currentTarget.dataset.index;
-            pics.splice(index, 1);
-
-            that.pics=pics
-            
+            this.pics.splice(index, 1);
+            this.$apply();
         },
         // 预览图片
         previewImg: function (e) {
@@ -332,7 +410,35 @@ export default class orderComment extends wepy.page{
             })
         },
   }
-
+  drawProgressbg(){
+    // 使用 wx.createContext 获取绘图上下文 context
+    var ctx = wx.createCanvasContext('canvasProgressbg',this)
+    ctx.setLineWidth(4);// 设置圆环的宽度
+    ctx.setStrokeStyle('#20183b'); // 设置圆环的颜色
+    ctx.setLineCap('round') // 设置圆环端点的形状
+    ctx.beginPath();//开始一个新的路径
+    ctx.arc(110, 110, 100, 0, 2 * Math.PI, false);
+    //设置一个原点(110,110)，半径为100的圆的路径到当前路径
+    ctx.stroke();//对当前路径进行描边
+    ctx.draw();
+  }
+  drawCircle (step){  
+    var context = wx.createCanvasContext('canvasProgress',this);
+      // 设置渐变
+      var gradient = context.createLinearGradient(200, 100, 100, 200);
+      gradient.addColorStop("0", "#2661DD");
+      gradient.addColorStop("0.5", "#40ED94");
+      gradient.addColorStop("1.0", "#5956CC");
+      
+      context.setLineWidth(10);
+      context.setStrokeStyle(gradient);
+      context.setLineCap('round')
+      context.beginPath(); 
+      // 参数step 为绘制的圆环周长，从0到2为一周 。 -Math.PI / 2 将起始角设在12点钟位置 ，结束角 通过改变 step 的值确定
+      context.arc(110, 110, 100, -Math.PI / 2, step * Math.PI - Math.PI / 2, false);
+      context.stroke(); 
+      context.draw() 
+  }
 }
 </script>
 
@@ -372,18 +478,27 @@ export default class orderComment extends wepy.page{
      <view class='right'>
         <view class="parcel" wx:for="{{pics}}" wx:key="{{index}}">
             <image src="{{pics[index]}}" class="According" data-index="{{index}}" mode="aspectFill" bindtap="previewImg"></image>
-            <image src="/images/icons/broken.png" class='deleteimg' catchtap="deleteImg" data-index="{{index}}"></image>
+            <image src="/images/icons/error.png" class='deleteimg' catchtap="deleteImg" data-index="{{index}}"></image>
         </view>
-       <image src='/images/icons/addPic.jpg' class='add' bindtap='choose'/>
+       <image wx:if="{{addPic}}" src='/images/icons/addPic.jpg' class='add' bindtap='choose'/>
      </view>
    </view>
  </view>
  <!--textarea-->
  <view class="conts">
      <textarea class="areas" placeholder='更多评价请写在这里（最多300字）' minlength="{{min}}" maxlength="{{max}}" bindinput="inputs"> 
-         <!-- <text class="currentWordNumber">{{currentWordNumber|0}}/{{max}}</text> -->
      </textarea>
  </view>
+ <view style="position:fixed;left:100px;">
+     <view class='progress_box'>
+        <canvas class="progress_bg"   canvas-id="canvasProgressbg">  </canvas> 
+        <canvas class="progress_canvas"   canvas-id="canvasProgress">  </canvas> 
+        <view class="progress_text">
+            <!-- <view class="progress_dot"></view>  -->
+            <text class='progress_info'> {{currentWordNumber}}</text>
+        </view>     
+    </view>
+</view>
  <!--提交评价-->
  <button class='btn' @tap="comment">提交评价</button>
 </template>

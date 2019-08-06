@@ -67,6 +67,7 @@ export default class orderItem extends wepy.page{
     events = {
       'orderList':(orderList,$event)=>{
         this.orderList = orderList;
+        console.log(orderList)
         this.$apply();
         this.$emit('myOrder', true);//通知父亲，接收到数据
       }
@@ -78,7 +79,6 @@ export default class orderItem extends wepy.page{
     }
     methods = {
       action(text,index){
-        console.log(index);
         if(text == '前往支付'){
           http.get(api.WechatPay,{order_id:this.orderList[index].id,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
                 // console.log(res);
@@ -132,7 +132,7 @@ export default class orderItem extends wepy.page{
 
         if(text == '前往评价'){
           wx.navigateTo({
-            url: '/pages/orderComment',
+            url: '/pages/orderComment?shop_id=' + this.orderList[index].shopInfo.id +'&order_id=' + this.orderList[index].id,
           })
         }
       }

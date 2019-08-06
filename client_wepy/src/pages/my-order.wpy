@@ -10,7 +10,7 @@
   <view wx:if="{{init}}" class="scroll-view">
     <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
       <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
-        <scroll-view style="height:100%" scroll-y>
+        <scroll-view style="height:100%;position:relative;" scroll-y>
             <view wx:if="{{OrderList==0}}" > 
               <image style="width:100%;" mode='widthFix' src="{{imageUrl+'zq/noneOrder.png'}}"/>   
               <navigator open-type="switchTab" 
@@ -22,10 +22,17 @@
             <view wx:else>
               <orderItem ></orderItem>
             </view> 
-              
+           
         </scroll-view>
       </view>
     </view>
+    <swiper wx:if="{{showPage}}" class="orderPage" easing-funtion="easeInOutCubic" current="{{swiperCurrent}}" bindchange="pageRefresh">
+        <swiper-item style="display:flex;justify-content:center;"  wx:for="{{pageList}}">
+          <view wx:if="{{item!=1}}" @tap="frontPage" class="frontPage">{{item -1 }} </view>
+          <view class="currentPage" >{{item}}</view>
+          <view wx:if="{{item!=pageList.length}}" @tap="nextPage" class="nextPage">{{item +1}}</view>
+        </swiper-item>
+    </swiper>
   </view>
 </view>
 
@@ -41,6 +48,11 @@ export default class myOrder extends wepy.page{
     orderItem:orderItem,
   }
   data = {
+    front:'<<',
+    next:'>>',
+    showPage:false,
+    pageList:[],
+    swiperCurrent:0,//当前页
     init:false,
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     activeTab: 0,
@@ -71,20 +83,43 @@ export default class myOrder extends wepy.page{
     })
 
     if(this.activeTab == 1){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
-           
-            this.OrderList=res;
+            if(res.length == 0){
+              this.showPage = false;this.$apply();
+              return ;
+            }
+            
+            for(let i = 0; i< res.last_page; i++){//
+              this.pageList[i] = i+1;
+            }
+            this.showPage = true;
+            this.OrderList=res.data;
             this.$broadcast('orderList',this.OrderList);
             this.$apply();
           })}
     else if(this.activeTab == 2){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{
-          
-          this.OrderList=res;
+          if(res.length == 0){
+              this.showPage = false;this.$apply();
+              return ;
+          }
+          for(let i = 0; i< res.last_page; i++){//
+            this.pageList[i] = i+1;
+          }
+          this.showPage = true;
+          this.OrderList=res.data;
           this.$broadcast('orderList',this.OrderList);
           this.$apply();
         })}
     else if(this.activeTab == 3){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-         
-          this.OrderList=res;
+          console.log(res);
+          if(res.length == 0){
+              this.showPage = false;this.$apply();
+              return ;
+          }
+          for(let i = 0; i< res.last_page; i++){//
+            this.pageList[i] = i+1;
+          }
+          this.showPage = true;
+          this.OrderList=res.data;
           this.$broadcast('orderList',this.OrderList);
           this.$apply();
         }) } 
@@ -98,11 +133,20 @@ export default class myOrder extends wepy.page{
   }
    watch = {
      activeTab(newValue, oldValue) {
+      this.pageList = [];
       switch(newValue){
           case 0://全部订单
               {
-                http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res=>{   
-                  this.OrderList=res; 
+                http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res=>{ 
+                  if(res.length == 0){
+                    this.showPage = false;this.$apply();
+                    return ;
+                  }
+                  for(let i = 0; i< res.last_page; i++){//
+                    this.pageList[i] = i+1;
+                  }
+                  this.showPage = true;  
+                  this.OrderList=res.data; 
                   this.$broadcast('orderList',this.OrderList);               
                   this.$apply();   
                 })
@@ -112,8 +156,15 @@ export default class myOrder extends wepy.page{
           case 1://带支付，待付款
             {
               http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
-                
-                this.OrderList=res; 
+                if(res.length == 0){
+                  this.showPage = false;this.$apply();
+                  return ;
+                }
+                for(let i = 0; i< res.last_page; i++){//
+                  this.pageList[i] = i+1;
+                }
+                this.showPage = true;
+                this.OrderList=res.data; 
                 this.$broadcast('orderList',this.OrderList);             
                 this.$apply();  
               })
@@ -124,7 +175,15 @@ export default class myOrder extends wepy.page{
           case 2:// 商家确认接单，用户等待收获
           {
             http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{            
-              this.OrderList=res; 
+              if(res.length == 0){
+                this.showPage = false;this.$apply();
+                return ;
+              }
+              for(let i = 0; i< res.last_page; i++){//
+                this.pageList[i] = i+1;
+              }
+              this.showPage = true;
+              this.OrderList=res.data; 
               this.$broadcast('orderList',this.OrderList);
               this.$apply();  
             })
@@ -134,8 +193,15 @@ export default class myOrder extends wepy.page{
           case 3://订单完成，待评价
           {
             http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-            
-              this.OrderList=res; 
+              if(res.length == 0){
+                this.showPage = false;this.$apply();
+                return ;
+              }
+              for(let i = 0; i< res.last_page; i++){//
+                this.pageList[i] = i+1;
+              }
+              this.showPage = true;
+              this.OrderList=res.data; 
               this.$broadcast('orderList',this.OrderList);
               this.$apply();   
             }) 
@@ -145,7 +211,76 @@ export default class myOrder extends wepy.page{
         }
   }
   methods = {
-      handlerTabTap(e) {
+    frontPage(e){
+      if(this.swiperCurrent == 0){
+        return;
+      }else{
+        this.swiperCurrent = this.swiperCurrent-1;
+        this.$apply();
+      }
+    },
+    nextPage(e){
+      if(this.swiperCurrent == this.pageList.length){
+        return;
+      }else{
+        this.swiperCurrent = this.swiperCurrent+1;
+        this.$apply();
+      }
+    },
+    pageRefresh(e){
+      console.log(this.activeTab);
+      switch(this.activeTab){
+          case 0://全部订单
+              {
+                http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,page:this.swiperCurrent+1}).then(res=>{   
+                  this.OrderList=res.data; 
+                  this.$broadcast('orderList',this.OrderList);               
+                  this.$apply();   
+                })
+                break;
+              }
+            
+          case 1://带支付，待付款
+            {
+              http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10,page:this.swiperCurrent+1 }).then(res=>{
+                for(let i = 0; i< res.last_page; i++){//
+                  this.pageList[i] = i+1;
+                }
+                this.OrderList=res.data; 
+                this.$broadcast('orderList',this.OrderList);             
+                this.$apply();  
+              })
+              break;
+            } 
+    
+            
+          case 2:// 商家确认接单，用户等待收获
+          {
+            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32,page:this.swiperCurrent+1}).then(res=>{            
+              for(let i = 0; i< res.last_page; i++){//
+                this.pageList[i] = i+1;
+              }
+              this.OrderList=res.data; 
+              this.$broadcast('orderList',this.OrderList);
+              this.$apply();  
+            })
+            break;
+          }  
+            
+          case 3://订单完成，待评价
+          {
+            console.log('1111')
+            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40,page:this.swiperCurrent+1 }).then(res=>{
+              console.log(res);
+              this.OrderList=res.data; 
+              this.$broadcast('orderList',this.OrderList);
+              this.$apply();   
+            }) 
+            break;
+          } 
+        } 
+    },
+    handlerTabTap(e) {
           this.init = false;
           // wx.showNavigationBarLoading({
 
@@ -153,14 +288,14 @@ export default class myOrder extends wepy.page{
           this.$apply();
           this._updateSelectedPage(e.currentTarget.dataset.index);
       },
-  }
-  _updateSelectedPage(page) {
-      let {tabs, stv, activeTab} = this.data;
-      this.activeTab = page;
-      this.stv.offset = stv.windowWidth*page;
-      this.$apply();
-      // console.log(this.activeTab)
-  }
+    }
+    _updateSelectedPage(page) {
+        let {tabs, stv, activeTab} = this.data;
+        this.activeTab = page;
+        this.stv.offset = stv.windowWidth*page;
+        this.$apply();
+        // console.log(this.activeTab)
+    }
 }
 </script>
 <style>
@@ -253,4 +388,58 @@ export default class myOrder extends wepy.page{
 
 }
 
+.orderPage{
+  white-space: nowrap;  /*这个很重要， */
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding:10rpx;
+  bottom:50px;
+  width: 26%;
+  left:37%;
+  z-index:1;
+  height:32px;
+  opacity: 0.7;
+  background-color:#f1f1f1;
+  border-radius:20rpx;
+}
+
+.frontPage{
+position: absolute;
+left:2%;
+font-size: 30rpx;
+bottom: 3px;
+border-radius: 50%;
+width: 25px;
+height: 25px;
+background-color: #999;
+display: flex;
+align-items:center;
+justify-content:center;
+}
+
+.currentPage{
+  font-size:40rpx;
+  width:30px;
+  height:30px;
+  color:#fff;
+  background-color:#ff6b5d;
+  text-align: center;
+  border-radius:50%;
+}
+
+.nextPage{
+position: absolute;
+left: 73%;
+font-size: 30rpx;
+bottom: 3px;
+border-radius: 50%;
+width: 25px;
+height: 25px;
+background-color: #999;
+display: flex;
+align-items:center;
+justify-content:center;
+}
 </style>
