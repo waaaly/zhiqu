@@ -23,7 +23,7 @@ export default class shopOrder extends wepy.page{
         if(e.status == 0){
             http.get(api.ShopOrder,{shop_id:e.shopId}).then(res=>{
                 console.log(res)
-                this.orderList = res;
+                this.orderList = res.data;
                 this.$apply();
             })
         }else{
@@ -37,7 +37,7 @@ export default class shopOrder extends wepy.page{
                         icon:"none"
                     })
                 }else{
-                    this.orderList = res;
+                    this.orderList = res.data;
                     this.$apply();
                 }
             })

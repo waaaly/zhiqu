@@ -160,8 +160,8 @@ export default class Index extends wepy.page{
       return ;
     }
 
-    //用户选择的服务区域
-    if(wx.getStorageSync('userSkip')){
+    //用户没有选择服务区域选择跳过 或者 用户通过扫码进入到其他页面
+    if(wx.getStorageSync('userSkip') || !wx.getStorageSync('userChooseArea')){
         http.get(api.GetShopArea,{district:'智趣社区'}).then(area=>{
           that.area.area_id = area.area_id;
           that.area.area_name = area.area_name;

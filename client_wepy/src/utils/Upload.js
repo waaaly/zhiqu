@@ -39,7 +39,15 @@ const getSignature = function (policyBase64) {
 const uploadFile = function(localFilePath,userId){
     const policyBase64    = getPolicyBase64 ();//加密签证超时时间
     const signature       = getSignature(policyBase64);//加密计算出签名
-    const aliyunFileKey   = 'front/' + userId.toString() + localFilePath.replace('http://tmp/', '/');//传的是用户id/，表示要传到这个目录下
+    const perfix          = 'front/' + userId + '/';//oss上存储位置
+    var   aliyunFileKey;//oss文件名
+    //模拟器
+    if(localFilePath.indexOf('http://tmp')!=-1){
+        aliyunFileKey = localFilePath.replace('http://tmp/', perfix)
+    //真机
+    }else{
+        aliyunFileKey = localFilePath.replace('wxfile://tmp_', perfix)
+    }
     wx.uploadFile({
         url: aliyunServerURL,
         filePath: localFilePath,

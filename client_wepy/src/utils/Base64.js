@@ -5,7 +5,7 @@ const Base64 = {
 
     // public method for encoding
     encode: function (input) {
-        console.log("111");
+
         var output = "";
         var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
         var i = 0;
@@ -34,7 +34,7 @@ const Base64 = {
                 this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
 
         }
-        console.log(output);
+
         return output;
     },
 

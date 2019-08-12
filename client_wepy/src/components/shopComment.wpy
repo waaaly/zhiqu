@@ -1,54 +1,48 @@
 <template>
-    <view class=" ratings" ref="ratings">
-    <scroll-view scroll-y style="height:100%" class="_scroll-view data-v-973552be">
-      <view class=" ratings-content">
-        <!-- <view class=" overview">
-          <view class=" overview-left">
-            <view class="_h1 data-v-973552be score">{{seller.score}}</view>
-            <view class=" title">综合评分</view>
-            <view class=" rank">高于周边商家{{seller.rankRate}}%</view>
-          </view>
-          <view class=" overview-right">
-            <view class=" score-wrapper">
-              <label class=" title">服务态度</label>
-                <star></star>
-              <label class=" score">{{seller.serviceScore}}</label>
-            </view>
-            <view class=" score-wrapper">
-              <label class=" title">服务评分</label>
-                <star></star>
-              <label class=" score">{{seller.foodScore}}</label>
-            </view>
-            <view class=" delivery-wrapper">
-              <label class=" title">送达时间</label>
-              <label class=" delivery">{{seller.deliveryTime}}分钟</label>
-            </view>
-          </view>
-        </view> -->
-        <view class=" rating-wrapper">
-          <view class="_ul data-v-973552be">
-            <view wx:if="{{!(onlyContent && !rating.text) || (selectType === ALL) && (rating.rateType === selectType)}}" class="_li data-v-973552be rating-item" wx:key="index" key="{{index}}" wx:for="{{ratings}}" wx:for-index="index" wx:for-item="rating">
-              <view class=" avatar">
-                <image src="{{rating.avatar}}" class="_img data-v-973552be"></image>
+  <view wx:if="{{commentList.length!=0}}" class=" comment">
+    <scroll-view scroll-y style="height:100%" >
+        <view wx:for="{{commentList}}" class="comment-item" wx:for-item="item" wx:for-index="index">
+            <view class="item-title">
+              <view class="title-userInfo">
+                <image style="width:50px;height:50px;border-radius:50%;" src="{{item.userInfo.avatar}}"/>
+                <text style="color:black;margin-left:10px;" class="text">{{item.userInfo.name}}</text>
               </view>
-              <view class=" content">
-                <view class="_h1 data-v-973552be name">{{rating.username}}</view>
-                <view class=" star-wrapper">
-                  <template data="{{...$root[$kk+'4-'+index], $root}}" is="cbc99c46"></template>
-                  <label class=" delivery" wx:if="{{rating.deliveryTime}}">{{rating.deliveryTime}}</label>
-                </view>
-                <view class="_p data-v-973552be text">{{rating.text}}</view>
-                <view class=" recommend" wx:if="{{rating.recommend && rating.recommend.length}}">
-                  <label class=" iconfont"></label>
-                  <label class=" item" wx:key="subIndex" key="{{subIndex}}" wx:for="{{rating.recommend}}" wx:for-index="subIndex" wx:for-item="item">{{item}}</label>
-                </view>
-                <view class=" time"></view>
+              <view class="title-orderInfo">
+                <text style="font-size:24rpx">{{item.created_at}}</text>
+                <text style="font-size:24rpx">本次评分：{{item.grade}}分</text>
               </view>
             </view>
-          </view>
+
+            <view class="body-good">
+              <view class="good-info" wx:for="{{item.orderInfo.order_goods}}" wx:for-item="goodItem">
+                <view style="display:flex;align-items:center;">
+                  <image style="width:50px;height:50px;border-radius:5px;" mode="widthFix" src="{{OssUrl + goodItem.list_pic_url}}"/>
+                  <text style="margin-left:20px;color:black" class="text">{{goodItem.goods_name}}</text>
+                </view>
+                <text style="color:black">X{{goodItem.number}}</text>
+              </view>
+            </view>
+              
+            <view class='item-foot'>
+              <view class="foot-title">综合评价:</view>
+              <view class="foot-body">
+                <text>{{item.content}}</text>
+              </view>
+              <view class="foot-pic" wx:if="{{item.list_pic_url.length!=0}}">
+                <image class="pic-item"  mode="widthtFix"  
+                wx:for={{item.list_pic_url}} wx:for-item="commentPicItem" wx:for-index="commentPicIndex"
+                src="{{OssUrl + commentPicItem}}" @tap="previewImg({{commentPicIndex}},{{item.list_pic_url}})"/>
+              </view>
+            </view>
         </view>
-      </view>
+        <view style="display: flex;justify-content: center;" wx:if="{{currentPage!=pageNum}}" @tap="loadPage">
+          <!-- <image wx:if="{{!loading}}" src="http://img.tukexw.com/img/1c7f861bd1c86239.jpg"/> -->
+          <text style="text-align:center;font-size:45px;">...</text>
+        </view>
     </scroll-view>
+  </view>
+  <view style="height:100%;">
+    <image src="{{OssUrl+'zq/' + 'noneMsg.png'}}" mode="widtgFix" style="width:100%;height:400px;"/>                  
   </view>
 </template>
 
@@ -62,19 +56,58 @@ export default class shopComment extends wepy.component{
     star:star,
   }
     data = {
-     shopInfo:{
-      type:Object,
-      default:{}
-    }
+      OssUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/',
+      shopInfo:{
+        type:Object,
+        default:{}
+      },
+      commentList:[],
+      orderInfoList:[],//商品信息在这里
+      currentPage:0,//当前页
+      pageNum:0,//评论总页数
+      loading:false,//加载下一页
+      shopId:0,//
     }
     onLoad(e){
      
     }
+    methods = {
+      previewImg(index,picList) {
+            let picUrlList = [];
+            for(let item of picList){
+              picUrlList.push(this.OssUrl+item);
+            }
+
+            wx.previewImage({
+            //当前显示图片
+            current: picUrlList[index],
+            //所有图片
+            urls: picUrlList
+            })
+        },
+        loadPage(e){
+          this.loading = true;
+          http.get(api.CommentList,{shop_id:this.shopId,page:this.currentPage+1}).then(res=>{
+              this.currentPage = res.current_page;
+              this.commentList = this.commentList.concat(res.data);
+              this.loading = false;
+              console.log(this.commentList);
+              this.$apply();
+          })
+        }
+    }
     watch = {
       shopInfo(_new,old){
-        //获取用户评论
+        //更新组建当前数据
+        this.currentPage = 0,//当前页
+        this.pageNum = 0,//评论总页数
+        this.shopId = _new.id;
         http.get(api.CommentList,{shop_id:_new.id}).then(res=>{
-            console.log(res);
+            this.currentPage = res.current_page;
+            this.pageNum = res.last_page;
+            this.commentList = res.data;
+            console.log(this.data);
+            this.$apply();
         })
       }
     }
@@ -82,285 +115,85 @@ export default class shopComment extends wepy.component{
 </script>
 
 <style>
-.ratingselect .rating-type {
-  padding: 36rpx 0;
-  margin: 0 36rpx;
-  position: relative;
-  font-size: 0;
-}
 
-.ratingselect .rating-type:after {
-  display: block;
+.comment {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  border-top: 2rpx solid rgba(7, 17, 27, 0.1);
-  content: " ";
-}
-
-.ratingselect .rating-type .block {
-  display: inline-block;
-  padding: 16rpx 24rpx;
-  line-height: 32rpx;
-  margin-right: 16rpx;
-  border-radius: 2rpx;
-  font-size: 24rpx;
-  color: #4d555d;
-}
-
-.ratingselect .rating-type .block.active {
-  color: #fff;
-}
-
-.ratingselect .rating-type .block .count {
-  margin-left: 4rpx;
-  font-size: 16rpx;
-}
-
-.ratingselect .rating-type .block.positive {
-  background: rgba(0, 160, 220, 0.2);
-}
-
-.ratingselect .rating-type .block.positive.active {
-  background: #00a0dc;
-}
-
-.ratingselect .rating-type .block.negative {
-  background: rgba(77, 85, 93, 0.2);
-}
-
-.ratingselect .rating-type .block.negative.active {
-  background: #4d555d;
-}
-
-.ratingselect .switch {
-  padding: 24rpx 36rpx;
-  line-height: 48rpx;
-  border-bottom: 2rpx solid rgba(7, 17, 27, 0.1);
-  font-size: 0;
-  color: #93999f;
-}
-
-.ratingselect .switch.on .iconfont {
-  color: #00c850;
-}
-
-.ratingselect .switch .iconfont {
-  display: inline-block;
-  vertical-align: top;
-  margin-right: 8rpx;
-  font-size: 48rpx;
-}
-
-.ratingselect .switch .text {
-  font-size: 24rpx;
-}
-
-.ratings {
-  position: absolute;
-  top: 348rpx;
+  top: 26%;
   bottom: 0;
   left: 0;
   width: 100%;
   overflow: hidden;
+  background-color:#f4f4f4;
+  color:#ffb65d;
 }
 
-.ratings .overview {
+.comment-item{
+  display:flex;
+  flex-direction:column;
+  background-color:#fff;
+  border-radius:20rpx;
+  margin:15rpx;
+  padding:20rpx;
+}
+.item-title{
+  display:flex;
+  flex-direction:row;
+  justify-content:space-between;
+  margin-bottom: 15px;
+}
+.title-userInfo{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+}
+.title-orderInfo{
+  display:flex;
+  flex-direction:column;
+}
+.title-orderGood{
+
+}
+
+.body-good{
+  display:flex;
+  flex-direction:column;
+  padding: 5px 40px 20px 60px;
+
+}
+
+.good-info{
   display: flex;
-  padding: 36rpx 0;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.ratings .overview .overview-left {
-  flex: 0 0 274rpx;
-  padding: 12rpx 0;
-  width: 274rpx;
-  border-right: 2rpx solid rgba(7, 17, 27, 0.1);
-  text-align: center;
+.item-foot{
+  display:flex;
+  flex-direction:column;
+}
+.foot-title{
+
+}
+.foot-body{
+  margin:15px 0px;
+  color:black;
+}
+.foot-pic{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
-@media only screen and (max-width:320px) {
-  .ratings .overview .overview-left {
-    flex: 0 0 240rpx;
-    width: 240rpx;
-  }
+.pic-item{
+  border-radius:10px;
+  height:180rpx;
+  width:180rpx;
+  margin:10rpx;
 }
 
-.ratings .overview .overview-left .score {
-  margin-bottom: 12rpx;
-  line-height: 56rpx;
-  font-size: 48rpx;
-  color: #f90;
+.text{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow:ellipsis;
 }
-
-.ratings .overview .overview-left .title {
-  margin-bottom: 16rpx;
-  line-height: 24rpx;
-  font-size: 24rpx;
-  color: #07111b;
-}
-
-.ratings .overview .overview-left .rank {
-  line-height: 20rpx;
-  font-size: 20rpx;
-  color: #93999f;
-}
-
-.ratings .overview .overview-right {
-  flex: 1;
-  padding: 12rpx 0 12rpx 48rpx;
-}
-
-@media only screen and (max-width:320px) {
-  .ratings .overview .overview-right {
-    padding-left: 12rpx;
-  }
-}
-
-.ratings .overview .overview-right .score-wrapper {
-  margin-bottom: 16rpx;
-  font-size: 0;
-}
-
-.ratings .overview .overview-right .score-wrapper .title {
-  display: inline-block;
-  line-height: 36rpx;
-  vertical-align: top;
-  font-size: 24rpx;
-  color: #07111b;
-}
-
-.ratings .overview .overview-right .score-wrapper .star {
-  display: inline-block;
-  margin: 0 24rpx;
-  vertical-align: top;
-}
-
-.ratings .overview .overview-right .score-wrapper .score {
-  display: inline-block;
-  line-height: 36rpx;
-  vertical-align: top;
-  font-size: 24rpx;
-  color: #f90;
-}
-
-.ratings .overview .overview-right .delivery-wrapper {
-  font-size: 0;
-}
-
-.ratings .overview .overview-right .delivery-wrapper .title {
-  line-height: 36rpx;
-  font-size: 24rpx;
-  color: #07111b;
-}
-
-.ratings .overview .overview-right .delivery-wrapper .delivery {
-  margin-left: 24rpx;
-  font-size: 24rpx;
-  color: #93999f;
-}
-
-.ratings .rating-wrapper {
-  padding: 0 36rpx;
-}
-
-.ratings .rating-wrapper .rating-item {
-  display: flex;
-  padding: 36rpx 0;
-  position: relative;
-}
-
-.ratings .rating-wrapper .rating-item:after {
-  display: block;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  border-top: 2rpx solid rgba(7, 17, 27, 0.1);
-  content: " ";
-}
-
-.ratings .rating-wrapper .rating-item .avatar {
-  flex: 0 0 56rpx;
-  width: 56rpx;
-  margin-right: 24rpx;
-}
-
-.ratings .rating-wrapper .rating-item .avatar ._img {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-}
-
-.ratings .rating-wrapper .rating-item .content {
-  flex: 1;
-  position: relative;
-}
-
-.ratings .rating-wrapper .rating-item .content .name {
-  margin-bottom: 8rpx;
-  line-height: 24rpx;
-  font-size: 20rpx;
-  color: #07111b;
-}
-
-.ratings .rating-wrapper .rating-item .content .star-wrapper {
-  margin-bottom: 12rpx;
-  font-size: 0;
-}
-
-.ratings .rating-wrapper .rating-item .content .star-wrapper .star {
-  display: inline-block;
-  margin-right: 12rpx;
-  vertical-align: top;
-}
-
-.ratings .rating-wrapper .rating-item .content .star-wrapper .delivery {
-  display: inline-block;
-  vertical-align: top;
-  line-height: 24rpx;
-  font-size: 20rpx;
-  color: #93999f;
-}
-
-.ratings .rating-wrapper .rating-item .content .text {
-  line-height: 36rpx;
-  color: #07111b;
-  font-size: 24rpx;
-  margin-bottom: 16rpx;
-}
-
-.ratings .rating-wrapper .rating-item .content .recommend {
-  line-height: 32rpx;
-  font-size: 0;
-}
-
-.ratings .rating-wrapper .rating-item .content .recommend .iconfont,
-.ratings .rating-wrapper .rating-item .content .recommend .item {
-  display: inline-block;
-  margin: 0 16rpx 8rpx 0;
-  font-size: 18rpx;
-}
-
-.ratings .rating-wrapper .rating-item .content .recommend .iconfont {
-  color: #00a0dc;
-}
-
-.ratings .rating-wrapper .rating-item .content .recommend .item {
-  padding: 0 12rpx;
-  border: 2rpx solid rgba(7, 17, 27, 0.1);
-  border-radius: 2rpx;
-  color: #93999f;
-  background: #fff;
-}
-
-.ratings .rating-wrapper .rating-item .content .time {
-  position: absolute;
-  top: 0;
-  right: 0;
-  line-height: 24rpx;
-  font-size: 20rpx;
-  color: #93999f;
-}
-
 </style>

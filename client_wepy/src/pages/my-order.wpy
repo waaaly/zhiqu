@@ -26,7 +26,7 @@
         </scroll-view>
       </view>
     </view>
-    <swiper wx:if="{{showPage}}" class="orderPage" easing-funtion="easeInOutCubic" current="{{swiperCurrent}}" bindchange="pageRefresh">
+    <swiper wx:if="{{showPage}}" class="orderPage" easing-funtion="easeInOutCubic" current="{{swiperCurrent}}" bindchange="swiperChange">
         <swiper-item style="display:flex;justify-content:center;"  wx:for="{{pageList}}">
           <view wx:if="{{item!=1}}" @tap="frontPage" class="frontPage">{{item -1 }} </view>
           <view class="currentPage" >{{item}}</view>
@@ -56,6 +56,7 @@ export default class myOrder extends wepy.page{
     init:false,
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     activeTab: 0,
+    orderStatus:10,//订单状态码
     tabs:['全部订单','待付款','待收货','已完成'],              //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
                                                           //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
     OrderList:[],
@@ -80,50 +81,27 @@ export default class myOrder extends wepy.page{
     //修改页面标题
     wx.setNavigationBarTitle({
       title:'订单列表'
-    })
-
-    if(this.activeTab == 1){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
-            if(res.length == 0){
-              this.showPage = false;this.$apply();
-              return ;
-            }
-            
-            for(let i = 0; i< res.last_page; i++){//
-              this.pageList[i] = i+1;
-            }
-            this.showPage = true;
-            this.OrderList=res.data;
-            this.$broadcast('orderList',this.OrderList);
-            this.$apply();
-          })}
-    else if(this.activeTab == 2){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{
-          if(res.length == 0){
-              this.showPage = false;this.$apply();
-              return ;
-          }
-          for(let i = 0; i< res.last_page; i++){//
-            this.pageList[i] = i+1;
-          }
-          this.showPage = true;
-          this.OrderList=res.data;
-          this.$broadcast('orderList',this.OrderList);
-          this.$apply();
-        })}
-    else if(this.activeTab == 3){http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-          console.log(res);
-          if(res.length == 0){
-              this.showPage = false;this.$apply();
-              return ;
-          }
-          for(let i = 0; i< res.last_page; i++){//
-            this.pageList[i] = i+1;
-          }
-          this.showPage = true;
-          this.OrderList=res.data;
-          this.$broadcast('orderList',this.OrderList);
-          this.$apply();
-        }) } 
-        
+    })  
+  }
+  onShow(e){
+    let getParam = {
+      user_id:wx.getStorageSync('userInfoInServer').id,
+    }
+    if(this.activeTab == 1){
+      this.orderStatus = 10;
+      getParam['statusTab'] = 10;
+      this.refresh(getParam,false);
+    }
+    else if(this.activeTab == 2){
+      this.orderStatus = 32;
+      getParam['statusTab'] = 32;
+      this.refresh(getParam,false);
+    }
+    else if(this.activeTab == 3){
+      this.orderStatus = 40;
+      getParam['statusTab'] = 40;
+      this.refresh(getParam,false);
+    } 
   }
   events = {
     'myOrder':(recve)=>{
@@ -133,82 +111,47 @@ export default class myOrder extends wepy.page{
   }
    watch = {
      activeTab(newValue, oldValue) {
-      this.pageList = [];
-      switch(newValue){
-          case 0://全部订单
+        this.OrderList = [];
+        this.pageList = [];
+        this.swiperCurrent = 0;
+        let getParam = {
+          user_id:wx.getStorageSync('userInfoInServer').id
+        }
+        //改变顶部订单标签
+        switch(newValue){
+            case 0://全部订单
+                {
+                  this.orderStatus = '';
+                  getParam['statusTab'] = '';
+                  this.refresh(getParam,false);
+                  break;
+                }
+              
+            case 1://带支付，待付款
               {
-                http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(res=>{ 
-                  if(res.length == 0){
-                    this.showPage = false;this.$apply();
-                    return ;
-                  }
-                  for(let i = 0; i< res.last_page; i++){//
-                    this.pageList[i] = i+1;
-                  }
-                  this.showPage = true;  
-                  this.OrderList=res.data; 
-                  this.$broadcast('orderList',this.OrderList);               
-                  this.$apply();   
-                })
+                this.orderStatus = 10;
+                getParam['statusTab'] = 10;
+                this.refresh(getParam,false);
                 break;
-              }
-            
-          case 1://带支付，待付款
+              } 
+              
+            case 2:// 商家确认接单，用户等待收获
             {
-              http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10 }).then(res=>{
-                if(res.length == 0){
-                  this.showPage = false;this.$apply();
-                  return ;
-                }
-                for(let i = 0; i< res.last_page; i++){//
-                  this.pageList[i] = i+1;
-                }
-                this.showPage = true;
-                this.OrderList=res.data; 
-                this.$broadcast('orderList',this.OrderList);             
-                this.$apply();  
-              })
+              this.orderStatus = 32;
+              getParam['statusTab'] = 32;
+              this.refresh(getParam,false);
+              break;
+            }  
+              
+            case 3://订单完成，待评价
+            {
+              this.orderStatus = 40;
+              getParam['statusTab'] = 40;
+              this.refresh(getParam,false);
               break;
             } 
-    
-            
-          case 2:// 商家确认接单，用户等待收获
-          {
-            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32}).then(res=>{            
-              if(res.length == 0){
-                this.showPage = false;this.$apply();
-                return ;
-              }
-              for(let i = 0; i< res.last_page; i++){//
-                this.pageList[i] = i+1;
-              }
-              this.showPage = true;
-              this.OrderList=res.data; 
-              this.$broadcast('orderList',this.OrderList);
-              this.$apply();  
-            })
-            break;
-          }  
-            
-          case 3://订单完成，待评价
-          {
-            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40 }).then(res=>{
-              if(res.length == 0){
-                this.showPage = false;this.$apply();
-                return ;
-              }
-              for(let i = 0; i< res.last_page; i++){//
-                this.pageList[i] = i+1;
-              }
-              this.showPage = true;
-              this.OrderList=res.data; 
-              this.$broadcast('orderList',this.OrderList);
-              this.$apply();   
-            }) 
-            break;
           } 
-          } 
-        }
+      }
   }
   methods = {
     frontPage(e){
@@ -227,75 +170,50 @@ export default class myOrder extends wepy.page{
         this.$apply();
       }
     },
-    pageRefresh(e){
-      console.log(this.activeTab);
-      switch(this.activeTab){
-          case 0://全部订单
-              {
-                http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,page:this.swiperCurrent+1}).then(res=>{   
-                  this.OrderList=res.data; 
-                  this.$broadcast('orderList',this.OrderList);               
-                  this.$apply();   
-                })
-                break;
-              }
-            
-          case 1://带支付，待付款
-            {
-              http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:10,page:this.swiperCurrent+1 }).then(res=>{
-                for(let i = 0; i< res.last_page; i++){//
-                  this.pageList[i] = i+1;
-                }
-                this.OrderList=res.data; 
-                this.$broadcast('orderList',this.OrderList);             
-                this.$apply();  
-              })
-              break;
-            } 
-    
-            
-          case 2:// 商家确认接单，用户等待收获
-          {
-            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:32,page:this.swiperCurrent+1}).then(res=>{            
-              for(let i = 0; i< res.last_page; i++){//
-                this.pageList[i] = i+1;
-              }
-              this.OrderList=res.data; 
-              this.$broadcast('orderList',this.OrderList);
-              this.$apply();  
-            })
-            break;
-          }  
-            
-          case 3://订单完成，待评价
-          {
-            console.log('1111')
-            http.get(api.OrderList,{user_id: wx.getStorageSync('userInfoInServer').id,statusTab:40,page:this.swiperCurrent+1 }).then(res=>{
-              console.log(res);
-              this.OrderList=res.data; 
-              this.$broadcast('orderList',this.OrderList);
-              this.$apply();   
-            }) 
-            break;
-          } 
-        } 
-    },
     handlerTabTap(e) {
           this.init = false;
-          // wx.showNavigationBarLoading({
-
-          // })
           this.$apply();
           this._updateSelectedPage(e.currentTarget.dataset.index);
-      },
+    },
+    swiperChange(){
+        let getParam = {
+          user_id:wx.getStorageSync('userInfoInServer').id,
+          statusTab:this.orderStatus,
+        }
+        this.refresh(getParam,true);
     }
-    _updateSelectedPage(page) {
-        let {tabs, stv, activeTab} = this.data;
-        this.activeTab = page;
-        this.stv.offset = stv.windowWidth*page;
-        this.$apply();
-        // console.log(this.activeTab)
+  }
+
+  refresh(param,ifPageChange){
+    if(ifPageChange){
+      param['page'] = this.swiperCurrent + 1;
     }
+    console.log(param);
+    http.get(api.OrderList,{...param}).then(res=>{ 
+        console.log(res);
+        if(res.data.length == 0){
+          this.showPage = false;
+          this.init = true;
+          this.$apply();
+          return ;
+        }  
+        for(let i = 0; i< res.last_page; i++){
+          this.pageList[i] = i+1;
+        }
+        this.showPage = true;
+        this.OrderList=res.data; 
+        this.$broadcast('orderList',this.OrderList);               
+        this.$apply();   
+    })         
+  }
+    
+  _updateSelectedPage(page) {
+      let {tabs, stv, activeTab} = this.data;
+      this.activeTab = page;
+      this.stv.offset = stv.windowWidth*page;
+      this.$apply();
+  }
+  
 }
 </script>
 <style>

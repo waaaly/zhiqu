@@ -350,18 +350,26 @@ export default class orderComment extends wepy.page{
         choose: function (e) {//这里是选取图片的方法
             var that = this;
             var userId = wx.getStorageSync('userInfoInServer').id
-            var perfix = 'front/' + userId;
+            var perfix = 'front/' + userId +'/';
 
             wx.chooseImage({
               count: 3 - that.pics.length, // 最多可以选择的图片张数，默认9
               sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
               sourceType: ['album', 'camera'], // album 从相册选图，camera 使用相机，默认二者都有
               success: function (res) {
+
                  var imgsrc = res.tempFilePaths;
-                 
+                 var fileName;
                  for (let item of imgsrc){
+                   
+                    if(item.indexOf('http://tmp')!=-1){
+                      fileName = item.replace('http://tmp/', perfix)
+                    }else{
+                      fileName = item.replace('wxfile://tmp_', perfix)
+                    }
+                    console.log(fileName);
+                    that.picUrl.push(fileName);    
                     uploadFile(item,userId);
-                    that.picUrl.push(item.replace('http://tmp', perfix));
                  }
                   that.pics = that.pics.concat(imgsrc);//连接两个或多个数组 
                   if(that.pics.length >= 3){
@@ -381,10 +389,12 @@ export default class orderComment extends wepy.page{
                     grade: this.wjxScore,
                     list_pic_url: this.picUrl,
           }).then(res=>{
-            console.log(res);
-            if(res.msg){
+            if(res.msg =="评论成功"){
               wx.showToast({
-                title:res.msg,
+                title:'评价成功',
+              })
+              wx.navigateBack({
+
               })
             }
           })
@@ -489,15 +499,15 @@ export default class orderComment extends wepy.page{
      <textarea class="areas" placeholder='更多评价请写在这里（最多300字）' minlength="{{min}}" maxlength="{{max}}" bindinput="inputs"> 
      </textarea>
  </view>
- <view style="position:fixed;left:100px;">
+ <!-- <view style="position:fixed;left:23%;"> 进度条
      <view class='progress_box'>
         <canvas class="progress_bg"   canvas-id="canvasProgressbg">  </canvas> 
         <canvas class="progress_canvas"   canvas-id="canvasProgress">  </canvas> 
         <view class="progress_text">
-            <!-- <view class="progress_dot"></view>  -->
+            <view class="progress_dot"></view> 
             <text class='progress_info'> {{currentWordNumber}}</text>
         </view>     
-    </view>
+    </view> -->
 </view>
  <!--提交评价-->
  <button class='btn' @tap="comment">提交评价</button>

@@ -188,13 +188,15 @@ export default class my extends wepy.page{
         })
     }
     onShow(e){
-        //读取用户信息
+        //读取本地用户信息查看是否已经登录授权
         this.getUserInfo().then(res=>{
+            //判断用户是否商家，获取商家信息
              http.get(api.MyShop,{bind_phone:wx.getStorageSync("userInfoInServer").phone}).then(result =>{ 
                     this.shop_name = result.shop_name;
                     this.shop_id = result.id;
                     this.init = true;
                     this.$apply();
+                    //查看是否有新的订单
                     http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
                     if(res){
                         this.haveOrder = true;
@@ -210,6 +212,7 @@ export default class my extends wepy.page{
             this.$apply();
         }).catch(res=>{
                 this.init = true;
+                this.$apply();
         })
     } 
     

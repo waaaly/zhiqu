@@ -395,7 +395,7 @@ margin-top:30rpx;
     
     <!-- 商家头-->
     <view  class="shop-info {{currentShop==index ? 'shop-top' : ''}} " @tap="goShoper('{{shopItem}}')" >
-        <view class=" {{shopCheckList[shopIndex]==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}" @tap.stop="selectedShop"></view>
+        <view class=" {{shopItem.shopChecked==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}" @tap.stop="selectedShop"></view>
         <view style="flex:2;">
           <image style="padding-bottom:2%;width:60rpx;height:60rpx;border-radius:50%;" src="{{imageUrl + shopItem.shop_icon}}"/>
         </view>
@@ -530,22 +530,21 @@ export default class Cart extends wepy.page{
       that.shopCheckList = [];
       var total = new Object();
       var shopCheck = 1;
-      for(let index in _new){
-        // console.log(item)获取索引
+      for(let index in _new){       
+        _new[index].shopInfo["shopChecked"] = 1; //添加商家勾选属性 
+        for(let goodIndex in _new[index].cartList){
+            _new[index].shopInfo["shopChecked"] &=  _new[index].cartList[goodIndex].checked;
+        }  
         that.shopList.push(_new[index].shopInfo);//商家信息
         that.cartList.push(_new[index].cartList);//该商家的购物列表
-        total["num"] = _new[index].CountNum; //通过eval表达式可以给obj动态的赋值 ;//该商家勾选的商品数
+        total["num"] = _new[index].CountNum; //通过eval表达式可以给obj动态的赋值 ;该商家勾选的商品数
         total["money"] = _new[index].TotalPrice;//该商家勾选商品的总价格
         that.totalList.push(total);
         total={};
-        for(let cartItem of _new[index].cartList){
-          shopCheck &= cartItem.checked;
-          that.shopCheckList.push(shopCheck);
-          shopCheck = 1; 
-        }
       }
       this.$apply();
-      // console.log(that.shopCheckList)
+        console.log(that.shopList)
+        console.log(that.cartList)
     }
   }
   //提交商品数量到后台
@@ -578,15 +577,16 @@ export default class Cart extends wepy.page{
     selectedShop: function(e) {
       var index = e.currentTarget.dataset.shopindex;
       var currentShop = this.shopList[index];
-      if(this.shopCheckList[index]){
-        this.shopCheckList[index] = 0;
+      
+      if(currentShop.shopChecked){
+        currentShop.shopChecked = 0;
       }else{
-        this.shopCheckList[index] = 1;
+        currentShop.shopChecked = 1;
       }
-      console.log(!(this.shopCheckList[index]))
+      
       http.post(api.CartChechedAll,{shop_id:currentShop.id,
       user_id:wx.getStorageSync('userInfoInServer').id,
-      checked_all:this.shopCheckList[index]}).then(res=>{
+      checked_all:currentShop.shopChecked}).then(res=>{
         console.log(res)
         this.allList = res;   
         this.$apply() ;  

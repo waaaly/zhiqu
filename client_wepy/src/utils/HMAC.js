@@ -13,7 +13,6 @@ const Crypto = require('./Crypto.js');
 var util = Crypto.util;
 
 Crypto.HMAC = function (hasher, message, key, options) {
-    console.log("222")
 	// Allow arbitrary length keys
 	key = key.length > hasher._blocksize * 4 ?
 	      hasher(key, { asBytes: true }) :
