@@ -34,7 +34,7 @@
   </view> 
                   <!-- 活动专区 热门商品 -->
 
-    <view wx:if="{{notDefaultAddress}}" style="text-align:center;">
+    <view wx:if="{{notShop}}" style="text-align:center;">
       <image src="{{imageUrl+'zq/noneServer.png'}}"/>
       <!-- <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
       <text style="color:#ff6b5d;">换个地址试试呢～</text>
@@ -53,7 +53,7 @@
   </view>
   
                   <!-- 推荐商家 -->
-  <view wx:if="{{notDefaultAddress}}" style="text-align:center;">
+  <view wx:if="{{notShop}}" style="text-align:center;">
     <image src="{{imageUrl+'zq/noneServer.png'}}"/>
    <!-- <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
       <text style="color:#ff6b5d;">换个地址试试呢～</text>
@@ -61,9 +61,11 @@
   </view>
   
     <view wx:else class='index-content'>
+      <!-- <block wx:if="{{shopList.length != 0}}"> -->
         <repeat   for="{{shopList}}">
             <shopIndex :shop.sync="item"></shopIndex>
         </repeat>
+      <!-- </block>       -->
     </view>
 
 </template>
@@ -93,7 +95,7 @@ export default class Index extends wepy.page{
     goodHot4:goodHot,
   }
   data = {
-    userAddress:false,//是否使用用户默认地址的服务区域
+    userAddress:false,//是否使用用户默认地址的服务区域  及其用户选择其他地址的标志
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     address:"智趣社区",
     city:'广州',//当前城市
@@ -106,7 +108,7 @@ export default class Index extends wepy.page{
       twoWay:true
     },
     imgUrls: [],//siwepr
-    
+    notShop:false,//五商家
     hotGoodList:[[],[],[],[]],//首页活动热门商品
     hotGood1:[],
     hotGood2:[],
@@ -154,7 +156,7 @@ export default class Index extends wepy.page{
       })
     })  
 
-    //读取后台用户地址信息
+    //读取后台用户已选择的地址信息
     if(wx.getStorageSync('userDefaultAddress')){
       this.userAddress = true;
       return ;
@@ -177,8 +179,19 @@ export default class Index extends wepy.page{
     //推荐商家 
     new Promise((resolve,reject)=>{
       http.get(api.ShopList,{area_id:that.area.area_id}).then(res =>{
+        console.log("onload") 
         console.log(res);
-        this.shopList = res;
+        if(res.status){
+          this.shopList = [];
+          this.notShop = true;
+          wx.showToast({
+            title:'当前无商家',
+            icon:'false',
+            image:'../images/icons/error.png'
+          })
+        }else{
+          this.shopList = res;
+        }
         this.$apply();
       })
     })
@@ -186,8 +199,7 @@ export default class Index extends wepy.page{
     //活动商品
     new Promise((resolve,reject)=>{
       http.get(api.HotGood,{area_id:that.area.area_id}).then(res=>{
-        console.log("onload")
-        console.log( res)  
+        console.log( res) 
         for(let x=0;x<4;x++){       
           if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
           if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}
@@ -210,8 +222,20 @@ export default class Index extends wepy.page{
       //推荐商家 
       new Promise((resolve,reject)=>{
         http.get(api.ShopList,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res =>{
+          console.log("onshow") 
           console.log(res);
-          this.shopList = res;
+          if(res.status){
+            this.shopList = [];
+            this.notShop = true;
+            wx.showToast({
+              iamge:'../images/icons/error.png',
+              title:'当前无商家',
+              icon:'none',
+              
+            })
+          }else{
+            this.shopList = res;
+          }
           this.$apply();
         })
       })
@@ -221,7 +245,10 @@ export default class Index extends wepy.page{
         http.get(api.HotGood,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res=>{
           this.hotGoodList=[[],[],[],[]];
           console.log( res)
-          console.log("onshow")  
+          if(res.msg == '当前无商家'){
+            this.notShop = true;
+            return; 
+          } 
           for(let x=0;x<4;x++){       
             if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
             if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}
@@ -233,11 +260,12 @@ export default class Index extends wepy.page{
           this.hotGood2 = this.hotGoodList[1];
           this.hotGood3 = this.hotGoodList[2];
           this.hotGood4 = this.hotGoodList[3];
-
+          
           this.$apply();
         })
       })
       that.address = wx.getStorageSync('userDefaultAddress').area_name;
+      this.notShop = false;
       that.userAddress = false;
       that.$apply();
     }

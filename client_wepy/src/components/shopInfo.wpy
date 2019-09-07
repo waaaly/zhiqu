@@ -4,10 +4,7 @@
       <view class=" seller-content">
         <view class=" overview">
           <view class=" title">{{shopInfo.name}}</view>
-          <view class=" desc border-1px">
-            <view class=" star">
-              <star></star>
-            </view>
+          <view class=" desc border-1px" style="display:none;">
             <label class=" text">({{shopInfo.ratingCount}})</label>
             <label class=" text">月售{{shopInfo.monthly_sale}}单</label>
           </view>

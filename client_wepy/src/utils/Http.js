@@ -79,8 +79,8 @@ export default class http{
                             confirmText:'前往登陆',
                             success: (res=> {
                                 if(res.confirm){
-                                    wx.switchTab({
-                                        url: '/pages/my',
+                                    wx.navigateTo({
+                                        url: '/pages/authorize',
                                     })
                                 }   
                             }),

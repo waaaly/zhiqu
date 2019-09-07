@@ -79,4 +79,8 @@ module.exports = {
     CommentList:ApiRootUrl + 'comment-list',//获取用户评论
 
     QRcode:ApiRootUrl + 'qrcode',//生成小程序码
+
+    GroupList:ApiRootUrl+'group-list',  //团购商品列表
+    GroupCarousel:ApiRootUrl+'group-carousel',  //团购商品轮播 get
+    GroupDetail:ApiRootUrl+ 'group-detail',  //团购商品详情   get group_id goods_id
 }

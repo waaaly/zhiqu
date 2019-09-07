@@ -43,7 +43,7 @@
               <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
             <block wx:if="{{item.order_status == 32}}" >
-              <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}}),{{orderIndex}}'>{{actionItem}}</view>
+              <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
             <block wx:if="{{item.order_status == 40}}" >
               <view wx:for="{{['前往评价']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
@@ -79,6 +79,7 @@ export default class orderItem extends wepy.page{
     }
     methods = {
       action(text,index){
+        var that = this;
         if(text == '前往支付'){
           http.get(api.WechatPay,{order_id:this.orderList[index].id,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
                 // console.log(res);
@@ -96,6 +97,7 @@ export default class orderItem extends wepy.page{
                             confirmColor:"#ff6b5d",
                             content: "您已完成支付～",
                         })
+                        that.orderList.splice(index,1);
                     }, 
                     fail: function(res) { 
                         console.log('付款失败') 
@@ -118,15 +120,16 @@ export default class orderItem extends wepy.page{
           })
         }
         if(text == '申请退款'){
+          console.log(index);
+          console.log(this.orderList[index]);
           http.post(api.UserRefund,{order_id:this.orderList[index].id,refund_desc:'买错了'}).then(res=>{
-            if(res.msg){
+             console.log(res);
               wx.showToast({
-                title:res.msg,
+                title:'您已申请退款～',
                 icon:'none',
               })
               // this.orderList.splice(index,1);
               this.$apply();
-            }
           })
         }
 

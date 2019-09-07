@@ -1,109 +1,114 @@
-<style>
-.goodBar{
-  display: flex;
-  display: -webkit-flex;
-  height: 100rpx;
-  position: fixed;
-  bottom: 0;
-  background: #fff;
-  width: 100%;
-  z-index: 12;
-  border-top: 2rpx solid #eee;
-}
+<style lang='scss'>
+$font-sm: 24rpx;
+$font-base: 28rpx;
+$font-color-base: #606266;
+$font-color-light: #909399;
+$uni-color-primary:#fa436a;
 
-.settle{
-  color:#666;
-  font-size: 26rpx;
-  position: relative;
-  flex: 1;
-  padding-top:5px;
+button:after{
+  border:none;
 }
-.settleRedDot{
-  position: absolute;
-  top:3px;
-  left: 70%;
-  height: 8px;
-  width: 8px;
-  border-radius: 50%;
-  background-color:red;
+button{
+  background-color: #fff;
 }
+.page-bottom{
+		position:fixed;
+		left: 5%;
+		bottom:2%;
+		z-index: 95;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		right: 5%;
+		height: 120rpx;
+		background: rgba(255,255,255,.9);
+		box-shadow: 0 0 20rpx 0 rgba(0,0,0,.5);
+		border-radius: 16rpx;
+		padding:0 10rpx;
+		.p-b-btn{
+			display:flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			font-size: 24rpx;
+			color: $font-color-base;
+			width: 96rpx;
+      height: 80rpx;
+      z-index:100;
+			.yticon{
+				font-size: 40rpx;
+				line-height: 48rpx;
+				color: $font-color-light;
+			}
+			&.active, &.active .yticon{
+				color: $uni-color-primary;
+			}
+			.icon-fenxiang2{
+				font-size: 42rpx;
+				transform: translateY(-2rpx);
+			}
+			.icon-shoucang{
+				font-size: 46rpx;
+			}
+		}
+		.action-btn-group{
+			display: flex;
+			height: 76rpx;
+			border-radius: 100px;
+			overflow: hidden;
+			box-shadow: 0 20rpx 40rpx -16rpx #fa436a;
+			box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
+			background: linear-gradient(to right, #ffac30,#fa436a,#F56C6C);
+			margin-left: 0rpx;
+			position:relative;
+			&:after{
+				content: '';
+				position:absolute;
+				top: 50%;
+				right: 50%;
+				transform: translateY(-50%);
+				height: 28rpx;
+				width: 0;
+				border-right: 1px solid rgba(255,255,255,.5);
+			}
+			.action-btn{
+				display:flex;
+				align-items: center;
+				justify-content: center;
+				width: 180rpx;
+				height: 100%;
+				font-size: $font-base ;
+				padding: 0;
+				border-radius: 0;
+				background: transparent;
+			}
+		}
+	}
+/*************************/
 
-.collection{
-  position: relative;
-  flex: 1;
-  color:#666;
-  font-size: 26rpx;
-  padding-top:5px;
-
-}
-
-.share{
-  position: relative;
-  flex: 1;
-  color:#666;
-  font-size: 26rpx;
-  background:transparent;
-  display:flex;
-  justify-content:center;
-  margin-right:-30rpx;
-  margin-left:-30rpx;
-  padding-top:5px;
-
-}
-button::after {
-  border: none;
-}
-
-.addCart{
-  background: #f37d6a ;
-  color: #fff;
-    -webkit-flex: 4;
-  flex: 2;
-  text-align: center;
-  line-height: 100rpx;
-  font-size: 32rpx;
-}
-
-.removeCart {
-  background: #c3c3c3;
-  color:#666;
-    -webkit-flex: 4;
-  flex: 2;
-  text-align: center;
-  line-height: 100rpx;
-  font-size: 32rpx;
-}
-
-.removeCart-Enable {
-  background: red;
-  color:#fff;
-  -webkit-flex: 4;
-  flex: 2;
-  text-align: center;
-  line-height: 100rpx;
-  font-size: 32rpx;
-}
 </style>
 
 <template>
-    <view class='goodBar'>
-      <view class='settle' @tap="gotocart" >
-        <view class="settleRedDot" style="{{showRedDot?'':'display:none'}}"></view>
-       <image style="height:17px;width:17px;  display: block;width: 40rpx;height: 40rpx;margin: 0 auto;" src="/images/icons/jiesuan.png"></image>
-        <text class='carnum' wx:if="{{cartTotal.checkedGoodsCount>0}}">{{cartTotal.checkedGoodsCount}}</text>
-        <text style='position:absolute;bottom:11rpx;left:26rpx'>结算</text>
-      </view>
-      <view class='collection' @tap='Collection'>
-         <image style="height:17px;width:17px;  display: block;width: 40rpx;height: 40rpx;margin: 0 auto;" src="/images/icons/shoucang.png"></image>
-      <text style='position:absolute;bottom:11rpx;left:30rpx'>收藏</text>
-      </view>
-      <button class="share" open-type="share">
-        <image style="height:17px;width:17px;" src="/images/icons/friends.png"></image>
-        <text style='position:absolute;bottom:-1px;'>转发</text>
-      </button> 
-      <view class='addCart' @tap='addcart'>加入购物车</view>
-      <view class="{{checkInCart?'removeCart-Enable':'removeCart'}}" @tap='delOutcart'>移出购物车</view>
-    </view>
+
+  <!-- 底部操作菜单 -->
+		<view class="page-bottom">
+			<navigator url="/pages/cart" open-type="switchTab" class="p-b-btn">
+          <image style="height:22px;width:22px;" src="/images/icons/jiesuan.png"/>				
+          <text>结算</text>
+			</navigator>
+			<view @tap='Collection'  class="p-b-btn">
+          <image style="height:22px;width:22px;" src="/images/icons/shoucang.png"/>
+				  <text>收藏</text>
+			</view>
+			 <button  style="display: flex;flex-direction: column;font-size: 24rpx;padding-top: 10px;align-items: center;" open-type="share" role="button">
+          <image style="height:22px;width:22px;" src="/images/icons/friends.png"/>
+				  <text style="color:#606266;margin-top:-15rpx;">分享</text>
+			</button> 
+			<view class="action-btn-group">
+				  <button @tap='addcart' type="primary" class=" action-btn no-border buy-now-btn" >加入购物车</button>
+				  <button @tap='delOutcart' type="primary" class=" action-btn no-border add-cart-btn">移出购物车</button>
+			</view>
+		</view>
 
 </template>
 

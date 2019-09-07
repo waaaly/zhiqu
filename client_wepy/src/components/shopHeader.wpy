@@ -46,7 +46,7 @@ export default class shopHeader extends wepy.component{
           <label wx:if="{{shopInfo.state==1}}" style="flex:2;color:rgb(51, 255, 61);" class="name">正在营业</label>
           <label wx:if="{{shopInfo.state==0}}" style="flex:2;color:rgb(51, 255, 61);" class="name">商家休息</label>
         </view>
-        <view  class="  desc">{{shopInfo.district}}Km/{{shopInfo.delivery_time}} 分钟送达
+        <view  class="  desc" style="display:none;">{{shopInfo.district}}Km/{{shopInfo.delivery_time}} 分钟送达
         </view>
         <view style="width:250px;" class="  desc">{{shopInfo.shop_summary}}</view>
         <view wx:if="{{shopInfo.supports}}" class="  support">

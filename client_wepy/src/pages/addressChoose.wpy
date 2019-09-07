@@ -166,7 +166,7 @@ page{
   height: 67%;
   background:#fff;
   position: absolute;
-  top: 21%;
+  top: 22%;
   width: 100%;
 }
 .weui-icon-search_in-box {

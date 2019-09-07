@@ -80,13 +80,13 @@ export default class Authorize extends wepy.page {
                             }
                             wx.showToast({
                               title: '登陆成功',
-                              duration:1000,
+                              duration:800,
                               complete:(res)=>{
                                 setTimeout(() =>{
-                                    wx.switchTab({
-                                      url: '/pages/my', // 回退前 delta(默认为1) 页面
+                                    wx.navigateBack({
+                                       // 回退前 delta(默认为1) 页面 url: '/pages/my',
                                     })
-                                },1050)                              
+                                },850)                              
                               }
                             })
                           }else{

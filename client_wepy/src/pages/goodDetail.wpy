@@ -154,7 +154,7 @@ export default class goodDetail extends wepy.page{
     data = {
         swiper_H:0,
         swiper_W:0,
-        buttonTop:550,//上边界
+        buttonTop:520,//上边界
         buttonLeft:0,//商家悬浮钮左边界
         offsetLeft:0,//商家悬浮钮初始边界，用来判断用户的单击动作
         offsetTop:0,//

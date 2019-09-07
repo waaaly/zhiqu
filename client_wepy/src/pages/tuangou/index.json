@@ -1,0 +1,9 @@
+{
+  "navigationBarTextStyle": "black",
+  "backgroundColorTop": "#fff",
+  "navigationBarTitleText": "团购专区",
+  "usingComponents": {
+    "tui-icon": "./icon/icon",
+    "tui-countdown": "./countdown/countdown"
+  }
+}
