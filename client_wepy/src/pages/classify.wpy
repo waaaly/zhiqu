@@ -175,7 +175,7 @@ export default class Classify extends wepy.page {
 
     new Promise((resolve,reject)=>{
        http.get(api.GoodsCategory,{}).then(res=>{
-        console.log(res);
+        console.log(res); 
         this.rootcateList = res.brotherCategory;
         this.maxRootNum = this.rootcateList.length-1;
         this.currentRootArray = this.rootcateList[0];

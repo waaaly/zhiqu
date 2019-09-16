@@ -170,6 +170,7 @@ export default class goodBar extends wepy.component{
                 goods_id:this.good_id,   
                 shop_id: this.shop_id, 
                 number:this.good_num,
+                type:1,//平台购买
                 user_id:wx.getStorageSync('userInfoInServer').id,
             }).then(res =>{
                 console.log(res)

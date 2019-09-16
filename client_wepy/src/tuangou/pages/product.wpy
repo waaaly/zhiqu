@@ -7,10 +7,10 @@
 	
 		<view class="carousel">
 			<swiper indicator-dots circular=true duration="400">
-				<swiper-item class="swiper-item" wx:for="{{imgList}}" key="index">
+				<swiper-item class="swiper-item" wx:for="{{productInfo.shopGoods.list_pic_url}}" key="index">
 					<view class="image-wrapper">
 						<image
-							src={{item.src}} 
+							src={{imageUrl+item}} 
 							class="loaded" 
 							mode="aspectFill"
 						/>
@@ -21,10 +21,12 @@
 	
 		<view class="introduce-section">
 			<view class="price-box">
-				<text class="price" style="margin-right:20rpx">团购价格</text>
-				<text class="price-tip">¥</text>
-				<text class="price">341.6</text>
-				<text class="m-price">¥488</text>
+				<view style="display:flex;align-items:baseline;justify-content:space-between;">
+					<text class="price" style="margin-right:10rpx">团购价格</text>
+					<text class="price-tip">¥</text>
+					<text class="price">{{productInfo.retail_price}}</text>
+					<text class="m-price">¥{{productInfo.original_price}}</text>
+				</view>
 				<view class="countDown">
 					<view class="countDown-font">{{hour}}</view>
 					<view style="font-size:26rpx;">时</view>
@@ -34,17 +36,17 @@
 					<view style="font-size:26rpx;">秒</view>
 				</view>
 			</view>
-			<text class="title">恒源祥2019春季长袖白色t恤 新款春装</text>
+			<text class="title">{{productInfo.shopGoods.goods_name}}</text>
 			<view class="bot-row">
-				<text>总销量: 108</text>
-				<text>本团总量: 50</text>
-				<text>已参与: 25</text>
+				<!-- <text>总销量: 108</text> -->
+				<text>本团总量: {{productInfo.max_num}}</text>
+				<text>已参与: {{productInfo.cur_num}}</text>
 			</view>
 		</view>
 
 		<view class="share-section" @tap="share">
-			<view style="flex: 1;font-size: 24rpx;color: #fa436a;">智趣团</view>
-			<text class="tit" style="color: #fa436a;">最后十分先到先得</text>
+			<view style="flex: 1;font-size: 24rpx;color: #fa436a;">{{productInfo.hot_desc}}</view>
+			<text class="tit" style="color: #fa436a;">分享赚好礼</text>
 				
 			<button class="share-btn" open-type="share">立即分享
 				<text class="yticon icon-you"></text>
@@ -57,8 +59,11 @@
 			<view class="c-row b-b" @tap="toggleSpec">
 				<text class="tit">购买类型</text>
 				<view class="con">
-					<text class="selected-text" style="line-height:1rpx;" wx:for="{{specSelected}}" >
-						{{item}}
+					<text class="selected-text" style="line-height:1rpx;" wx:for="{{specSelected}}"  wx:for-item="item">
+						<block wx:for="{{item}}" wx:for-item="childItem">{{childItem}}</block>
+					</text>
+					<text class="selected-text" style="line-height:1rpx;" >
+						X{{number}}
 					</text>
 				</view>
 				<text class="yticon icon-you"></text>
@@ -99,16 +104,16 @@
 			<!--商品详情-->
 			<view id='scroll_0'  style="display: inline-block;width:100%;">
 				<view style="display:flex;flex-direction:column;">
-					<image wx:for="{{desc}}" style="width:100%;" mode="widthFix" src="{{item}}"/>
+					<image wx:for="{{productInfo.shopGoods.details_pic_url}}" style="width:100%;" mode="widthFix" src="{{imageUrl+item}}"/>
 				</view>	
 			</view>
 			<!--商品评价-->
 			<view id='scroll_1' style='display:inline-block;width:100%;position:absolute;top:-20px;'>
 				<view class="eva-section">
-					<view class="e-header">
+					<view @tap='allComment' class="e-header">
 						<text class="tit">评价</text>
 						<text>(86)</text>
-						<text class="tip">好评率 100%</text>
+						<text class="tip">全部评论</text>
 						<text class="yticon icon-you"></text>
 					</view> 
 					<view class="eva-box">
@@ -133,29 +138,35 @@
 			@tap="toggleSpec">
 			
 			<view class="mask"></view>
-			<view class="layer attr-content" @tap.stop="stopPrevent">
+			<view class="layer attr-content">
 				<view class="a-t">
 					<image src="https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg"></image>
 					<view class="right">
-						<text class="price">¥328.00</text>
-						<text class="stock">库存：188件</text>
+						<text class="price">¥{{productInfo.retail_price}}</text>
+						<!-- <text class="stock">库存：{{productInfo.max_num - productInfo.cur_num}}件</text> -->
 						<view class="selected">已选：
-							<text class="selected-text" wx:for="{{specSelected}}" >
-								{{item}}
+							<text class="selected-text" wx:for="{{specSelected}}" wx:for-item="item">
+									<block wx:for="{{item}}" wx:for-item="childItem">{{childItem}}</block>
 							</text>
 						</view>
 					</view>
 				</view>
-				<view wx:for="{{specList}}" wx:key="key"  wx:for-item='item' class="attr-list">
-					<text>{{item.name}}</text>
+				<view class="numberBox">
+					<view>数量</view>
+					<view class="numberRight"> 
+						<text @tap.stop="numberDown" class="yticon icon--jianhao"></text>
+						<text class="number">{{number}}</text>
+						<text @tap.stop="numberUp" class="yticon icon-jia1"></text>
+					</view>
+				</view>
+				<view wx:for="{{specInfo}}"  wx:for-item='item'  wx:for-index='index' class="attr-list">
+					<text>{{item.sp_name}}</text><!--规格名-->
 					<view class="item-list">
 						<text 
-							wx:for="{{specChildList}}" wx:key="key"  wx:for-item='childItem'
-							wx:if="{{childItem.pid === item.id}}"
-							key="childIndex" class="tit {{childItem.name==specSelected[0]||childItem.name==specSelected[1]?'selected':''}}"
-							
-							@tap="selectSpec({{item}}, {{childItem}})">
-							{{childItem.name}}
+							wx:for="{{item.items}}"  wx:for-item='childItem' wx:for-index='childIndex'
+							class="tit {{specSelected[index][childIndex]==childItem.sp_item_name?'selected':''}}"					
+							@tap.stop="selectSpec({{index}},{{childIndex}},{{childItem.sp_item_name}})"><!--规格值-->
+							{{childItem.sp_item_name}}
 						</text>
 					</view>
 				</view>
@@ -169,12 +180,12 @@
 				<text class="yticon icon-xiatubiao--copy"></text>
 				<text>首页</text>
 			</navigator>
-			<navigator  open-type="switchTab" class="p-b-btn">
+			<view @tap='testOrder' open-type="switchTab" class="p-b-btn">
 				<image style="width:24px;height:24px;" src="../../images/icons/share.jpg"/>
 				<!-- <text class="yticon icon-gouwuche"></text> -->
 				<text>分享</text>
-			</navigator>
-			 <view class="p-b-btn" :class="{active: favorite}" @tap="toFavorite">
+			</view>
+			 <view class="p-b-btn"  @tap="toFavorite">
 				 <image style="width:24px;height:24px;" src="../../images/icons/callme.jpg"/>
 				<!-- <text class="yticon icon-shoucang"></text> -->
 				<text style="color:#606266;">联系我</text>
@@ -185,7 +196,7 @@
 			</view>
 		</view>
 
-
+ 
 	</view>
 </template>
 
@@ -196,26 +207,31 @@
 	export default class product extends wepy.page{
 
 		data = {
+				imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+				productInfo:{},//商品属性
 				current_scroll_id:'scroll_0',//0是商品详情，1是评价
 				timer:null,
 				hour:0,
 				minute:0,
 				secound:0,
-				specClass: 'none',//规格选择
-				specSelected:['S','白色'],
-				favorite: true,
-				shareList: [],
-				imgList: [
+				specClass: 'none',//规格选择弹窗
+				specSelected:{},//默认选择的规格,键名是sp_item_id
+												/*
+												{
+													规格名数组下标：{
+														规格值键值：规格值
+													}
+												}
+												*/	
+				number:1,//商品数量
+				specInfo:[
 					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
+					items: [{sp_item_id: "6", sp_item_name: "乐享黄金", price: "444.00"},//规格值
+									{sp_item_id: "7", sp_item_name: "至尊钻石", price: "888.00"}],
+					sp_id: "6",//规格id
+					sp_name: "套餐类型"//规格名
 					}
-				],
+				],//商品规格列表
 				desc: [
 						"https://gd3.alicdn.com/imgextra/i4/479184430/O1CN01nCpuLc1iaz4bcSN17_!!479184430.jpg_400x400.jpg" ,
 						"https://gd2.alicdn.com/imgextra/i2/479184430/O1CN01gwbN931iaz4TzqzmG_!!479184430.jpg_400x400.jpg" ,
@@ -283,17 +299,34 @@
 				]
 		}
 		 onLoad(e){		
-			wx.setNavigationBarTitle({
-				title:'团购商品详情'
-			})	
+			
 		
 		}
 		onShow(e){
 			var groupInfo = wx.getStorageSync('currentGroup');
+			var spValue = new Object;
 			http.get(api.GroupDetail,{
 					goods_id:groupInfo.goods_id,
 					group_id:groupInfo.group_id}).then(res=>{
-				this.countDown(res.remaining_time);
+						// console.log(res)
+						//动态设置页面标题
+						wx.setNavigationBarTitle({
+							title:res.shopGoods.goods_name
+						})
+						this.productInfo = res;
+						this.specInfo = res.shopGoods.specInfo;//获取商品规格
+						//默认选择规格的首项 按键值进行访问
+						for(let index in res.shopGoods.specInfo){												//规格名列表
+							for(let childIndex in res.shopGoods.specInfo[index].items){		//规格值列表
+								//index:规格名数组下标 childIndex：规格值键值
+								spValue = {};
+								spValue[childIndex] = res.shopGoods.specInfo[index].items[childIndex].sp_item_name;//存储规格名
+								this.specSelected[index]=spValue;
+								break;
+							}
+						}
+						console.log(this.specSelected)
+						this.countDown(res.remaining_time);
 			})
 		}
 		onUnload(){
@@ -325,10 +358,16 @@
 				this.countDown(secounds);
 			},1000)
 		}
+		//设置分享副标题
+		onShareAppMessage (res) {
+			return {
+				title: this.productInfo.shopGoods.goods_name,
+			}
+  }
+
 		methods={
 			//规格弹窗开关
 			toggleSpec() {
-				console.log('111')
 				if(this.specClass === 'show'){
 					this.specClass = 'hide';
 					setTimeout(() => {
@@ -338,77 +377,127 @@
 					this.specClass = 'show';
 				}
 			},
-			//选择规格
-			selectSpec(proper, value){
-				if(proper.name==='尺寸'){
-					this.specSelected[0] = value.name;
+			//选择规格 规格名键值，规格值键值，规格值
+			selectSpec(spNameIndex,spValueIndex, spValue){
+				var spObj = new Object;
+				spObj[spValueIndex] = spValue;
+				//删除原来所选项
+				delete this.specSelected[spNameIndex];
+				//插入新的项
+				this.specSelected[spNameIndex] = spObj;
+			},
+			numberDown(e){
+				if(this.number==1){
+					return;
 				}else{
-					this.specSelected[1] = value.name;
+					this.number = this.number-1;
+					this.$apply();
 				}
-				console.log(proper,value);
+			},
+			numberUp(e){
+				this.number = this.number+1;
+				this.$apply();
+				console.log(this.number)
 			},
 			//分享
 			share(){
-				this.$refs.share.toggleMask();	
+	
 			},
-			//收藏
+			//联系我
 			toFavorite(){
-				this.favorite = !this.favorite;
+
 			},
+			//前往所有评论
+			allComment(e){
+				wx.navigateTo({
+					url:'./allComment'
+				})
+			},
+			//检查是否有默认地址
+			checkDefaAddress(){
+					return new Promise((resolve,reject)=>{
+						if (wx.getStorageSync("userDefaultAddress").is_default){
+							reject();
+						}else{
+							wx.showModal({
+								title: '提交失败',
+								content: "您还没有设置默认地址哟～",
+								cancelText: '下次再说',
+								confirmText: "前往设置",
+								confirmColor: "#ff6b5d",
+								success:function(e){
+										if(!e.cancel){
+												resolve();
+										}else{
+											reject();
+										}
+									}
+								})
+						}
+				})
+			},
+			//立即购买
 			buy(){
-				//确认用户绑定手机号
-				if(!wx.getStorageSync("userInfoInServer").phone){
-					wx.showModal({
-					title: '提交失败',
-					cancelText: '下次再说',
-					confirmText: "前往绑定",
-					confirmColor: "#ff6b5d",
-					content: "您还没有绑定手机号哟～",
-					success:function(e){
-						wx.navigateTo({
-							url: '/pages/bindPhone',
-							})
-						},
+				this.methods.checkDefaAddress().then(res=>{
+					wx.navigateTo({
+						url: '/pages/my-func?id=1',
 					})
-					return;
-				}
-				//确认用户设置默认地址
-				if (!wx.getStorageSync("userDefaultAddress").is_default){
-					wx.showModal({
-					title: '提交失败',
-					cancelText: '下次再说',
-					confirmText: "前往设置",
-					confirmColor: "#ff6b5d",
-					content: "您还没有设置默认地址哟～",
-					success:function(e){
-						wx.navigateTo({
-							url: '/pages/my-func?id=1',
-							})
-						},
-					})
-					return;
-				}
-				//加入购物车
-				http.post(api.CartAdd,{
-					goods_id:wx.getStorageSync('currentGroup').goods_id,   
-					shop_id: wx.getStorageSync('currentGroup').group_id, 
-					number:1,
-					user_id:wx.getStorageSync('userInfoInServer').id,
-				}).then(res =>{
-					console.log(res)
-					if(res.msg){
-					wx.showToast({
-						title: res.msg,
-						icon: 'none'
-					})
-					}else{
+				}).catch(res=>{//已经有默认地址，加入购物车并提交订单
+							http.post(api.CartAdd,{
+							goods_id:wx.getStorageSync('currentGroup').goods_id,   
+							group_id: wx.getStorageSync('currentGroup').group_id, 
+							shop_id: wx.getStorageSync('currentGroup').shop_id, 
+							number:this.number,
+							user_id:wx.getStorageSync('userInfoInServer').id,
+							address_id:wx.getStorageSync('userDefaultAddress').id,
+							type:2,//团购购买
+						}).then(res =>{
+							console.log(res)
+							this.methods.handle(res);
+						})
+				})
+			},
+			//检查返回数据
+			handle(data){
+				if(data.msg){
+					if(data.code === 201){
 						wx.showModal({
+								title:'支付提醒',
+								content:'您已加入过拼团快去付款吧～',
+								cancelText:'取消',
+								confirmText:'前往支付',
+								success: function (e) {
+									if (e.cancel) {
+										//点击取消,默认隐藏弹框
+									} else {
+											wx.navigateTo({
+												url:'./createOrder/createOrder?orderInfo=' + JSON.stringify(data.data),
+											})
+									}
+								}
+						})
+					}else{
+						wx.showToast({
+							icon:'none',
+							title:data.msg
+						})
+					}
+				}else{
+					wx.showModal({
 							title:'拼团成功',
 							content:'恭喜您成功加入拼团，快去前往支付吧~',
-							confirmText:'立即支付'
+							confirmText:'前往支付',
+							success: function (e) {
+								if (e.cancel) {
+									//点击取消,默认隐藏弹框
+								} else {
+										wx.navigateTo({
+											url:'./createOrder/createOrder?orderInfo=' + JSON.stringify(data),
+										})
+								}
+							}
 						})
-					}              
-				})
+					}
 			},
 			changeSwiper(e){
 				this.current_scroll_id = e;
@@ -428,13 +517,34 @@
 </script>
 
 <style lang='scss'>
+.numberBox{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 40rpx;
+	padding-left: 10rpx;
+	color: #606266;
+}
+.numberRight{
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.number{
+	width:100rpx;
+	background-color:#eee;
+	display: flex;
+	align-items: center;
+	justify-content:center;
+	margin:0rpx 15rpx;
+}
 .countDown{
 	display:flex;
 	align-items:center;
 	justify-content:space-between;
 	color:#fa436a;
-	margin-left:5%;
-	width:45%;
+	margin-left:3%;
+	flex:1;
 }
 .countDown-font{
 	display: flex;

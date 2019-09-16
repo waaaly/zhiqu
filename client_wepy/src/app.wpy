@@ -83,11 +83,11 @@ import 'wepy-async-function'
 export default class extends wepy.app {
   config = {
         pages: [
-          'pages/tuangou/index',
           'pages/chooseArea',
+          'pages/tuangou/index',
+          
           'pages/my',
-          
-          
+                   
           'pages/authorize',
           'pages/orderComment',
           
@@ -119,7 +119,9 @@ export default class extends wepy.app {
         subPackages:[{
           root:'tuangou',
           pages:[
-            'pages/product'
+            'pages/product',
+            'pages/createOrder/createOrder',
+            'pages/allComment'
           ]
         }],
         window: {
@@ -146,8 +148,8 @@ export default class extends wepy.app {
           //   "text": "分类"
           // },
           {
-            "selectedIconPath": "/images/2-on.png",
-            "iconPath": "/images/2-off.png",
+            "selectedIconPath": "/images/团购.png",
+            "iconPath": "/images/团购-off.png",
             "pagePath": "pages/tuangou/index",
             "text": "团购"
           },

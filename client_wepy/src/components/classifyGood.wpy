@@ -164,6 +164,7 @@ export default class classifyGood extends wepy.component{
                     goods_id:item.good_id,   
                     shop_id: item.shop_id, 
                     number:1,
+                    type:1,//平台购买
                     user_id:wx.getStorageSync('userInfoInServer').id,
                 }).then(res =>{
                     console.log(res)

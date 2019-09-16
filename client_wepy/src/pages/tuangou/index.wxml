@@ -51,7 +51,7 @@
       <block wx:for="{{productList}}" wx:key="{{index}}">
         <view class="tui-pro-item list-item" hover-class="hover" 
               hover-start-time="150" bindtap="detail"
-              data-goodsId="{{item.goods_id}}" data-groupId="{{item.id}}">
+              data-goodsId="{{item.goods_id}}" data-groupId="{{item.id}}" data-shopid="{{item.shop_id}}">
           <image src="{{imageUrl+item.primary_pic_url}}" class="tui-pro-img" mode="widthFix" />
           <view class="tui-pro-content">
             <view class="tui-pro-tit">{{item.goods_name}}</view>

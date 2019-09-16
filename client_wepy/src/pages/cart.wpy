@@ -677,21 +677,21 @@ export default class Cart extends wepy.page{
     //提交订单
     goOrder:function(e){
       //确认用户绑定手机号
-      if(!wx.getStorageSync("userInfoInServer").phone){
-        wx.showModal({
-          title: '提交失败',
-          cancelText: '下次再说',
-          confirmText: "前往绑定",
-          confirmColor: "#ff6b5d",
-          content: "您还没有绑定手机号哟～",
-          success:function(e){
-            wx.navigateTo({
-              url: '/pages/bindPhone',
-            })
-          },
-        })
-        return;
-      }
+      // if(!wx.getStorageSync("userInfoInServer").phone){
+      //   wx.showModal({
+      //     title: '提交失败',
+      //     cancelText: '下次再说',
+      //     confirmText: "前往绑定",
+      //     confirmColor: "#ff6b5d",
+      //     content: "您还没有绑定手机号哟～",
+      //     success:function(e){
+      //       wx.navigateTo({
+      //         url: '/pages/bindPhone',
+      //       })
+      //     },
+      //   })
+      //   return;
+      // }
       //确认用户设置默认地址
       if (!wx.getStorageSync("userDefaultAddress").is_default){
         wx.showModal({

@@ -1,5 +1,5 @@
 <template>
-<shopSort :mask1Hidden.sync='mask1Hidden'></shopSort>
+<!-- <shopSort :mask1Hidden.sync='mask1Hidden'></shopSort> -->
  <view class="weui-search-bar__form" style="margin-top:{{form_MT}}px;width:{{form_W}}px;">
     
     <view class="weui-search-title" bindtap="goChooseAddress" style="top:{{title_top}}px;left:{{title_left}}px;right:{{title_right}}px;">
@@ -199,7 +199,6 @@ export default class Index extends wepy.page{
     //活动商品
     new Promise((resolve,reject)=>{
       http.get(api.HotGood,{area_id:that.area.area_id}).then(res=>{
-        console.log( res) 
         for(let x=0;x<4;x++){       
           if(res[x*4]!=undefined){this.hotGoodList[x].push(res[x*4])}
           if(res[x*4+1]!=undefined){this.hotGoodList[x].push(res[x*4+1])}
@@ -244,7 +243,6 @@ export default class Index extends wepy.page{
       new Promise((resolve,reject)=>{
         http.get(api.HotGood,{area_id:wx.getStorageSync('userDefaultAddress').area_id}).then(res=>{
           this.hotGoodList=[[],[],[],[]];
-          console.log( res)
           if(res.msg == '当前无商家'){
             this.notShop = true;
             return; 
