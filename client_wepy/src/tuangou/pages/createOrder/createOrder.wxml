@@ -4,10 +4,10 @@
             <text class="yticon icon-shouhuodizhi"></text>
             <view class="cen">
                 <view class="top">
-                    <text class="name">{{consignee}}</text>
-                    <text class="mobile">{{mobile}}</text>
+                    <text class="name">{{orderInfo.consignee}}</text>
+                    <text class="mobile">{{orderInfo.mobile}}</text>
                 </view>
-                <text class="address">{{address}}</text>
+                <text class="address">{{orderInfo.address}}</text>
             </view>
             <text class="yticon icon-you"></text>
         </view>
@@ -20,7 +20,7 @@
                 <text class="title clamp">{{goodInfo.goods_name}}</text>
                 <text class="spec">{{goodInfo.specifition_name_value?goodInfo.specifition_name_value:'默认规格'}}</text>
                 <view class="price-box">
-                    <text class="price">{{goodInfo.retail_price}}</text>
+                    <text class="price">￥{{goodInfo.retail_price}}</text>
                     <text class="number">x {{goodInfo.number}}</text>
                 </view>
             </view>
@@ -41,12 +41,20 @@
     </view>
     <view class="yt-list">
         <view class="yt-list-cell b-b">
-            <text class="cell-tit clamp">商品金额</text>
+            <text class="cell-tit clamp">商品原价</text>
             <text class="cell-tip">￥{{goodInfo.market_price}}</text>
         </view>
         <view class="yt-list-cell b-b">
-            <text class="cell-tit clamp">优惠金额</text>
-            <text class="cell-tip red">-￥{{goodInfo.market_price - goodInfo.retail_price}}</text>
+            <text class="cell-tit clamp">商品数量</text>
+            <text class="cell-tip">￥{{goodInfo.number}}</text>
+        </view>
+        <view class="yt-list-cell b-b">
+            <text class="cell-tit clamp">订单金额</text>
+            <text class="cell-tip">￥{{goodInfo.market_price*goodInfo.number}}</text>
+        </view>
+        <view class="yt-list-cell b-b">
+            <text class="cell-tit clamp">团购优惠</text>
+            <text class="cell-tip red">-￥{{(goodInfo.market_price - goodInfo.retail_price)*goodInfo.number}}</text>
         </view>
         <view class="yt-list-cell b-b">
             <text class="cell-tit clamp">运费</text>
@@ -61,9 +69,9 @@
         <view class="price-content">
             <text>实付款</text>
             <text class="price-tip">￥</text>
-            <text class="price">{{goodInfo.retail_price}}</text>
+            <text class="price">{{orderInfo.actual_price}}</text>
         </view>
-        <text  class="submit" bindtap="payment" data-id="{{orderId}}">
+        <text  class="submit" bindtap="payment" data-id="{{orderInfo.id}}">
             确认支付
         </text>
     </view>

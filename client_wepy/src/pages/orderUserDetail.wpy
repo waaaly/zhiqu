@@ -4,24 +4,372 @@ import http from '../utils/Base';
 import api from '../utils/API';
 import orderDetail from '../components/orderDetail';
 export default class orderUserDetail extends wepy.page{
-    components = {
-        orderDetail :orderDetail,
-    }
     data = {
-
+        order:{},
+        goodsList:{},
+        shopInfo:{},
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     }
     onLoad(e){
+        console.log(e)
+        //修改页面标题
+        wx.setNavigationBarTitle({
+          title:'订单详情'
+        })
         http.get(api.OrderDetail,{
-            user_id:wx.getStorageSync('userInfoInServer').id,
             order_id:e.orderId
         }).then(res=>{
             console.log(res)
-            this.$broadcast('userOrder',res);
+            this.order = res;
+            this.goodsList = res.goodsList;
+            this.shopInfo = res.shopInfo;
+            this.$apply();
         })
+    }
+    methods = {
+        //前往商家
+        goShoper(res){
+            let url = '/pages/shoper?shop_id='+this.shopInfo.id;
+            wx.navigateTo({
+                url: url,
+            })
+        },
+        tel(phone) {
+            wx.makePhoneCall({
+                phoneNumber: phone,
+            })
+        }
     }
 }
 </script>
 
+<style lang='scss'>
+.hr-address{
+    margin-top:15rpx;
+    width:100%;
+    height: 5px;
+    margin-bottom:15rpx;
+}
+.address-box{
+    position: relative;
+    display: flex;
+    padding:20rpx 20rpx 10rpx 0rpx;
+    // border-bottom:10rpx solid #aaa;
+    image{
+        width: 35px;
+        height: 35px;
+        margin: 0 20rpx;
+    }
+    .info-box{
+        font-size:30rpx;
+        color:#363636;
+        display: flex;
+        flex-direction: column;
+        .user{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .phone{
+            image{
+                height: 18px;
+                width:18px;
+                margin-right:10rpx;
+            }
+        }
+    }
+}
+.orderStatus{
+    position: absolute;
+    top:20rpx;
+    left: 50rpx;
+    width: 150rpx;
+    height:150rpx;
+    border-radius: 50%;
+    background-color: #888;
+    opacity: 0.7;
+    color:#fff;
+    text{
+       transform: rotate(-45deg);
+        top: 50rpx;
+        left: 10rpx;
+        position: absolute;
+    }
+}
+.shop-info{
+    position: relative;
+    padding-left:5rpx;
+    display:flex;
+    align-items: center;
+    color:#ff6200;
+    border-left:3px solid #ff6200;
+    margin-bottom:20rpx;
+    .shop-icon{
+        width:50rpx;
+        height:50rpx;
+        border-radius: 50%;
+        margin-left:0rpx;
+    }
+    .shop-name{
+        font-size: 30rpx;
+        margin:0rpx 20rpx;
+    }
+    image{
+        width:30rpx;
+        height:30rpx;
+        margin-left:20rpx;
+    }
+    .callShoper{
+        position: absolute;
+        right:20rpx;
+        display: flex;
+        align-items: center;
+        z-index:10;
+        image{
+            margin-right:15rpx;
+            width:30rpx;
+            height:30rpx;
+        }
+    }
+}
+.order-goods-container {
+    background-color:#FAFAFA;
+    padding:10rpx 20rpx 15rpx 25rpx;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items:center;
+    .order-goods-image {
+        width:150rpx;
+        height:150rpx;
+    }
+    .order-goods-title-container {
+        display: flex;
+        flex-direction: column;
+        justify-content:center;
+        -webkit-flex:1;
+        flex:1;
+        height:100%;
+        padding-left:28rpx;
+        text{
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+    }
+    .order-goods-buy-container {
+        display: flex;
+        flex-direction: column;
+        justify-content:center;
+        text-align:right;
+        .muted{
+            font-size:28rpx;
+            color:#a3a3a3;
+            margin-top:10rpx;
+        }
+    }
+}
+.order-footer-container{
+    padding-left:25rpx;padding-right:20rpx;height:70rpx;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-end;
+    border-bottom: 28rpx solid #ddd;
+    .price{
+        font-size:32rpx;color:#ff6200;margin-right:20rpx;
+    }
+    text{
+        font-size:28rpx;color:#262626;
+    }
+}
+
+.summary-box {
+    color:#262626;
+    margin-bottom:20rpx;
+    padding: 10px 15px; 
+    background:#fff;
+    border-top:1px solid #ededed;
+    border-bottom:1px solid #ededed;
+    margin-top:10rpx;
+    overflow:hidden;
+    font-size:28rpx;
+    .final-box { 
+        float: right; width: 100%; padding-top: 10rpx; text-align: right;
+     .major{ color:#ff6200;}
+    }
+    .price-box {     
+        display: flex;
+        flex-direction: row;
+        justify-content:space-between;
+        align-items:center;padding: 10rpx 0; 
+        .major{
+            color:#ff6200;
+        }
+    }
+}
+.order-detail{
+    color: #ff6200;
+    padding-left:5rpx;
+    border-left:3px solid #ff6200;
+}
+.weui-cells{
+    border-bottom:1px solid #ededed;
+    border-top:none;
+    margin-top:5px;
+    position:relative;
+    background-color:#fff;
+    line-height:1.41176471;
+    font-size:17px;
+}
+
+.weui-cell{
+    font-size:28rpx;
+    padding:10px 15px;
+    position:relative;
+    display:-webkit-flex;
+    display:flex;
+    -webkit-align-items:center;
+    align-items:center;
+}
+
+.weui-cell__bd{
+    font-size:28rpx;
+    flex:1;
+}
+
+.weui-cell__ft{
+    font-size:28rpx;
+    text-align:right;
+    color:#666;
+}
+.weui-split{
+    height:1px;background-color:#f5f5f5;margin:0 80rpx;
+}
+</style>
+
+
 <template>
-    <orderDetail></orderDetail>
+<view>
+  <!--地址展现-->
+  <image style="margin-top:60rpx;" class="hr-address" src="/images/icons/address-hr.png"/>
+    <view class="address-box">
+        <image  src="/images/icons/address.png"/>
+        <!-- 地址内容 -->
+        <view class="info-box " style="width:100%;">
+            <view class="user">
+                <view>联系人：{{order.consignee}}</view>
+                <view class="phone">
+                    <!-- <image src="/images/icons/call.png"/> @tap="tel(order.mobile)" -->
+                    <text>{{order.mobile}}</text>
+                </view>
+            </view>
+            <view>地址：{{order.address}} </view>
+        </view>
+    </view>
+  <image class="hr-address" src="/images/icons/address-hr.png"/>
+  <!--地址展现end-->
+
+    <!--订单状态浮动-->
+    <view class="orderStatus">
+        <text >{{order.order_status_text}}</text>
+    </view>
+
+    <view class="shop-info" @tap="goShoper">
+        <image class="shop-icon" src="{{imageUrl+shopInfo.shop_icon}}"/>
+        <view class="shop-name">{{shopInfo.shop_name}}</view>
+        <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+        <view class="callShoper"  @tap.stop="tel(shopInfo.bind_phone)">
+            <image src="/images/icons/call.png"/> 
+            <text>{{shopInfo.bind_phone}}</text>
+        </view>
+    </view>
+
+<!--商品区域-->
+    <block wx:for="{{goodsList}}" wx:for-index="index" wx:for-item="item" wx:key="goodsId">   
+        <view class="order-goods-container">
+          <!--商品图片-->
+          <image class="order-goods-image" mode="aspectFill" src="{{item.list_pic_url}}"/>
+          <!--商品说明-->
+          <view class="order-goods-title-container">
+            <text>{{item.goods_name}}</text>
+            <text style="font-size:24rpx;color:#666" wx:if="{{item.product_id!=0}}">商品属性：{{item.goods_specifition_name_value}}</text>
+            <text style="font-size:24rpx;color:#666" wx:else>商品属性：默认属性</text>
+          </view>
+          <!--商品信息-->
+          <view class="order-goods-buy-container">
+            <text>￥{{item.actual_price}}</text>
+            <text class="muted">x{{item.number}}</text>
+          </view>
+        </view>
+    </block>
+  
+  <view  class="order-footer-container ">
+    <text >合计:</text>
+    <view class="price">￥{{order.goods_price}}</view>
+    <text >(含运费￥{{0}})</text>
+  </view>
+<!--商品区域end-->
+  
+<!--订单详情-->
+  <view  class="weui-cells">
+    <view class="order-detail">订单详情</view>
+    <view class="weui-cell">
+      <view class="weui-cell__bd">订单状态</view>
+      <view class="weui-cell__ft">{{order.order_status_text}}</view>
+    </view>
+
+    <view class="weui-split"></view>
+
+    <view class="weui-cell">
+      <view class="weui-cell__bd">订单流水</view>
+      <view class="weui-cell__ft">{{order.order_sn}}</view>
+    </view>
+
+    <view class="weui-split"></view>
+
+    <view class="weui-cell">
+      <view class="weui-cell__bd">生成时间</view>
+      <view class="weui-cell__ft">{{order.add_time}}</view>
+    </view>
+
+    <view class="weui-split"></view>
+
+    <view class="weui-cell">
+      <view class="weui-cell__bd">支付方式</view>
+      <view class="weui-cell__ft">{{order.pay_name}}</view>
+    </view>
+
+    <view class="weui-split"></view>
+
+    <view class="weui-cell">
+      <view class="weui-cell__bd">配送方式</view>
+      <view class="weui-cell__ft">商家配送</view>
+    </view>
+
+    <view class="weui-split"></view>
+
+    <view class="weui-cell">
+      <view class="weui-cell__bd">买家留言</view>
+      <view class="weui-cell__ft">{{order.postscript}}</view>
+    </view>
+  </view>
+
+
+
+  <!--信息汇总-->
+  <view class="summary-box">
+    <view class="price-box row-between">  
+      <!-- <text>联系商家：</text>  
+      <image src="/images/icons/call.png"/> 
+      <text>{{shopInfo.bind_phone}}</text> -->
+    </view>
+    <view class="final-box">
+      <text class="major">实付款：￥{{order.actual_price}}</text>
+    </view>
+  </view>
+</view>
 </template>

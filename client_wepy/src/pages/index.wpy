@@ -1,24 +1,30 @@
 <template>
-<!-- <shopSort :mask1Hidden.sync='mask1Hidden'></shopSort> -->
+<view>
  <view class="weui-search-bar__form" style="margin-top:{{form_MT}}px;width:{{form_W}}px;">
     
     <view class="weui-search-title" bindtap="goChooseAddress" style="top:{{title_top}}px;left:{{title_left}}px;right:{{title_right}}px;">
-        <image style="height:40rpx;width:40rpx;margin-right:15rpx;" src='../images/icons/dingwei1.jpg'/>
-        <text style="width:{{titleText_W}}%;font-size:30rpx;color:#000;text-overflow:ellipsis;overflow:hidden;">{{address}}</text>
+        <image style="height:40rpx;width:40rpx;margin-right:15rpx;" src='../images/icons/dingwei.png'/>
+        <text style="width:{{titleText_W}}%;font-size:30rpx;color:#666;text-overflow:ellipsis;overflow:hidden;">{{address}}</text>
         <image style="width:20rpx;height:20rpx;margin:0 20rpx 0 20rpx;" src="../images/icons/xiangxia.png"/>
-        <!-- <image style="height:40rpx;width:40rpx;position:absolute;right:{{sao_R}}px" src="../images/icons/saoyisao.png"
-        @tap="scan"/> -->
     </view>
-    <navigator class="weui-search-bar__box" style="width:{{search_W}}%;margin-left:{{search_ML}}px;" url='/pages/search'><!--right:{{search_R}}px-->
-      <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
-      <input type="text" class="weui-search-bar__input" placeholder="输入关键词进行搜索"/>
-      <view class="weui-icon-clear" wx:if="{{wxSearchData.value != ''}}" @tap="wxSearchClear">
-        <icon type="clear" size="14"></icon>
-      </view>
-    </navigator>
+    <view class="laba" style="margin-left:{{search_ML}}rpx;margin-top: {{labaTop}}rpx;" >
+      <image class="swiperImg" src="../images/icons/laba.png"/>
+      <swiper class="swiperBox" indicator-dots="{{false}}" vertical="{{true}}" autoplay="{{true}}" circular="{{true}}" interval="3000" >
+          <swiper-item style="width: 180px;height: 28px;"  wx:for="{{imgUrls}}" wx:key="{{index}}" >
+            <view class="swiperText">{{item.title}}</view>
+          </swiper-item>
+      </swiper>
+    </view>
   </view>
+
   <view class='wrap-swiper'>
-      <swiper style="height:{{swiper_H}}px" indicator-dots="{{true}}" autoplay="{{true}}" interval="{{3000}}" duration="{{1500}}" circular="{{true}}" current="{{current}}" indicator-active-color='#ff6d5b'>
+      <swiper style="height:{{swiper_H}}px" 
+              indicator-dots="{{true}}" 
+              autoplay="{{true}}" 
+              interval="{{3000}}"  
+              circular="{{true}}"  
+              indicator-active-color='#ff6d5b'
+              bindchange="swiperChange">
         <block wx:for="{{imgUrls}}" wx:key="key">
       <swiper-item>
         <image src="{{imageUrl+item.pic_url}}" style="width:100%;" mode="widthFix"  />
@@ -26,6 +32,7 @@
         </block>
       </swiper>
   </view>
+
 
   <view style=' align-items: center; display:flex;flex-direction:column;justify-content:space-between'>
     <text style="font-size:50rpx;color:#ffb65d;font-weight:bold;font-size:50rpx">ACTIVITY AREA</text>
@@ -36,9 +43,6 @@
 
     <view wx:if="{{notShop}}" style="text-align:center;">
       <image src="{{imageUrl+'zq/noneServer.png'}}"/>
-      <!-- <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
-      <text style="color:#ff6b5d;">换个地址试试呢～</text>
-      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator> -->
     </view>
     <view wx:else>
       <goodHot1 :hotGood.sync="hotGood1"></goodHot1>
@@ -55,9 +59,6 @@
                   <!-- 推荐商家 -->
   <view wx:if="{{notShop}}" style="text-align:center;">
     <image src="{{imageUrl+'zq/noneServer.png'}}"/>
-   <!-- <view style=" color:#ff6b5d;line-height:50px;">您的附近没有可提供服务的商家</view>
-      <text style="color:#ff6b5d;">换个地址试试呢～</text>
-      <navigator class="goAddress"   url="/pages/addressAdd" >前往新增地址</navigator> -->
   </view>
   
     <view wx:else class='index-content'>
@@ -67,7 +68,7 @@
         </repeat>
       <!-- </block>       -->
     </view>
-
+</view>
 </template>
 
   
@@ -108,6 +109,7 @@ export default class Index extends wepy.page{
       twoWay:true
     },
     imgUrls: [],//siwepr
+    siweprCur:0,//当前页
     notShop:false,//五商家
     hotGoodList:[[],[],[],[]],//首页活动热门商品
     hotGood1:[],
@@ -125,7 +127,8 @@ export default class Index extends wepy.page{
     title_top:0,
     sao_R:0,//扫一扫右边
     search_W:100,//搜索栏宽度
-    search_ML:0,//搜索栏外边距
+    search_ML:8,//搜索栏外边距
+    labaTop:0,//
     search_R:0,//
     titleText_W:80,//
     swiper_H:200,//swiper的高度
@@ -134,7 +137,7 @@ export default class Index extends wepy.page{
 
   onLoad(e){
     var that = this; 
-  
+
     //显示转发按钮
     wx.showShareMenu({
       withShareTicket: true
@@ -162,8 +165,8 @@ export default class Index extends wepy.page{
       return ;
     }
 
-    //用户没有选择服务区域选择跳过 或者 用户通过扫码进入到其他页面
-    if(wx.getStorageSync('userSkip') || !wx.getStorageSync('userChooseArea')){
+    //用户没有选择服务区域选择跳过 或者 用户通过扫码进入到其他页面或分享进入页面
+    if(wx.getStorageSync('userSkip') || !wx.getStorageSync('userChooseArea') || !e.area){
         http.get(api.GetShopArea,{district:'智趣社区'}).then(area=>{
           that.area.area_id = area.area_id;
           that.area.area_name = area.area_name;
@@ -280,7 +283,7 @@ export default class Index extends wepy.page{
         this.title_left = 0 - 10*(e.scrollTop/45);
         this.title_top = 0 + 40*(e.scrollTop/45);
         this.title_right =  0 - 10*(e.scrollTop/45);
-        this.search_W =100- 50*(e.scrollTop)/45;
+        this.search_ML =8+360*(e.scrollTop)/45;
         this.search_R =40*(e.scrollTop)/45;
         this.titleText_W =80 -35*(e.scrollTop)/45;
         this.sao_R = -20*(e.scrollTop)/45;
@@ -290,7 +293,8 @@ export default class Index extends wepy.page{
         this.title_left =-10;
         this.title_top = 40;
         this.title_right =  -10;
-        this.search_W = 50;
+        this.search_ML = 360;
+        this.labaTop = 15;
         this.search_R =40;
         this.titleText_W =35;
         this.sao_R = -20;
@@ -299,6 +303,11 @@ export default class Index extends wepy.page{
       
     }
   methods ={
+      //swiperChange
+    swiperChange(e){
+     this.siweprCur = e.detail.current;
+     this.$apply();
+    },
     goChooseAddress(e){
       this.userAddress = true;
       this.$apply();
@@ -328,10 +337,33 @@ export default class Index extends wepy.page{
   }
 }
 </script>
-<style>
+<style lang="scss">
 
 page{
   background-color:#fff;
+}
+.laba{
+  position: relative;
+  color: #666;
+  .swiperImg{
+    height:40rpx;
+    width:40rpx;
+    position: absolute;
+    top:0;
+  }
+  .swiperBox{
+    height:28px;
+    margin-left:30rpx;
+  }
+  .swiperText{
+    margin-left:20rpx;
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all; /* 追加这一行代码 */
+  }
 }
 .weui-search-bar__form {
   position: fixed;
@@ -342,9 +374,8 @@ page{
   padding-bottom:10px;
   padding-left:10px;
   padding-right:10px;
-  /* border: 30rpx solid #e6e6ea; */
-  background-color: #ffb65d;
-
+  // background-color: #ffb65d;ffac30
+  background: linear-gradient(to bottom, #ffb65d,#f8cb88);
 }
  /* 地址、扫一扫 */
 .weui-search-title{

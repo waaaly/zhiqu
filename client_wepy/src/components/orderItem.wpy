@@ -14,28 +14,29 @@
            </navigator>   
         </navigator>
         <view class='line'></view>
-        <navigator wx:for="{{item.goodsList}}" wx:for-item="goodItem" 
-                    wx:for-index="goodIndex" class='secondCol' >
-            <image style='width:60px;height:60px;border-radius:5px;' src='{{goodItem.list_pic_url}}'/> 
-            <view style="font-size:30rpx;color:#262626;flex:2;margin-left:20rpx;">{{goodItem.goods_name}}</view>
-            <view style="display:flex;flex-direction:column;margin-top:20rpx">
-                <text style="display:flex;justify-content:flex-end;color:#666;font-size:25rpx;">¥{{goodItem.actual_price}}</text>
-                <text style="display:flex;justify-content:flex-end;color:#666;font-size:25rpx;">x{{goodItem.number}}</text>
-                <!-- <text style="display:flex;justify-content:flex-end;color:#ff6b5d;font-size:30rpx;">小计:{{goodItem.number*goodItem.actual_price}}</text> -->
-            </view>
+        <navigator url="{{'/pages/orderUserDetail?orderId=' + item.id}}">      
+          <view wx:for="{{item.goodsList}}" wx:for-item="goodItem" 
+                      wx:for-index="goodIndex" class='secondCol' >
+              <image src='{{goodItem.list_pic_url}}'/> 
+              <view class="good-name">
+                <text>{{goodItem.goods_name}}</text>
+              </view>
+              <view class="good-num-price">
+                  <text >¥{{goodItem.actual_price}}</text>
+                  <text >x{{goodItem.number}}</text>
+              </view>
+          </view>
+          <view class='line'></view>   
+          <view class="order-info">
+            <view class="box">
+              <text >订单编号:{{item.order_sn}}</text> 
+              <text >下单时间:{{item.add_time}}</text>
+            </view> 
+            <view class="total">总计：{{item.goods_price}}元</view>
+          </view>
         </navigator>
 
-        <view class='line'></view>
-        
-        <view style="display:flex;justify-content:space-between;margin-top:20rpx;padding-right:45rpx;padding-left:45rpx;">
-          <navigator style="display:flex;flex-direction:column;padding-bottom:10px;" url="{{'/pages/orderUserDetail?orderId=' + item.id}}">
-            <view style="text-align:left;font-size:25rpx;color:#666;">订单编号:{{item.order_sn}}</view> 
-            <view style="text-align:left;font-size:25rpx;color:#666;">下单时间:{{item.add_time}}</view>
-          </navigator> 
-          <view style="text-align:right;color:#ff6b5d;padding:5rpx;font-size:30rpx;">总计：{{item.goods_price}}元</view>
-        </view>
-        
-        <view class="thirdCol ">
+        <view wx:if="{{item.order_status != 0}}" class="thirdCol ">
             <block wx:if="{{item.order_status == 10}}" >
               <view wx:for="{{['前往支付', '取消订单']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
@@ -107,13 +108,23 @@ export default class orderItem extends wepy.page{
             })
         }
         if(text == '取消订单'){
-          http.post(api.OrderCancel,{order_id:this.orderList[index].id}).then(res=>{
+          var order_id = this.orderList[index].id;
+          http.post(api.OrderCancel,{order_id:order_id}).then(res=>{
             console.log(res);
             if(res.msg){
               wx.showToast({
                 title:res.msg,
                 icon:'none',
-              })
+              })      
+              var groupOrderInfoList = wx.getStorageSync('groupOrderInfoList');
+              for(let index in groupOrderInfoList){
+                if(groupOrderInfoList[index].order_id == order_id){
+                  delete groupOrderInfoList[index];
+                  console.log(groupOrderInfoList);
+                  break;
+                }
+              } 
+              wx.setStorageSync('groupOrderInfoList',groupOrderInfoList);
               this.orderList.splice(index,1);
               this.$apply();
             }
@@ -146,7 +157,7 @@ export default class orderItem extends wepy.page{
 }
 </script>
 
-<style>
+<style lang="scss">
 .page{
   display: flex;
   flex-direction: column;
@@ -159,7 +170,6 @@ export default class orderItem extends wepy.page{
   border-radius: 15rpx;
   border:1px solid #ffb65d;
   background: #fff;
-  padding-bottom:10px;
 }
 
 .firsetCol{
@@ -208,6 +218,31 @@ export default class orderItem extends wepy.page{
   flex-direction: row;
   /* align-items: center; */
   justify-content:space-between;
+  image{
+    width:60px;height:60px;border-radius:5px;
+  }
+  .good-name{
+    font-size:26rpx;
+    color:#666;
+    flex:2;
+    margin-left:20rpx;
+    display: flex;
+    align-items: center;
+   text{
+      word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+   }
+  }
+  .good-num-price{
+    display:flex;flex-direction:column;margin-top:20rpx;
+    text{
+      display:flex;justify-content:flex-end;color:#999;font-size:25rpx;
+    }
+  }
 }
 
 .thirdCol {
@@ -229,5 +264,22 @@ export default class orderItem extends wepy.page{
   border-radius: 5px;
 }
 
+.order-info{
+  display:flex;justify-content:space-between;
+  margin-top:20rpx;padding-right:45rpx;
+  padding-left:45rpx;
+  .box{
+    display:flex;
+    flex-direction:column;
+    padding-bottom:10px;
+    align-items: start;
+    text{
+      font-size:25rpx;color:#999;
+    }
+  }
+  .total{
+    text-align:right;color:#ff6b5d;padding-top:25rpx;font-size:30rpx;
+  }
+}
 </style>
 

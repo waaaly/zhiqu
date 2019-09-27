@@ -255,7 +255,8 @@ export default class myFunc extends wepy.page {
         if(res.length != 0){
             let shop = []; 
             let good = [];
-            for(let item of res){
+            for(let index in res){
+              let item = res[index];
               shop.push(item.shopInfo.shop_name);
               good.push(item.goodsInfo);
             }
@@ -368,7 +369,6 @@ export default class myFunc extends wepy.page {
               return;
             }else{
               http.post(api.AddressSetDefault,{id:currentAddress.id}).then(res=>{  
-                  console.log(e.data);
                   wx.showToast({
                     title: "设置成功",
                     duration: 1000

@@ -1,13 +1,13 @@
 <template>
-<view wx:if="{{init}}">
+<view wx:if="{{init}}" style="position:relative">
     <block wx:if="{{login}}">
         <!--用户 -->
         <view wx:if="{{userInfoInServer.role == 0}}" class="avatar-wrapper">
             <view  class="background">
-                <image src="{{userInfoInServer.avatar}}"  class="_img "/>
+                <image  src="{{userInfoInServer.avatar}}"  class="_img "/>
             </view>
-            <view class="avatar" bindtap="gotoSetting">
-                <image style="z-index:1024;border-radius:50%;" src="{{userInfoInServer.avatar}}"/>
+            <view class="avatar" bindtap="goMyInfo">
+                <image  style="z-index:1024;border-radius:50%;" src="{{userInfoInServer.avatar}}"/>
             </view>
             <view class="userInfo">
                 <text style="padding:5px;border-bottom:#eee solid 1px;">{{userInfoInServer.name}}</text>
@@ -21,25 +21,24 @@
         </view>
         <!--商家-->
         <view wx:if="{{userInfoInServer.role == 1}}" class="avatar-wrapper-shop">
-             <view  class="background">
-                <image src="{{userInfoInServer.avatar}}"  class="_img "/>
+            <view  class="background">
+                <image  src="{{userInfoInServer.avatar}}"  class="_img "/>
             </view>
-                <view style="position:relative;display:flex;justify-content:center;width:60px;height:60px;border-radius:50%;border:2px solid #ffb65d;background-color:#fff;z-index:1024;padding:2px;">
-                    <image style="border-radius:50%;height:60px;width:60px;" src="{{userInfoInServer.avatar}}"/>
-                </view>
-                <text style="margin:10px;color:#fff;">{{userInfoInServer.name}}</text>
-                <view class="shopInfo" @tap="goMyShop">
-                    <image style="width:100px;height:45px;" src="/images/icons/line.jpg"/>
-                    <view style="color:#ff6b5d;font-size:35rpx;display:flex;flex-direction:column;justify-content:space-between">
-                        <text style="margin-bottom:15px;">我的店铺</text>
-                        <text>{{shop_name}}</text>
-                    </view>
-                    <image wx:if="{{haveOrder}}" style="width:80px;height:80px;" src="/images/icons/newOrder.jpg"/>
-                    <image wx:else style="width:80px;height:80px;" src="/images/icons/noneOrder.jpg"/>
-                    <!-- <image @tap.stop="previewImg" style="width:45px;height:45px;" src="https://tse4-mm.cn.bing.net/th?id=OIP.TwdA5X1c0ShqBqcGudgjTwHaHa&w=200&h=200&c=7&o=5&dpr=1.5&pid=1.7"/> -->
-                </view>
-            </view>    
-       
+            <view bindtap="goMyInfo" class="shoperAvatar">
+                <image style="border-radius:50%;height:60px;width:60px;" src="{{userInfoInServer.avatar}}"/>
+            </view>
+            <view bindtap="goMyShop" class="shopIcon">
+                <image style="width:50rpx;height:50rpx;" src="../images/icons/shop.png"/>
+                <view wx:if="{{haveOrder}}" class="newOrderTip">
+                    <image style="width:28rpx;height:28rpx;" src="../images/icons/playing.png"/>
+                    <text>来咯，来咯，新单它来咯～</text>
+                </view>              
+            </view>
+            <text style="margin:10px;color:#fff;">{{userInfoInServer.name}}</text>
+        </view>    
+        <view style="position: absolute;top: 10rpx;right: 10rpx;">
+            <image bindtap="goMyInfo" style="width:50rpx;height:50rpx;" src="../images/icons/userInfo.png"/>
+        </view>
         
     </block>
     
@@ -91,6 +90,7 @@ export default class my extends wepy.page{
         login:false,
         init:false,
         haveOrder:false,
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         shop_name:'',
         shop_id:'',
         userRole:0,//用户身份：0消费者，1：商家
@@ -178,6 +178,7 @@ export default class my extends wepy.page{
                 success: (res=>{
                     this.login = true;
                     this.userInfoInServer = res.data;
+                    this.init = true;
                     this.$apply();
                     resolve(res.data)
                 }),
@@ -190,29 +191,38 @@ export default class my extends wepy.page{
     onShow(e){
         //读取本地用户信息查看是否已经登录授权
         this.getUserInfo().then(res=>{
-            //判断用户是否商家，获取商家信息
-             http.get(api.MyShop,{bind_phone:wx.getStorageSync("userInfoInServer").phone}).then(result =>{ 
+            var userInfo = wx.getStorageSync("userInfoInServer");
+             //判断用户是否商家，获取商家信息
+            if(userInfo.role){
+                 this.menuItems['order'] = this.order;
+                 http.get(api.MyShop,{bind_phone:userInfo.phone}).then(result =>{ 
                     this.shop_name = result.shop_name;
+                    userInfo['shop_name'] = result.shop_name;
+                    wx.setStorageSync("userInfoInServer",userInfo);
                     this.shop_id = result.id;
                     this.init = true;
                     this.$apply();
                     //查看是否有新的订单
                     http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
-                    if(res){
-                        this.haveOrder = true;
-                        this.$apply();
+                        if(res){
+                            this.haveOrder = true;
+                            wepy.playBackgroundAudio({
+                                dataUrl: this.imageUrl + 'voice/newOrderNotify.mp3',
+                            });
+                            this.$apply();
+                        }else{
+                            this.haveOrder = false;
+                            this.$apply();
                         }
                     })   
-            })
-            if(res.role){
-                this.menuItems['order'] = this.order;
+                 })
             }else{
                 delete this.menuItems.order;
             }
             this.$apply();
         }).catch(res=>{
-                this.init = true;
-                this.$apply();
+            this.init = true;
+            this.$apply();
         })
     } 
     
@@ -222,6 +232,12 @@ export default class my extends wepy.page{
             wx.navigateTo({
                 url: '../pages/shopHome?newOrder='+this.haveOrder,
             })         
+        },
+        //个人信息
+        goMyInfo(e){
+            wx.navigateTo({
+                url: '/pages/myInfo?newOrder='+this.haveOrder,
+            })  
         },
         //展开子列表
        naviTo: function(e) {
@@ -303,9 +319,15 @@ export default class my extends wepy.page{
 }
 </script>
 
-<style>
+<style lang='scss'>
 page{
     background-color: #eee;
+}
+/*隐藏滚动栏*/
+::-webkit-scrollbar{
+width: 0;
+height: 0;
+color: transparent;
 }
 .gradual{
     display:flex;
@@ -364,6 +386,38 @@ page{
     display:flex;
     flex-direction: column;
 }
+.shoperAvatar{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    border:2px solid #ffb65d;
+    background-color:#fff;
+    z-index:1024;
+    padding:2px;
+}
+.shopIcon{
+    position: absolute;top: 10rpx;left: 10rpx;
+    display:flex;
+    align-items: center;
+    .newOrderTip{
+        margin-left:10rpx;
+        padding: 5rpx;
+        display:flex;
+        align-items: center;
+        opacity: 0.9;
+        background-color: #333;
+        text{         
+            padding: 5rpx;
+            color: #fff;
+            margin-left: 10rpx;
+            font-size: 25rpx;
+        }
+    }
+}
+
 .shopInfo{
     display: flex;
     justify-content: space-between;
@@ -497,7 +551,7 @@ page{
 }
 
 .avatar-wrapper-shop {
-    padding: 25px 0;
+    padding: 32px 0px 10px 0px;
 	position: relative;
     display: flex;
     flex-direction: column;

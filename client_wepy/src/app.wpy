@@ -84,9 +84,17 @@ export default class extends wepy.app {
   config = {
         pages: [
           'pages/chooseArea',
-          'pages/tuangou/index',
-          
           'pages/my',
+          
+          'pages/submitInfo',
+          
+          'pages/myInfo',
+          
+          
+          
+          'pages/tuangou/index',
+          'pages/product',
+          
                    
           'pages/authorize',
           'pages/orderComment',
@@ -119,7 +127,6 @@ export default class extends wepy.app {
         subPackages:[{
           root:'tuangou',
           pages:[
-            'pages/product',
             'pages/createOrder/createOrder',
             'pages/allComment'
           ]
@@ -136,35 +143,35 @@ export default class extends wepy.app {
         "borderStyle": "black",
         "list": [
           {
-            "selectedIconPath": "/images/1-on.png",
-            "iconPath": "/images/1-off.png",
+            "selectedIconPath": "/images/tabIcon/1-on.png",
+            "iconPath": "/images/tabIcon/1-off.png",
             "pagePath": "pages/index",
             "text": "首页"
           },
-          // {
-          //   "selectedIconPath": "/images/2-on.png",
-          //   "iconPath": "/images/2-off.png",
-          //   "pagePath": "pages/classify",
-          //   "text": "分类"
-          // },
           {
-            "selectedIconPath": "/images/团购.png",
-            "iconPath": "/images/团购-off.png",
+            "selectedIconPath": "/images/tabIcon/2-on.png",
+            "iconPath": "/images/tabIcon/2-off.png",
             "pagePath": "pages/tuangou/index",
             "text": "团购"
           },
           {
-            "selectedIconPath": "/images/3-on.png",
-            "iconPath": "/images/3-off.png",
+            "selectedIconPath": "/images/tabIcon/3-on.png",
+            "iconPath": "/images/tabIcon/3-off.png",
             "pagePath": "pages/cart",
             "text": "购物车"
           },
           {
-            "selectedIconPath": "/images/4-on.png",
-            "iconPath": "/images/4-off.png",
+            "selectedIconPath": "/images/tabIcon/4-on.png",
+            "iconPath": "/images/tabIcon/4-off.png",
             "pagePath": "pages/my",
             "text": "我的"
-          }
+          },
+          // {
+          //   "selectedIconPath": "/images/tabIcon/2-on.png",
+          //   "iconPath": "/images/tabIcon/2-off.png",
+          //   "pagePath": "pages/classify",
+          //   "text": "分类"
+          // },
         ]
       },
       // debug:true,

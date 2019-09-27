@@ -35,10 +35,10 @@
               </view>
             </view>
         </view>
-        <view style="display: flex;justify-content: center;" wx:if="{{currentPage!=pageNum}}" @tap="loadPage">
-          <!-- <image wx:if="{{!loading}}" src="http://img.tukexw.com/img/1c7f861bd1c86239.jpg"/> -->
-          <text style="text-align:center;font-size:45px;">...</text>
-        </view>
+        <Pagination wx:if="{{commentList.length!=0}}"
+                    :curNum.sync="curNum" 
+                    :totalNum.sync="totalNum">
+        </Pagination>
     </scroll-view>
   </view>
   <view style="height:100%;">
@@ -51,9 +51,11 @@ import wepy from "wepy";
 import star from "../components/star";
 import http from '../utils/Base';
 import api from '../utils/API';
+import Pagination from '../components/pagination';
 export default class shopComment extends wepy.component{
   components = {
     star:star,
+    Pagination:Pagination,
   }
     data = {
       OssUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/',
@@ -63,9 +65,8 @@ export default class shopComment extends wepy.component{
       },
       commentList:[],
       orderInfoList:[],//商品信息在这里
-      currentPage:0,//当前页
-      pageNum:0,//评论总页数
-      loading:false,//加载下一页
+      curNum:1,//当前页
+      totalNum:1,//评论总页数
       shopId:0,//
     }
     onLoad(e){
@@ -77,7 +78,6 @@ export default class shopComment extends wepy.component{
             for(let item of picList){
               picUrlList.push(this.OssUrl+item);
             }
-
             wx.previewImage({
             //当前显示图片
             current: picUrlList[index],
@@ -85,26 +85,28 @@ export default class shopComment extends wepy.component{
             urls: picUrlList
             })
         },
-        loadPage(e){
-          this.loading = true;
-          http.get(api.CommentList,{shop_id:this.shopId,page:this.currentPage+1}).then(res=>{
-              this.currentPage = res.current_page;
-              this.commentList = this.commentList.concat(res.data);
-              this.loading = false;
-              console.log(this.commentList);
-              this.$apply();
-          })
-        }
+
     }
+    events = {
+    //翻页器组件
+    'changeCur':(value)=>{
+        //组件已经将页数加一
+        http.get(api.CommentList,{shop_id:this.shopId,page:value}).then(res=>{
+            this.curNum = res.current_page;
+            this.commentList = this.commentList.concat(res.data);
+            this.loading = false;
+            console.log(this.commentList);
+            this.$apply();
+        })
+    }
+  }
     watch = {
       shopInfo(_new,old){
         //更新组建当前数据
-        this.currentPage = 0,//当前页
-        this.pageNum = 0,//评论总页数
         this.shopId = _new.id;
         http.get(api.CommentList,{shop_id:_new.id}).then(res=>{
-            this.currentPage = res.current_page;
-            this.pageNum = res.last_page;
+            this.curNum = res.current_page;
+            this.totalNum = res.last_page;
             this.commentList = res.data;
             console.log(this.data);
             this.$apply();
@@ -118,7 +120,7 @@ export default class shopComment extends wepy.component{
 
 .comment {
   position: absolute;
-  top: 26%;
+  top: 30%;
   bottom: 0;
   left: 0;
   width: 100%;

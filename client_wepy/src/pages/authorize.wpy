@@ -26,7 +26,7 @@ page {
 
 <template>
   <view class="authorize-contianer">
-    <image class="authorize-icon" src="/images/authorize.png"></image>
+    <image class="authorize-icon" src="/images/icons/authorize.png"></image>
     <view class="auth-item">智趣申请获取以下权限：</view>
     <view class="auth-item">获取你的公开信息（头像、昵称等）</view>
     <view class="btn-authorize">

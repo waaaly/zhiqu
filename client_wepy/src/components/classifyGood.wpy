@@ -10,19 +10,12 @@
                 <text style="margin-left:20rpx;font-size:30rpx;color:#ff6b5d;">{{item.shop_name}}</text>                
             </view>
             <view class="itemName">{{item.goods_name}}
-                <!-- <view wx:if="{{item.collectId}}" class="shoucang" @tap.stop="delInCollect({{item}})">
-                    <image style="display:block;width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} "
-              mode='widthFix'/>
-                </view> -->
-                <!-- <view wx:else @tap.stop="collect({{item}})" class="shoucang iconfont">&#xe628;</view> -->
             </view>
             <view class="goodText">
                 {{item.goods_desc}}
             </view>
             <view class="titleContent">
                 <view class="title">¥{{item.retail_price}}元</view>
-                <!-- <view class="smalltitle">{{item.extra_price}}元</view> -->
-                <!-- <view @tap.stop="addCart({{item}})" class="add iconfont"></view> -->
                 <view @tap.stop="addCart({{item}})" class="add iconfont">
                     <image style="width:45rpx;height:45rpx;" mode="widthFix" src="/images/icons/cart.jpg"/>
                 </view>
@@ -40,6 +33,11 @@
             </navigator>
             <view wx:for="{{shopItem}}" @tap.shop="collectGoodDetail({{item.good_id}},{{item.shop_id}})" class="list">
                 <image style="border-radius:20rpx;width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
+                <view @tap.stop="lowerShelf({{item}})" 
+                    style="{{item.is_on_sale==0?'opacity:0.8;z-index:10;':''}}" 
+                    class="lower-shelf">
+                    <view class= "text-box">已下架</view>
+                </view>
                 <view style="margin-left:5%;width:70%;">
                     <view class="itemName">{{item.goods_name}}
                         <view  class="shoucang" @tap.stop="delInCollect({{item}})">
@@ -81,8 +79,9 @@ export default class classifyGood extends wepy.component{
         image_H:100,
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
+        
+        collectList:{},//收藏列表,以商家为主体
         goodList:[],
-        collectList:{},//收藏列表
     }
     onLoad(e){
         wx.getSystemInfo({
@@ -156,6 +155,17 @@ export default class classifyGood extends wepy.component{
                 })
             }) 
         },
+        //将下架商品移除s收藏列表
+        lowerShelf(e){
+            console.log(e)
+            wx.showModal({
+                title: '提示',
+                content: '该商品已下架您确定将它移出收藏吗?',
+                success:(res=>{
+                    this.methods.delInCollect(e)
+                })                               
+            })
+        },        
         addCart(item){
             // console.log(item);
 
@@ -211,9 +221,10 @@ export default class classifyGood extends wepy.component{
             var good = new Object();
             var collectList = new Object();
             var goodList = [];
-            
+            console.log(List)
             for(let shopIndex in List){
                 for(let goodIndex in List[shopIndex]){
+                    good["is_on_sale"]      = List[shopIndex][goodIndex].is_on_sale;
                     good["collectId"]       = List[shopIndex][goodIndex].collectionId;
                     good["good_id"]         = List[shopIndex][goodIndex].id;
                     good["primary_pic_url"] = List[shopIndex][goodIndex].primary_pic_url;          
@@ -229,7 +240,6 @@ export default class classifyGood extends wepy.component{
                 this.collectList[shopIndex] = goodList;
                 goodList = [];
             } 
-            console.log(this.collectList);
             this.$apply();
         },
         'notList':(e,$event)=>{ 
@@ -245,7 +255,7 @@ export default class classifyGood extends wepy.component{
 </script>
 
 
-<style>
+<style lang="scss">
 .main{
     background-color:#f3f3f3;
     padding-top:5px;
@@ -345,7 +355,29 @@ export default class classifyGood extends wepy.component{
   font-size: 40rpx;
   color: #ff6b5d;
   position: absolute;
-  left: 380rpx;
+  left:360rpx;
   bottom:rpx;
+}
+.lower-shelf{
+    position: absolute;
+    color: #fff;
+    background-color: #aaa;
+    opacity: 1;
+    z-index: -10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: -10rpx;
+    right: -20rpx;
+    height: 220rpx;
+    top: 20rpx;
+
+  .text-box{
+    border:1px solid #aaa;
+    border-radius: 50%;
+    width: 150rpx;
+    font-size:50rpx;
+    text-align: center;
+  }
 }
 </style>

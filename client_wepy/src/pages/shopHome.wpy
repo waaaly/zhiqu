@@ -123,7 +123,9 @@ export default class shopHome extends wepy.page{
         console.log(isEnable);
         if(!isEnable) return;
         http.get(api.NotifyOrder,{shop_id:this.myShop.id},false).then(res=>{
+           console.log(res)
           if(res){
+           
             isEnable = false;
             wepy.playBackgroundAudio({
               dataUrl: that.imageUrl + 'voice/newOrderNotify.mp3',
@@ -199,8 +201,6 @@ export default class shopHome extends wepy.page{
       </view>
     </view>
 
-    <!--其他统计区域-->
-    <!--TODO 目前是外卖模板-->
     <view>
       <view class="count-box row-around bg-white">
         <navigator class="count-item column-center"   url="{{'../pages/shopOrder?shopId='+myShop.id +'&status=22&title='+'待接单列表'}}" >
@@ -224,9 +224,9 @@ export default class shopHome extends wepy.page{
 
       </view>
       <view class="count-box row-around bg-white">
-        <navigator class="count-item column-center" url="{{'../pages/shopOrder?shopId='+myShop.id+'&status=0&title='+'全部列表'}}">
-          <text class="count-value">本月订单数</text>
-          <text class="muted">{{myShop.monthly_order_num}}</text>
+        <navigator class="count-item column-center" url="{{'../pages/shopOrder?shopId='+myShop.id+'&status=0&title='+'全部订单列表'}}">
+          <text class="count-value">全部订单数</text>
+          <text class="muted">{{myShop.total_order_num}}</text>
         </navigator>
         <view class="vr"/>
         <view class="count-item column-center">

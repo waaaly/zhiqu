@@ -173,6 +173,7 @@
     border-radius: 12rpx;
     position: relative;
     margin-bottom: 60rpx;
+    box-shadow: 3rpx 3rpx 10rpx 10rpx #ddd
 }
 
 .tui-pro-item::after {
@@ -250,6 +251,16 @@
     color: #555;
 }
 
+.tuanBox {
+    font-size: 30rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 28px;
+    border: 1px solid #eee;
+    color: #2e2e2e
+}
+
 .split {
     content: '';
     border: 1rpx solid #eee;
@@ -293,6 +304,30 @@
 .xiala-item {
     text-align: center;
     padding: 10rpx;
+}
+
+.shadow {
+    margin-top: 70rpx;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tips {
+    margin-top: 180rpx;
+    display: flex;
+    color: #777;
+    flex-direction: column;
+    align-items: center;
+}
+
+.font {
+    color: #ff6b5d;
+    text-decoration: underline;
+    margin: 30rpx 0rpx;
 }
 
 

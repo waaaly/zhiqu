@@ -4,6 +4,9 @@ import http from '../../utils/Base';
 import api from '../../utils/API';
 Page({
     data: {
+        init: false,
+        noInfo: false,
+        noSwiper: false, //没有推荐团购
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         swiperList: [],
         currentClassify: '全部团购',
@@ -18,26 +21,61 @@ Page({
             "各式各样的团购商品等你来战！妈妈再也不用担心我的钱没处花啦",
             "最后三天，最后三天，错过等一年！"
         ],
-        productList: []
+        productList: [],
+        isShoper: false, //用户不是商家才显示成为团长
     },
     onLoad: function(options) {
         //团购商品轮播
         http.get(api.GroupCarousel, {}).then(res => {
-            this.setData({
-                swiperList: res,
-            })
+            if (res) {
+                this.setData({
+                    swiperList: res,
+                    noSwiper: true,
+                })
+            } else {
+                this.setData({
+                    noSwiper: true,
+                })
+            }
         })
+        if (wx.getStorageSync("userInfoInServer").role) {
+            this.setData({
+                isShoper: true
+            })
+        }
+        this.refresh('全部团购', true);
     },
-    onShow(e) {
-        //团购列表
+    //刷新数据
+    refresh(classifyName, init) {
+        //获取团购列表
         http.get(api.GroupList, {}).then(res => {
             console.log(res);
+            if (res.msg == '暂无团购') {
+                this.setData({
+                    noInfo: true,
+                })
+                return;
+            }
+            //获取新数据
             groupList.init(res);
-            this.setData({
-                productList: groupList.getAll(),
-                secClass: groupList.getClassify()[0],
-                moreClass: groupList.getClassify().splice(1)
-            })
+            //初始化
+            if (init) {
+                this.setData({
+                    productList: groupList.getAll(),
+                    secClass: groupList.getClassify()[0],
+                    moreClass: groupList.getClassify().splice(1),
+                    init: true,
+                    noInfo: false,
+                })
+            } else {
+                this.getProducetList(classifyName);
+            }
+        })
+    },
+    //前往个人信息
+    goMyInfo(e) {
+        wx.navigateTo({
+            url: '/pages/myInfo?newOrder=' + false,
         })
     },
     hideXiala(e) {
@@ -45,6 +83,7 @@ Page({
             xialaShow: false,
         })
     },
+    //swiper
     change: function(e) {
         this.setData({
             current: e.detail.current
@@ -58,10 +97,10 @@ Page({
         }
         wx.setStorageSync('currentGroup', currentGroup);
         wx.navigateTo({
-            url: '/tuangou/pages/product',
+            url: '../product',
         })
     },
-
+    //下拉框显示
     xiala: function(e) {
         var that = this;
         that.setData({
@@ -80,13 +119,12 @@ Page({
     changeClassify(e) {
         this.setData({
             currentClassify: e.currentTarget.dataset.item,
+            productList: [],
         })
-        this.getProducetList(e.currentTarget.dataset.item)
+        this.refresh(e.currentTarget.dataset.item, false)
     },
-    //获取数据
+    // 根据团购分类获取数据
     getProducetList(name) {
-        console.log(name)
-        console.log(groupList.getClassifyProduct(name));
         this.setData({
             productList: groupList.getClassifyProduct(name),
         })

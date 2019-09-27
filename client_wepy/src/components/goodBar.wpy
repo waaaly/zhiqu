@@ -9,7 +9,8 @@ button:after{
   border:none;
 }
 button{
-  background-color: #fff;
+  background: transparent;
+  opacity: 0.9;
 }
 .page-bottom{
 		position:fixed;
@@ -92,21 +93,21 @@ button{
 
   <!-- 底部操作菜单 -->
 		<view class="page-bottom">
-			<navigator url="/pages/cart" open-type="switchTab" class="p-b-btn">
-          <image style="height:22px;width:22px;" src="/images/icons/jiesuan.png"/>				
-          <text>结算</text>
+			<navigator url="/pages/index" open-type="switchTab" class="p-b-btn">
+          <image style="height:22px;width:22px;" src="/images/1-off.png"/>				
+          <text>首页</text>
 			</navigator>
 			<view @tap='Collection'  class="p-b-btn">
           <image style="height:22px;width:22px;" src="/images/icons/shoucang.png"/>
 				  <text>收藏</text>
 			</view>
 			 <button  style="display: flex;flex-direction: column;font-size: 24rpx;padding-top: 10px;align-items: center;" open-type="share" role="button">
-          <image style="height:22px;width:22px;" src="/images/icons/friends.png"/>
+          <image style="height:22px;width:22px;" src="../images/icons/share.jpg"/>
 				  <text style="color:#606266;margin-top:-15rpx;">分享</text>
 			</button> 
 			<view class="action-btn-group">
 				  <button @tap='addcart' type="primary" class=" action-btn no-border buy-now-btn" >加入购物车</button>
-				  <button @tap='delOutcart' type="primary" class=" action-btn no-border add-cart-btn">移出购物车</button>
+				  <button @tap='toCart' type="primary" class=" action-btn no-border add-cart-btn">前往购物车</button>
 			</view>
 		</view>
 
@@ -127,19 +128,19 @@ export default class goodBar extends wepy.component{
         shop_id:0,
         good_id:0,
         good_num:1,
+        product_id:0,
     }
     events = {
-      'init':(shop_id,good_id,num,redDot,checkInCart,cartId,$event)=>{
-        this.shop_id = parseInt(shop_id);
+      'init':(good_id,shop_id,num,product_id,$event)=>{
         this.good_id = parseInt(good_id);
-        this.good_num = num;
-        this.showRedDot = redDot;      
-        this.checkInCart = checkInCart;
-        this.cart_id = cartId;
+        this.shop_id = parseInt(shop_id);
+        this.good_num = num;  
+        this.product_id = product_id;   
         this.$apply();
       },
-      'changeNum':(num,$event)=>{
+      'changeSpec':(num,product_id,$event)=>{
          this.good_num = num;
+         this.product_id = product_id;
          this.$apply();
       }
     }
@@ -167,6 +168,7 @@ export default class goodBar extends wepy.component{
       addcart(e){
         new Promise((resolve,reject)=>{
             http.post(api.CartAdd,{
+                product_id:this.product_id,
                 goods_id:this.good_id,   
                 shop_id: this.shop_id, 
                 number:this.good_num,
@@ -182,50 +184,41 @@ export default class goodBar extends wepy.component{
                 }else{
                    wx.showToast({
                     title: '添加成功！',
-                    icon: ''
                   })
-                  this.showRedDot = true;
-                  this.checkInCart = true;
-                  for(let index in res){
-                    for(let cartItem of res[index].cartList){
-                      if(cartItem.goods_id == this.good_id){
-                        this.cart_id = cartItem.id;
-                      }
-                    } 
-                  }           
-                  this.$apply();
                 }              
             })
         })
       },
-      delOutcart(e){
-        var that = this;
-        if(!that.checkInCart){
-          return;
-        }
-        wx.showModal({
-          title: '提示',
-          content: '确认将该商品移出购物车吗?',
-          success: function (res) {
-              if (res.confirm) {
-                // 从后台中删除该商品
-                http.post(api.CartDelete,{
-                  id: that.cart_id,
-                  user_id:wx.getStorageSync('userInfoInServer').id
-                }).then(res=>{
-                  that.checkInCart = false;
-                  that.$apply();
-                  http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(e =>{
-                    // console.log(e)
-                    if(e.length==0){
-                       that.showRedDot = false;
-                       that.$apply();
-                    }
-                  })
-                })
-              }
-            }
-          })
+      toCart(e){
+        wepy.reLaunch({
+          url: '/pages/cart',
+        })
+        // if(!that.checkInCart){
+        //   return;
+        // }
+        // wx.showModal({
+        //   title: '提示',
+        //   content: '确认将该商品移出购物车吗?',
+        //   success: function (res) {
+        //       if (res.confirm) {
+        //         // 从后台中删除该商品
+        //         http.post(api.CartDelete,{
+        //           id: that.cart_id,
+        //           user_id:wx.getStorageSync('userInfoInServer').id
+        //         }).then(res=>{
+        //           that.checkInCart = false;
+        //           that.$apply();
+        //           http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(e =>{
+        //             // console.log(e)
+        //             if(e.length==0){
+        //                that.showRedDot = false;
+        //                that.$apply();
+        //             }
+        //           })
+        //         })
+        //       }
+        //     }
+        //   })
       }
     }
 }

@@ -1,0 +1,516 @@
+<template>
+    <view wx:if="{{init}}" class="container">
+        <!--申请成为商家-->
+        <view wx:if="{{isShoper===1}}">
+            <view class="box" style="border-top: 20rpx solid #bbb;">
+                <view class='title' @tap='showTips(1)'>
+                    <image  src='../images/icons/tips.png'/>
+                    <text>基本信息</text>
+                </view>
+                <view class="flex-row" >
+                    <text class="left">商铺联系人</text> 
+                    <input class="right"  placeholder="商铺的持有者" maxlength="5" type='text'  bindinput="personName"/>  
+                </view>
+                <view class="flex-row">
+                    <text class="left">联系人二维码</text> 
+                    <view class="right flex-row-between">
+                        <image style="width:100rpx;height:100rpx;" src="{{imageUrl+code_pic}}" />
+                        <image @tap.stop='openPic(codeQR)'  src="../images/icons/openFlie.png"/>
+                    </view>
+                </view>
+            </view>
+            
+            <view class="box">
+                <view class='title' @tap='showTips(2)'>
+                    
+                    <image  src='../images/icons/tips.png'/>
+                    <text>个性设置</text>
+                </view>
+                <view class="flex-row" >
+                    <text class="left">商铺名</text> 
+                    <input class="right"  placeholder="取一个让人容易记住的店铺名吧～" maxlength="7" type='text'  bindinput="shopName"/>  
+                </view>
+                <view class="flex-row">
+                    <text class="left">商铺图标</text> 
+                    <view class="right flex-row-between">
+                        <image style="width:100rpx;height:100rpx;" src="{{imageUrl+shop_icon}}" />
+                        <image @tap.stop='openPic(icon)'   src="../images/icons/openFlie.png"/>
+                    </view>  
+                </view>
+            </view>
+
+            <view class="box" style="border-bottom: 20rpx solid #bbb;">
+                <view class='title' @tap='showTips(3)' >
+                     <image  src='../images/icons/tips.png'/>
+                     <text>详细信息</text>
+                </view>
+                <view class="row-wrap" >
+                    <view class="label">商铺地址</view>
+                    <view   @tap='selectDistrict' class="picker hui" >{{pickerAddress}}</view>
+                </view>
+                <view class="row-wrap" >
+                    <view class="label">街道/详细地址</view>
+                    <input class="right"  placeholder="请手动填写详细地址"  type='text'  bindinput="detailAddress"/>  
+                </view>
+                <view class="flex-row">
+                    <text class="left">商铺简介</text> 
+                    <textarea class="right" bindblur="bindTextAreaBlur" auto-height placeholder="商铺简介不少于30字" />  
+                </view>
+            </view>
+            <!--地址选择picker-->
+            <view class="picker-view" animation="{{animationAddressMenu}}" style="visibility:{{addressMenuIsShow ? 'visible':'hidden'}}">
+                <view style="height:10% ;width:95%;margin-top:10rpx">
+                    <text catchtap="cityCancel">取消</text>
+                    <text style="float: right; color:#09bb07;" catchtap="citySure">确定</text>
+                </view>
+                <picker-view style="width: 100%; height: 300px;" bindchange="cityChange" value="{{pickerValue}}" wx:key="">
+                    <picker-view-column>
+                    <view wx:for="{{provinces}}" class="picker-item">
+                        {{item.name}}</view>
+                    </picker-view-column>
+                    <picker-view-column>
+                    <view wx:for="{{citys}}" class="picker-item" wx:key="">
+                        {{item.name}}</view>
+                    </picker-view-column>
+                    <picker-view-column>
+                    <view wx:for="{{areas}}" class="picker-item" wx:key="">
+                        {{item.name}}</view>
+                    </picker-view-column>
+                </picker-view>
+            </view>
+        </view>
+         <!--申请成为团长-->
+        <view wx:else>
+            <view class="flex-row" style="margin:40rpx 20rpx;">
+                <text class="left">团长</text> 
+                <input class="right"  placeholder="团购发起者" maxlength="5" type='text'  bindinput="personName"/>  
+            </view>
+            <view class="flex-row">
+                <text class="left">团长二维码</text> 
+                <view class="right flex-row-between">
+                    <image style="width:100rpx;height:100rpx;" src="{{imageUrl+code_pic}}" />
+                    <image @tap.stop='openPic(codeQR)'  src="../images/icons/openFlie.png"/>
+                </view>
+            </view>
+        </view>
+        <!--足部-->
+        <view class="footer" @tap="sumbit">
+            <text>提交申请</text>
+        </view>
+         <!--提示1-->
+        <view class="opacity" style="{{showTips==1?'opacity:0.9;':'opacity:0;z-index:-1;'}}" >
+            <view class="title">Tips</view>
+            <view class="content">
+                <text>1、商家联系人不必须为实名，为商铺的联系人</text>
+                <text>2、商家联系人的微信二维码，商铺注册的唯一标识，用户可添加好友联系商家</text>
+                <text>3、微信二维码可在微信‘我’-‘个人信息’-‘二维码名片’找到</text>
+                <text>4、用户可将名片保存再选择上传</text>
+            </view>
+            <view class="close" @tap.stop="closeTips">X</view>
+        </view>
+        <!--提示2-->
+        <view class="opacity" style="{{showTips==2?'opacity:0.9;':'opacity:0;z-index:-1;'}}" >
+            <view class="content">
+                <text>1、商铺名称不能超过七个字符；</text>
+                <text>2、商铺图标是用户对商铺的第一印象。</text>
+            </view>
+            <view class="close" @tap.stop="closeTips">X</view>
+        </view>
+        <!--提示3-->
+        <view class="opacity" style="{{showTips==3?'opacity:0.9;':'opacity:0;z-index:-1;'}}" >
+            <view class="content">
+                <text>1、商铺地址包括，级联地址以及街道地址；</text>
+                <text>2、街道地址请手动输入；</text>
+                <text>3、商铺简介可以让用户快速的商铺。</text>
+            </view>
+            <view class="close" @tap.stop="closeTips">X</view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+var Address = require('../utils/City.js');
+const uploadFile = require("../utils/Upload.js");
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class submitInfo extends wepy.page{
+    data ={
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+        init:false,
+        showTips:0,//显示哪个提示
+        addressMenuIsShow:false,//商家地址选择器
+        animation:{},//picker动画变量
+        pickerValue: [0, 0, 0],//picker选择的各自所在数组的下标
+        pickerAddress:'点击选择商铺地址',//picker选到的地址
+        detailAddress:'',//手动填写的街道
+        provinces: [],//存储全部省份/直辖市
+        citys: [],//存储当前省份下的城市/直辖市就是直辖市
+        areas: [],//存储当前城市/直辖市下的区
+        isShoper:1,//1:申请为商家，2申请为团长
+        
+        //上传的参数
+        user_name:'null',//商家联系人名称
+        shop_name:'null',//店铺名
+        shop_icon:'null',//店铺图标
+        shop_desc:'null',//店铺简介
+        bind_phone:'',//绑定的手机号
+        code_pic:'',//商家微信二维码    
+    }
+
+    onLoad(e){
+        wx.setNavigationBarTitle({
+          title:`${e.type}审核资料填写`
+        })
+        if(e.type === '团长'){
+            this.isShoper = 2;
+        }
+        // 初始化动画变量
+        var animation = wx.createAnimation({
+            duration: 500,
+            transformOrigin: "50% 50%",
+            timingFunction: 'ease',
+        })
+        this.animation = animation;
+        //读取外部地址信息
+        var id = Address.provinces[0].id    
+        this.provinces= Address.provinces
+        this.citys= Address.citys[id]
+        this.areas= Address.areas[Address.citys[id][0].id]
+        this.init=true;
+    }
+    // 执行动画函数
+    startAddressAnimation (isShow) {
+        if (isShow) {
+        this.animation.translateY(0 + 'vh').step()
+        } else {
+        this.animation.translateY(40 + 'vh').step()
+        }
+        
+        this.animationAddressMenu = this.animation.export();
+        this.addressMenuIsShow = isShow;    
+    }
+     hideCitySelected (e) {
+        this.startAddressAnimation(false)
+    }
+    methods={
+        //提交审核资料
+        sumbit(){
+            var param ={
+                uid : wx.getStorageSync('userInfoInServer').id,
+                bind_phone : wx.getStorageSync('userInfoInServer').phone,
+                user_name : this.user_name,
+                code_pic : this.code_pic,
+                shop_name: this.shop_name,
+                shop_icon: this.shop_icon,
+                shop_desc: this.shop_desc,
+                address: this.pickerAddress + this.detailAddress,
+                review_type : (this.isShoper==1)?1:3,//商家申请：1，团长申请：3
+            }
+            console.log(param);
+            http.post(api.UserCollect,{...param}).then(res=>{
+                console.log(res)
+                if(res.msg=='您已提交申请'){
+                    wx.showModal({
+                        title:'提示',
+                        cancelShow:'false',
+                        content:'您已提交审核，请等待管理员确认！',
+                    })
+                }else{
+                    wx.showToast({
+                        title:res.msg
+                    })
+                }
+            })
+        },
+        //详细地址
+        detailAddress(e){
+            this.detailAddress = e.detail.value;
+        },
+        //联系人
+        personName(e){
+            this.user_name = e.detail.value;
+            this.$apply();
+        },
+        //商铺名
+        shopName(e){
+            this.shop_name = e.detail.value;
+            this.$apply();
+        },
+        //商家简介
+        bindTextAreaBlur(e){
+            this.shop_desc = e.detail.value;
+            this.$apply();
+        },
+        //打开选择图片
+        openPic(e){
+            console.log(e)
+            var that = this;
+            var userId = wx.getStorageSync('userInfoInServer').id
+            var perfix = 'front/' + userId +'/';
+             wx.chooseImage({
+              count: 1, // 最多可以选择的图片张数，默认9
+              sizeType: ['original', 'compressed'], // original 原图，compressed 压缩图，默认二者都有
+              sourceType: ['album', 'camera'], // album 从相册选图，camera 使用相机，默认二者都有
+              success: function (res) {
+
+                 var imgsrc = res.tempFilePaths;
+                 var fileName;
+                 for (let item of imgsrc){             
+                    if(item.indexOf('http://tmp')!=-1){
+                      fileName = item.replace('http://tmp/', perfix)
+                    }else{
+                      fileName = item.replace('wxfile://tmp_', perfix)
+                    }
+                    console.log(fileName);
+                    (e=='codeQR')? that.code_pic = fileName:that.shop_icon = fileName;
+                    that.$apply();
+                    uploadFile(item,userId);
+                 }       
+                  that.$apply();       
+              }
+            })
+        },
+        //关闭tips
+        closeTips(){
+            this.showTips = 0;
+            this.$apply();
+        },
+        //
+        showTips(e){
+            this.showTips = e;
+            this.$apply();
+        },
+        // 点击所在地区弹出选择框
+        selectDistrict: function (e) {
+            if (this.addressMenuIsShow) {
+            return
+            }
+            this.startAddressAnimation(true);
+        },
+        // 点击地区选择取消按钮
+        cityCancel: function (e) {
+            this.startAddressAnimation(false);
+        },
+        // 点击地区选择确定按钮
+        citySure: function (e) {               
+            var city = this.city;
+            var value = this.pickerValue;
+            this.startAddressAnimation(false);
+            //保存picker选择结果
+            this.pickerAddress = this.provinces[value[0]].name + '-' + this.citys[value[1]].name + '-' + this.areas[value[2]].name;
+            this.$apply();
+        },
+        // 处理省市县联动逻辑
+        cityChange (e) {
+            var value = e.detail.value
+            var provinces = this.provinces
+            var citys = this.citys
+            var areas = this.areas
+            var provinceNum = value[0]
+            var cityNum = value[1]
+            var countyNum = value[2]
+            if (this.pickerValue[0] != provinceNum) {
+            var id = provinces[provinceNum].id           
+                this.pickerValue = [provinceNum, 0, 0],
+                this.citys = Address.citys[id],
+                this.areas = Address.areas[Address.citys[id][0].id];      
+            } else if (this.pickerValue[1] != cityNum) {
+                var id = citys[cityNum].id        
+                this.pickerValue = [provinceNum, cityNum, 0],
+                this.areas = Address.areas[citys[cityNum].id];      
+            } else {        
+                this.pickerValue = [provinceNum, cityNum, countyNum]          
+            }
+         },
+    }
+}
+</script>
+
+<style lang="scss">
+.container{
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  display:flex;
+  background-color: #fff;
+}
+.box{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 20rpx 0rpx;
+    border-top: 10rpx solid #bbb;
+    border-bottom: 10rpx solid #bbb;
+    .title{
+        position: absolute;
+        display: flex;
+        top:10rpx;
+        left: 3%;
+        align-items: center;
+        letter-spacing:10rpx;//字体间距 
+        image{
+            width:30rpx;
+            height:30rpx;
+        }
+        text{
+            // background-color: #333;
+            // opacity: 0.8;
+            margin-left:10rpx;
+            color:#777;
+            font-size:28rpx;
+        }
+    }
+}
+.opacity{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 10;
+    background-color: #aaa;
+    border: 10rpx solid #333;
+    left: 60rpx;
+    top: 200rpx;
+    color: #fff;
+    padding: 10rpx;
+    right: 60rpx;
+
+    .title{
+        font-size: 48rpx;
+        margin-bottom:10rpx
+    }
+    .content{
+        margin: 20rpx;
+        font-size: 30rpx;
+        display: flex;
+        flex-direction: column;
+        text{
+            margin: 10rpx 0;
+        }
+    }
+    .close{
+        width: 60rpx;
+        height:60rpx;
+        border-radius: 50%;
+        margin-top:30rpx;
+        border:1px soild #fff;
+        background-color:#333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom:15rpx;
+    }
+}
+input{
+    width: 400rpx;
+    // border-radius: 20rpx;
+    // background-color: #ddd;
+    padding-left: 10rpx;
+}
+.flex-row{
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 10rpx 30rpx;
+    margin: 20rpx 20rpx 10rpx 20rpx;
+    border-bottom: 1px solid #ddd;
+}
+.flex-row-between{
+     display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.left{
+    min-width: 114px;
+    color: #333;
+    font-size: 28rpx;
+    /* letter-spacing:10rpx;字体间距 */
+    text-align: justify;
+    text-align-last:justify;
+}
+.right{
+    margin-left: 20rpx;
+    flex:1;
+    color: #777;
+    font-size: 28rpx;
+    image{
+        width:50rpx;
+        height: 50rpx;
+    }
+}
+.row-wrap{
+    width: 720rpx;
+    padding:10rpx 30rpx;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    font-size: 28rpx;
+    position: relative;
+    margin:20rpx 20rpx 10rpx 20rpx;
+}
+
+.row-wrap .label{
+    text-align: justify;
+    text-align-last:justify;
+    width: 114px;
+    color: #333;
+}
+.row-wrap .label-right{
+    flex: 1;
+    height: 88rpx;
+    line-height: 88rpx;
+}
+.row-wrap .label-right input{
+    height: 100%;
+    font-size: 28rpx;
+    padding-right: 30rpx;
+}
+.row-wrap .right-box{
+    margin-right: 30rpx; 
+}
+.picker {
+    min-width: 20rpx;
+    height: 100%;
+    margin-right: 20rpx;
+}
+.hui{
+    margin-left: 20rpx;
+    color: #777;
+}
+.picker-view {
+  width: 100%;
+  display: flex;
+  z-index:12;
+  background-color: #fff;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  bottom: 0rpx;
+  left: 0rpx;
+  height: 40vh;
+}
+
+.picker-item {
+  line-height: 70rpx;
+  margin-left: 5rpx;
+  margin-right: 5rpx;
+  text-align: center;
+}
+.footer{
+    position: fixed;
+    left: 0rpx;
+    right:0rpx;
+    bottom:0rpx;
+    height:70rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fa436a;
+    color:#fff;
+    letter-spacing:10rpx;/*字体间距*/
+    font-size:35rpx;
+    padding: 10rpx 0rpx;
+}
+</style>

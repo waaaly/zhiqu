@@ -141,31 +141,71 @@ export default class chooseArea extends wepy.page{
 </script>
 
 <template>
-<view wx:if="{{init}}" style="display:flex;flex-direction:column;margin-top:20px;align-items:center;">
-    <view style="display:flex;flex-direction:column;margin-bottom:20rpx;">
-        <text style="margin:10px;">您当前所在位置：</text>
-        <text style="margin:10px 0 10px 45px;">{{currentAddress}}</text>
-        <text style="margin:10px;">您附近有以下服务区域，请您选择其中之一：</text>
+<view wx:if="{{init}}" class="box">
+    <view class="title">
+        <text style="margin:10px;color:#666">您当前所在位置：</text>
+        <text style="margin:10px 0 10px 45px;text-decoration: underline;">{{currentAddress}}</text>
+        <text style="margin:10px;color:#666">您附近有以下服务区域，请您选择其中之一：</text>
     </view>
 
-    <view style="display:flex;flex-direction:column;width:80%;">
+    <view class="area">
         <block wx:for="{{areaList}}" >
-            <view @tap="chooseArea({{item}})" style="padding:20px;margin-bottom:30rpx;display:flex;justify-content: space-between;border-radius:10rpx;color:#fff;background-color:#ff6b5d;">
+            <view @tap="chooseArea({{item}})" class="item">
                 <text>{{item.area_name}}</text>
-                <image style="width:50rpx;height:50rpx;" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+                <image  src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
             </view>
         </block>
     </view>
 
-    <view @tap="skip" style="position:absolute;bottom:30px;right:15px;display:flex;justify-content:space-between;align-items:center">
-        <text style="color:#666;">跳过这一步</text>
-        <image style="width:40rpx;height:40rpx;" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+    <view @tap="skip" class="skip">
+        <text >跳过这一步</text>
+        <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
     </view>
 </view>
 </template>
 
-<style>
+<style lang='scss'>
 page{
     color:#ff6b5d;  
+    background-color: #eee;
+}
+.box{
+    display:flex;flex-direction:column;margin-top:20px;align-items:center;
+    .title{
+        display:flex;flex-direction:column;margin-bottom:20rpx;
+    }
+    .area{
+        display:flex;flex-direction:column;width:80%;margin-top: 70rpx;
+        .item{
+            padding:20px;margin-bottom:80rpx;display:flex;
+            justify-content: space-between;
+            border-radius:10rpx;
+            color:#fff;
+            background-color:#ff6b5d;
+            box-shadow: 1rpx 1rpx 10rpx 10rpx #ffbcb6;
+            image{
+                width:50rpx;height:50rpx;
+            }
+        }
+    }
+    .skip{
+        position: absolute;
+        bottom: 30px;
+        right: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #666;
+        padding: 10rpx 0rpx 10rpx 10rpx;
+        opacity: 0.8;
+        border-radius: 10rpx;
+        text{
+            color:#fff;
+        }
+        image{
+            width:40rpx;
+            height: 40rpx;
+        }
+    }
 }
 </style>

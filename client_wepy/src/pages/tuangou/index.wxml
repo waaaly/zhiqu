@@ -1,8 +1,8 @@
-<view bindtap="hideXiala" class="container">
+<view wx:if="{{init}}" bindtap="hideXiala" class="container">
     <!--headlines-->
     <view class="tui-rolling-news list-item">
         <tui-icon name="news" size='22' color='#ff6b5d'></tui-icon>
-        <swiper vertical="{{true}}" autoplay="{{true}}" circular="{{true}}" interval="4000" class="tui-swiper">
+        <swiper  vertical="{{true}}" autoplay="{{true}}" circular="{{true}}" interval="4000" class="tui-swiper">
           <swiper-item wx:for="{{headlines}}" wx:key="{{index}}" class="tui-swiper-item">
             <view class="tui-news-item">{{item}}</view>
           </swiper-item>
@@ -11,20 +11,27 @@
     <!--headlines-->
 
   <!--banner-->
-  <view class="tui-banner-box">
-    <swiper indicator-dots="true" autoplay="true" interval="5000" duration="150" class="tui-banner-swiper" circular="{{true}}" previous-margin="60rpx" next-margin="60rpx" bindchange="change">
-      <swiper-item wx:for="{{swiperList}}" wx:key="{{index}}" class="tui-banner-item">
-        <image src="{{imageUrl+item.group_pic_url}}" class="tui-slide-image {{current!=index?'tui-banner-scale':''}}" mode="scaleToFill" bindtap="detail" />
-      </swiper-item>
-    </swiper>
+  <view wx:if="{{!noSwiper}}" class="tui-banner-box">
+    <block wx:if="{{swiperList.length>2}}">
+      <swiper indicator-dots="true" autoplay="true" interval="5000" duration="150" class="tui-banner-swiper" circular="{{true}}" previous-margin="60rpx" next-margin="60rpx" bindchange="change">
+        <swiper-item wx:for="{{swiperList}}" wx:key="{{index}}" class="tui-banner-item">
+          <image src="{{imageUrl+item.group_pic_url}}" class="tui-slide-image {{current!=index?'tui-banner-scale':''}}" 
+          mode="scaleToFill" bindtap="detail" />
+        </swiper-item>
+      </swiper>
+    </block>
+    <block wx:else>
+      <swiper indicator-dots="true" autoplay="true" interval="5000" duration="150" class="tui-banner-swiper" circular="{{true}}"  bindchange="change">
+        <swiper-item wx:for="{{swiperList}}" wx:key="{{index}}" class="tui-banner-item">
+          <image src="{{imageUrl+item.group_pic_url}}" class="tui-slide-image {{current!=index?'tui-banner-scale':''}}" 
+          mode="scaleToFill" bindtap="detail" />
+        </swiper-item>
+      </swiper>
+    </block>
   </view>
   <!--banner-->
 
-  <!-- <view style="display:flex;justify-content:center;margin:20rpx;">
-      <image src="http://make.suchengapp.com/upload/images/20190817/15660564267.png" style="height:87px" role="img"/>
-  </view> -->
-
-  <view style="margin-top:20rpx;font-size:30rpx;display: flex; align-items: center;justify-content: space-between;padding: 10px 28px;border:1px solid #eee;color:#2e2e2e">
+  <view class="tuanBox" style="{{noSwiper?'margin-top:90rpx; ':'margin-top:20rpx;'}}">
     <view bindtap="changeClassify" 
         style="{{currentClassify=='全部团购'?'color:#ff6b5d':''}}"
         data-item='全部团购'>全部团购</view>
@@ -80,7 +87,16 @@
       <!-- </swiper-item>
     </swiper> -->
     <!--商品列表-->
-
   </view>
-
+</view>
+  <!--暂无团购-->
+<view wx:if="{{noInfo}}">
+  <view class='shadow'>
+    <image src='../../images/icons/noTuan.jpg' mode='FixWidth'/>
+    <view class="tips" wx:if='{{!isShoper}}'>
+      <text>当前没有任何团购信息呢,您可</text>
+      <text bindtap="goMyInfo" class="font">申请成为团长</text>
+      <text>发布团购哟~</text>
+    </view>
+  </view>
 </view>

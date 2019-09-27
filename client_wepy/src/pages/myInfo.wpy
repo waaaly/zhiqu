@@ -1,0 +1,277 @@
+<template>
+    <view class="box">
+        <view class='flex-wrp-row item'>
+            <view class='item-left '>
+                <text class='text'>头像</text>
+            </view>
+            <view class='item-right'>
+                <image src='{{avatar}}' style='width:100rpx;height:100rpx;border-radius:50%;' mode='aspectFit'></image>
+                <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+            </view>
+        </view>
+        
+        <view class='flex-wrp-row item'>
+            <view class='item-left '>
+                <text class='text'>昵称</text>
+            </view>
+            <view class='item-right'>
+                <text class='text'>{{name}}</text>
+                <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+            </view>
+        </view>
+        
+        <view class='flex-wrp-row item'>
+            <view class='item-left '>
+            <text class='text'>当前身份</text>
+            </view>
+            <view class='item-right '>
+            <text class='text'>{{role}}</text>
+            <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+            </view>
+        </view>
+        
+        <view class='flex-wrp-row item'>
+            <view class='item-left'>
+            <text class='text'>默认地址</text>
+            </view>
+            <view class='item-right '>
+            <text class='text'>{{defaultAddress}}</text>
+            <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+            </view>
+        </view>
+        
+        <view class='flex-wrp-row item'>
+            <view class='item-left'>
+            <text class='text'>绑定手机</text>
+            </view>
+            <view class='item-right'>
+                <text wx:if="{{phone==''}}" class='tips' >Tips:绑定手机后可申请成为商家或团长</text>
+                <text wx:if="{{phone==''}}" class='text' @tap="goBindPhone">暂未绑定手机</text>
+                <text wx:else class='text'>{{phone}}</text>
+                <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+            </view>
+        </view>
+        <!--还没提交过申请-->
+        <block wx:if="{{reviewStatus == null}}">
+            <!--已经绑定手机号-->
+            <block wx:if="{{role=='平台用户'&phone!=''}}">
+                <view @tap="toSubmitInfo(商家)" class='flex-wrp-row item'>
+                    <view class='item-left'>
+                    <text class='text'>成为商家</text>
+                    </view>
+                    <view class='item-right'>
+                    <text class='text'>前往申请</text>
+                    <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+                    </view>
+                </view>
+                <view @tap="toSubmitInfo(团长)" class='flex-wrp-row item'>
+                    <view class='item-left'>
+                        <text class='text'>成为团长</text>
+                    </view>
+                    <view class='item-right'>
+                    <text class='text'>前往申请</text>
+                    <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+                    </view>
+                </view>
+            </block>
+        </block>
+        <!--提交过申请,显示审核状态-->
+        <block wx:if="{{reviewStatus==0||reviewStatus==2}}">
+            <view  class='flex-wrp-row item'>
+                <view class='item-left'>
+                    <text wx:if="{{reviewType==1}}"  class='text'>商家审核状态</text>
+                    <text wx:if="{{reviewType==3}}" class='text'>团长审核状态</text>
+                </view>
+                <view class='item-right'>
+                    <text  wx:if="{{reviewStatus==0}}" class='text'>审核中</text>
+                    <text  wx:if="{{reviewStatus==2}}"  @tap="toSubmitInfo({{reviewType==1?'商家':'团长'}})"
+                     class='text'>驳回</text>
+                    <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+                </view>
+            </view>
+        </block>
+        <!--申请通过，更新用户身份-->
+        <block wx:if="{{reviewStatus==1}}">
+            <block wx:if="{{role=='智趣商家'}}">
+                <view @tap="toMyshop()" class='flex-wrp-row item'>
+                    <view class='item-left'>
+                        <text class='text'>我的商铺</text>
+                    </view>
+                    <view class='item-right'>
+                        <text class='text'>{{shopName}}</text>
+                        <image src='../images/icons/toRight.png' class='icon-right' mode='aspectFit'></image>
+                    </view>
+                </view>
+            </block>
+        </block>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import http from '../utils/Base';
+import api from '../utils/API';
+export default class myInfo extends wepy.page {
+    data={
+        avatar:'',//用户头像
+        name:'',//用户昵称
+        role:'',//用户身份
+        phone:'',//用户绑定的手机
+        defaultAddress:'',//默认地址
+        shopName:'',//商铺名称
+        haveOrder:'',
+        reviewType:'',//审核类型，1-平台商家  2-自营商家  3-团长
+        reviewStatus:null,//审核状态
+        showColonel:false,//团长审核通知
+    }
+    onLoad(e){
+
+        this.haveOrder = e.haveOrder;
+        wx.setNavigationBarTitle({
+          title:'个人详细信息'
+        })
+        if(wx.getStorageSync('userInfoInServer').avatar){
+            this.avatar = wx.getStorageSync('userInfoInServer').avatar;
+        }
+        if(wx.getStorageSync('userInfoInServer').name){
+            this.name = wx.getStorageSync('userInfoInServer').name;
+        }
+        if(wx.getStorageSync('userInfoInServer').role!=null){
+            let role = wx.getStorageSync('userInfoInServer').role;
+            switch(role){
+                case 0:{
+                    this.role='平台用户';
+                    break;
+                }
+                case 1:{
+                    this.role='平台商家';
+                    this.shopName =wx.getStorageSync('userInfoInServer').shop_name;
+                    break;
+                }
+                default:break;
+            }
+        }
+        if(wx.getStorageSync('userInfoInServer').phone){
+            this.phone = wx.getStorageSync('userInfoInServer').phone;
+        }
+        if(wx.getStorageSync('userDefaultAddress')){
+            this.defaultAddress =
+                                //   wx.getStorageSync('userDefaultAddress').province+
+                                //   wx.getStorageSync('userDefaultAddress').city+
+                                  wx.getStorageSync('userDefaultAddress').district_name+
+                                  wx.getStorageSync('userDefaultAddress').area_name+
+                                  wx.getStorageSync('userDefaultAddress').address;
+        }
+    }
+    onShow(){
+        http.get(api.UserCollectResult,{uid:wx.getStorageSync('userInfoInServer').id ,
+        bind_phone:wx.getStorageSync('userInfoInServer').phone}).then(res=>{
+            console.log(res)
+            this.reviewType = res.review_type;
+            this.reviewStatus = res.review_status;
+            if(res.review_type==3&&res.review_status==1){
+                this.role='智趣团长';
+                this.showColonel = true;
+            }
+            this.$apply();
+        })
+    }
+    methods={
+        //
+        colseColonel(e){
+            this.showColonel = false;
+            this.$apply();
+        },
+        //copy url
+        copy(e){
+            wx.setClipboardData({
+                data: 'http://test.mingrui-gz.com/admin/auth/login',
+                success: function(res) {
+
+                }
+            });
+        },
+        //
+        goBindPhone(e){
+            wx.navigateTo({
+                url:'/pages/bindPhone',
+            })
+        },
+        //
+        toSubmitInfo(e){
+            wx.showModal({
+                title:'提示',
+                content:`平台不兼容商家与团长双重身份，您确定要申请成为${e}吗？`,
+                cancelText:'考虑考虑',
+                comfireText:'确定',
+                success:(res=>{
+                    if(!res.cancel){
+                        wx.navigateTo({
+                            url:'/pages/submitInfo?type='+e,
+                        })
+                    }
+                })
+            })
+        },
+        //
+        toMyshop(){
+            wx.navigateTo({
+                url: '../pages/shopHome?newOrder='+this.haveOrder,
+            })
+        }
+    }
+}
+</script>
+
+<style lang='scss'>
+
+.box{
+    display: flex;
+    flex-direction: column;
+    color:#333;
+    font-size:28rpx;
+} 
+.flex-wrp-row {
+    margin: 10rpx 10rpx 15rpx 10rpx;
+  display: flex;
+  flex-direction: row;
+    padding: 20rpx;
+  position: relative;
+   border-bottom: 1px solid #bbb;
+}
+
+
+.item-left {
+      display: flex;
+  flex-direction: row;
+   flex: 1; /* 重要 */
+   align-items:center;
+}
+ .item-left text{
+    text-align: justify;
+    text-align-last:justify;
+ }
+.item-right {
+      display: flex;
+  flex-direction: row;
+  position: relative;
+  align-items:center;
+  color: #777;
+  position: relative;
+}
+.tips{
+   position: absolute;
+    bottom: -90rpx;
+    left: -470rpx;
+    padding: 10rpx;
+    opacity: 0.8;
+    background-color: #333;
+    color: #fff;
+    width: 485rpx;
+}
+.icon-right{
+    width: 40rpx;
+    height: 40rpx;
+    margin-left:15rpx;
+}
+</style>

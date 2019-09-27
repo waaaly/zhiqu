@@ -1,7 +1,7 @@
 <template>
     <shopHeader :shopInfo.sync='shopInfo'></shopHeader>
     <view class="tab" >
-        <view class="tab-item {{currentTab==index?'tab-item-active':''}}" wx:for="{{['商品','评论','商家']}}" @tap="touchTab({{index}})">
+        <view class="tab-item {{currentTab==index?'tab-item-active':''}}" wx:for="{{['商品','评论','联系商家']}}" @tap="touchTab({{index}})">
             <view class="tab-font">{{item}}</view>     
         </view>
     </view>

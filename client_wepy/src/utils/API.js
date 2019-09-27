@@ -69,4 +69,8 @@ module.exports = {
     GroupCarousel: ApiRootUrl + 'group-carousel', //团购商品轮播 get
     GroupDetail: ApiRootUrl + 'group-detail', //团购商品详情   get 
     GroupProduct: ApiRootUrl + 'group-product', //选择团购商品属性
+
+    UserCollect: ApiRootUrl + 'user-collect', //用户提交申请资料
+    UserCollectResult: ApiRootUrl + 'user-collect-result', //用户查看申请结果
+
 }

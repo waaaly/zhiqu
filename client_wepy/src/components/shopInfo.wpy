@@ -64,8 +64,12 @@
           <view class=" title border-1px">商家信息</view>
           <view class="">
             <view class="info-item" >商家地址：{{shopInfo.shop_address}}</view>
-             <view class="info-item" @tap="tel({{shopInfo.phone}})">联系方式：{{shopInfo.phone}}</view>
-              <view class="info-item" >营业时间：{{shopInfo.business_start_time}}-{{shopInfo.business_end_time}}</view>
+            <view class="info-item" @tap="tel({{shopInfo.phone}})">联系方式：{{shopInfo.phone}}</view>
+            <view class="shopQR" @tap="previewQR">
+              <text>商家微信：</text>
+              <image src="{{imageUrl+shopInfo.code_pic}}"/>
+            </view>
+            <view class="info-item" >营业时间：{{shopInfo.business_start_time}}-{{shopInfo.business_end_time}}</view>
           </view>
         </view>
       </view>
@@ -99,12 +103,42 @@ export default class shopInfo extends wepy.component{
         wx.makePhoneCall({
           phoneNumber: phone,
         })
-      }
-    }
+      },
+		//预览二维码
+		  previewQR(e){
+        var url = this.imageUrl + this.shopInfo.code_pic;
+        wx.previewImage({
+          current: url, // 当前显示图片的http链接
+          urls: [url] // 需要预览的图片http链接列表
+        })
+      },
+  }
 }
 </script>
 
-<style>
+<style lang='scss'>
+.shopQR{
+  position: relative;
+  padding: 32rpx 24rpx;
+  line-height: 32rpx;
+  font-size: 24rpx;
+  image{
+    width: 100rpx;
+  height: 100rpx;
+  position: absolute;
+  top: 0rpx;
+  left: 200rpx;
+  }
+}
+.shopQR::after{
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border-top: 2rpx solid rgba(7, 17, 27, 0.1);
+  content: " ";
+}
 .split{
     width: 100%;
     height: 16px;
@@ -114,7 +148,7 @@ export default class shopInfo extends wepy.component{
 }
 .seller {
   position: absolute;
-  top: 348rpx;
+  top: 32%;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -123,7 +157,7 @@ export default class shopInfo extends wepy.component{
 
 .seller .overview {
   position: relative;
-  padding: 36rpx;
+  padding:0rpx 36rpx;
 }
 
 .seller .overview .title {

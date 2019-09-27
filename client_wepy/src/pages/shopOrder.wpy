@@ -3,47 +3,72 @@ import wepy from 'wepy';
 import http from '../utils/Base';
 import api from '../utils/API';
 import orderDetail from '../components/orderDetail';
+import Pagination from '../components/pagination';
 export default class shopOrder extends wepy.page{
     components = {
         orderDetail:orderDetail,    
+            Pagination:Pagination,
     }
     data = {
+        init:false,
         StaticImgUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
         orderList:[],//等待商家确认接单的列表
         orderStatus:0,//记录订单的状态
+        shop_id:'',
+        curNum:1,
+        totalNum:1,
     }
     config = {
         "navigationBarTitleText": ""
     };
     onLoad(e){
+        console.log(e)
         this.orderStatus= e.status;
+        this.shop_id = e.shopId;
         wx.setNavigationBarTitle({
           title:e.title,
         })
-        if(e.status == 0){
-            http.get(api.ShopOrder,{shop_id:e.shopId}).then(res=>{
-                console.log(res)
-                this.orderList = res.data;
-                this.$apply();
-            })
-        }else{
-            http.get(api.ShopOrder,{shop_id:e.shopId,order_status:e.status}).then(res=>{
-                console.log(res)
-                if(res.msg){
-                    this.orderList = [];
-                    this.$apply();
-                    wx.showToast({
-                        title:res.msg,
-                        icon:"none"
-                    })
-                }else{
-                    this.orderList = res.data;
-                    this.$apply();
-                }
-            })
+        var param={
+           shop_id:e.shopId,
+           order_status:e.status,
         }   
+        this.getOrderData(param);
+    }
+    events = {
+    //翻页器组件
+    'changeCur':(value)=>{
+        //组件已经将页数加一
+        this.curNum = value;
+        let param = {
+          shop_id:this.shop_id,
+          order_status:this.orderStatus,
+          page:value
+        }
+        this.getOrderData(param);
+    }
+  }
+    //获取订单数据
+    getOrderData(param){
+        console.log(param)
+        http.get(api.ShopOrder,{...param}).then(res=>{
+            console.log(res)
+            if(res.msg){
+                this.orderList = [];
+                wx.showToast({
+                    title:res.msg,
+                    icon:"none"
+                })
+            }else{
+                this.orderList = res.data;
+                this.curNum=res.curremt_page;
+                this.totalNum=res.last_page;
+            }
+            this.init = true;
+            this.$apply();
+        })
     }
     methods = {
+        //确认接单
         receOrder(orderId,orderIndex){
              http.post(api.OrderReceived,{order_id:orderId}).then(res=>{
                 console.log(res)
@@ -55,6 +80,7 @@ export default class shopOrder extends wepy.page{
                 this.$apply();
             })
         },
+        //确认送达
         completeOrder(orderId,orderIndex){
             http.post(api.OrderComplete,{order_id:orderId}).then(res=>{
                 console.log(res)
@@ -66,6 +92,7 @@ export default class shopOrder extends wepy.page{
                 this.$apply();
             })
         },
+        //拒绝接单
         refundOrder(price,orderSn,desc,showModel,orderIndex){
             var that = this;
             if(this.orderStatus == 22){
@@ -113,7 +140,7 @@ export default class shopOrder extends wepy.page{
 </script>
 
 <template>
-  <view class="container">
+  <view wx:if="{{init}}" class="container">
     <block wx:for="{{orderList}}" wx:for-index="orderIndex">
         <navigator  style="display:flex;flex-direction: column;padding:5px;margin:5px;border-radius:20rpx;background-color:#fff;"
                     url="{{'/pages/orderUserDetail?orderId=' + item.id}}">
@@ -143,6 +170,9 @@ export default class shopOrder extends wepy.page{
     <block wx:if="{{orderList.length == 0}}">
          <image src="{{StaticImgUrl+'noneMsg.png'}}" mode="widtgFix" style="width:100%;height:400px;margin-top:100px;"/>
     </block>
+    <Pagination wx:if="{{orderList.length!=0}}"
+                 :curNum.sync="curNum" 
+                 :totalNum.sync="totalNum"></Pagination>
 </view>
 </template>
 

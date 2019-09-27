@@ -74,11 +74,13 @@ export default class http {
                             content: '您当前尚未登陆无法进行相关操作呢',
                             confirmColor: '#ff6b5d',
                             confirmText: '前往登陆',
-                            success: (res => {
-                                if (res.confirm) {
+                            success: (res1 => {
+                                if (res1.confirm) {
                                     wx.navigateTo({
                                         url: '/pages/authorize',
                                     })
+                                } else {
+
                                 }
                             }),
                         })

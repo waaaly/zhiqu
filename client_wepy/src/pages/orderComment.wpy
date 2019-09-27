@@ -274,6 +274,9 @@ export default class orderComment extends wepy.page{
     this.orderId = e.order_id;
     this.pics = [];
     this.picUrl = [];
+    wx.setNavigationBarTitle({
+      title:'编辑评价'
+    }) 
   }
   onShow(e){
     

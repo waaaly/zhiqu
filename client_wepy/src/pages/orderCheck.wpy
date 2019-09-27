@@ -24,36 +24,29 @@
       <text class="sm" style='flex:9;'>{{shopInfo.shop_name}}</text>
       <view class="arrow" style='flex:1;color:#ff6b5d;'>></view>
     </view>
-   <!--商品区域-->
 
+   <!--商品区域-->
     <view class="order-goods-list-container"  >
       <block wx:for="{{orderGoodsInfos}}" wx:for-index="index" wx:for-item="item" wx:key="goodsId">
-        <view class="{{!order.orderId || index == 0 || expand[order.orderId] ? '' : 'order-goods-fold'}}">
-          
-  <view class="order-goods-container row-between" @tap="goodDetail({{item.goods_id}})">
-    <!--商品图片-->
-    <image class="order-goods-image" mode="aspectFill" src="{{imageUrl + item.primary_pic_url}}"/>
-
-    <!--商品说明-->
-    <view class="order-goods-title-container column">
-      <text>{{item.goods_name}}</text>
-      <text class="muted">{{item.skuText}}</text>
-    </view>
-
-    <!--商品信息-->
-    <view class="order-goods-buy-container column">
-      <text>￥{{item.retail_price}}</text>
-      <text class="muted">x{{item.number}}</text>
-    </view>
-  </view>
-
+        <view class="{{!order.orderId || index == 0 || expand[order.orderId] ? '' : 'order-goods-fold'}}">     
+          <view class="order-goods-container row-between" @tap="goodDetail({{item.goods_id}})">
+            <!--商品图片-->
+            <image class="order-goods-image" mode="aspectFill" src="{{imageUrl + item.primary_pic_url}}"/>
+            <!--商品说明-->
+            <view class="order-goods-title-container column">
+              <text>{{item.goods_name}}</text>
+              <text style="font-size:26rpx;color:#666" wx:if="{{item.product_id!=0}}">商品属性：{{item.goods_specifition_name_value}}</text>
+              <text style="font-size:26rpx;color:#666" wx:else>商品属性：默认属性</text>
+            </view>
+            <!--商品信息-->
+            <view class="order-goods-buy-container column">
+              <text>￥{{item.retail_price}}</text>
+              <text class="muted">x{{item.number}}</text>
+            </view>
+          </view>
           <view class="hr"/>
         </view>
       </block>
-      <view  wx:if="{{order.orderId && order.orderGoodsInfos.length > 1}}" class="goods-fold-btn row-center" catchtap="expand" data-wpyexpand-a="{{order.orderId}}">
-        <text class="muted" wx:if="{{!expand[order.orderId]}}">查看全部 {{order.orderGoodsInfos.length}} 件商品</text>
-        <text class="muted" wx:else>收起商品</text>
-      </view>
     </view>
 <!--商品区域end-->
 
@@ -69,11 +62,6 @@
           <input bindinput="bindKeyInput" placeholder="对本次交易的说明"/>
         </view>
       </view>
-      <!-- <view class="spacing"/>
-        <view class="block">
-        <view class="left total_jf">积分 \t共{{total_jf_num}}\t可用{{can_use_score}}</view>
-        <view class="right"><input type="number" class="dk-jf" value="{{jf_num}}" bindinput="jfInput" placeholder="输入抵扣积分"/></view>
-      </view> -->
       <view class="spacing"/>
       <view class="block">
         <view class="left tongji">商品金额</view>
@@ -301,6 +289,12 @@ color:#fff;
   flex:1;
   height:100%;
   padding-left:28rpx;
+  word-break: break-all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .column{

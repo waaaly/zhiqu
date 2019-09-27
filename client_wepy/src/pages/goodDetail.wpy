@@ -1,4 +1,25 @@
-<style>
+<style lang='scss'>
+@font-face {
+  font-family: yticon;
+  font-weight: normal;
+  font-style: normal;
+  src: url("https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf") format("truetype");
+}
+.yticon {
+  font-family: "yticon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.icon--jianhao:before {
+  content: "\E60B";
+}
+.icon-jia1:before {
+  content: "\E61C";
+}
+
+
 .protitle {
   padding: 10rpx;
   position: relative;
@@ -34,50 +55,14 @@
   line-height: 2.5;
 }
 
-.numbox {
-  padding-top: 10rpx;
-  overflow: hidden;
-  padding-left: 15rpx;
-  padding-right: 15rpx;
-  padding-bottom:15rpx;
-}
-.numbox text {
-  float: left;
-  line-height: 60rpx;
-  font-size: 30rpx;
-}
-.numbox .xm-input-number {
-  border: 1rpx solid #eee;
-  width: 227rpx;
-  float: right;
-}
-.numbox .input-sub, .numbox .input-add {
-  height: 60rpx;
-  line-height: 60rpx;
-  float: left;
-  width: 60rpx;
-  text-align: center;
-  background: #fafafa;
-}
 
-.disabled {
-  color:#aaa;
-}
-.numbox .input-num {
-  color: #ff6700;
-  width: 107rpx;
-  float: left;
-  height: 60rpx;
-  text-align: center;
-  font-size: 30rpx;
-}
 
 .protab {
   display: -webkit-flex;
   display: flex;
   position: relative;
-  border-bottom: 5rpx solid #efefef;
-  border-top: 5rpx solid #efefef;
+  border-top: 1px solid #eee;
+  padding:10rpx 0 rpx;
 }
 .swiper-tab-item{
     -webkit-box-flex: 1;
@@ -89,19 +74,242 @@
   color:#f37d6a;
 }
 
+/*  弹出层 */
+	.popup {
+		position: fixed;
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 99;
+		&.show {
+			display: block;
+			.mask{
+				animation: showPopup 0.2s linear both;
+			}
+			.layer {
+				animation: showLayer 0.2s linear both;
+			}
+		}
+		&.hide {
+       z-index: -10;
+			.mask{
+        animation: hidePopup 0.2s linear both;
+			}
+			.layer {
+				animation: hideLayer 0.2s linear both;
+			}
+		}
+		&.none {
+			display: none;
+		}
+		.mask{
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+			background-color: rgba(0, 0, 0, 0.4);
+		}
+		.layer {
+			position: fixed;
+			z-index: 99;
+			bottom: 0;
+			width: 100%;
+			border-radius: 10rpx 10rpx 0 0;
+			background-color: #fff;
+			.btn{
+				height: 66rpx;
+				line-height: 66rpx;
+				border-radius: 100rpx;
+				background: #fa436a;
+				font-size: 34rpx;
+				color: #fff;
+				margin: 100rpx 40rpx 30rpx 40rpx;
+			}
+		}
+		@keyframes showPopup {
+			0% {
+				opacity: 0;
+			}
+			100% {
+				opacity: 1;
+			}
+		}
+		@keyframes hidePopup {
+			0% {
+				opacity: 1;
+			}
+			100% {
+				opacity: 0;
+			}
+		}
+		@keyframes showLayer {
+			0% {
+				transform: translateY(120%);
+			}
+			100% {
+				transform: translateY(0%);
+			}
+		}
+		@keyframes hideLayer {
+			0% {
+				transform: translateY(0);
+			}
+			100% {
+				transform: translateY(120%);
+			}
+		}
+	}
+/* 规格选择弹窗 */
+	.attr-content{
+
+		.a-t{
+      margin:0rpx 20rpx;
+			display: flex;
+			image{
+				width: 170rpx;
+				height: 170rpx;
+				flex-shrink: 0;
+				margin-top: -40rpx;
+				border-radius: 8rpx;;
+			}
+			.right{
+				display: flex;
+				flex-direction: column;
+				padding-left: 24rpx;
+				font-size: 26rpx;
+				color: #fa436a;
+				.price{
+					color: #fa436a;
+          margin-top:25rpx;
+        }
+        .stock{
+          color: #777;
+          margin: 5rpx 0rpx;
+        }
+				.selected{
+					display:flex;
+					color: #777;
+				}
+				.selected-text{
+          color: #fa436a;
+					margin-left: 10rpx;
+				}
+			}
+		}
+		.attr-list{
+      margin:0rpx 40rpx;
+			display: flex;
+			flex-direction: column;
+			font-size: 28rpx + 2rpx;
+			color:#fa436a;
+			padding-top: 30rpx;
+			padding-left: 10rpx;
+		}
+		.item-list{
+			padding: 20rpx 0 0;
+			display: flex;
+			flex-wrap: wrap;
+			text{
+				line-height:20rpx;
+				margin-right: 20rpx;
+				margin-bottom: 20rpx;
+				border-radius: 100rpx;
+				min-width: 60rpx;
+				height: 60rpx;
+				padding: 0 20rpx;
+				font-size: 28rpx;
+				color: #303133;
+				background-color:#eee;
+			}
+			.selected{
+				background: #fbebee;
+				color:#fa436a;
+			}
+		}
+  }
+  
+  .floatBtn{
+    position:fixed;
+    z-index:10;
+    background-color:#bbb;
+    opacity: 0.7;
+    border-radius:10rpx;
+    display:flex;
+    align-items:center;
+    text{
+      color:#ff6b5d;font-size:30rpx;
+    }
+    image{
+      width:65rpx;height:65rpx;border-radius:50%;
+    }
+  }
+
+  .spec {
+    padding: 15rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 40rpx;
+    font-size: 30rpx;
+    .spec-text{
+      color:#777;
+    }
+    image{
+      width:40rpx;height:40rpx;
+    }
+    .curSpec{
+      display: flex;
+      align-items: center;
+      flex:1;
+      margin-left:30rpx;
+      .value{
+        color:#ff6700;
+        margin-right:20rpx;
+      }
+      .number{
+        color:#ff6700;
+        background-color: #fff;
+      }
+    }
+}
+
+.numberBox{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 40rpx;
+	padding-left: 10rpx;
+	color: #606266;
+  margin:40rpx ;
+}
+.numberRight{
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.number{
+	width:100rpx;
+	background-color:#eee;
+	display: flex;
+	align-items: center;
+	justify-content:center;
+	margin:0rpx 15rpx;
+}
 </style>
 
 
 <template>
 <view style = 'padding-bottom:100rpx;position:relative;'>
-  <view  catchtouchmove="buttonMove" catchtouchstart="buttonStart" catchtouchend="buttonEnd"
-        style="top:{{buttonTop}}px;left:{{buttonLeft}}px;position:fixed;z-index:1024;background-color:#fafafa;border-radius:10rpx;display:flex;align-items:center;"> 
-    <text bindtap='goShop' style="color:#ff6b5d;font-size:30rpx;">{{shopInfo.shop_name}}</text>
-    <image style="width:65rpx;height:65rpx;border-radius:50%;" src="{{imageUrl + shopInfo.shop_icon}}"/>
+  <view class="floatBtn"  catchtouchmove="buttonMove" catchtouchstart="buttonStart" catchtouchend="buttonEnd"
+        style="top:{{buttonTop}}px;left:{{buttonLeft}}px;"> 
+    <text bindtap='goShop' >{{shopInfo.shop_name}}</text>
+    <image  src="{{imageUrl + shopInfo.shop_icon}}"/>
   </view>
     <swiper indicator-dots="true" autoplay="true" interval="5000" 
     duration="1000" style='height:{{swiper_H}}px;width:{{swiper_W}}px;' indicator-active-color='#ff6d5b'>
-      <block wx:for="{{goodObj.list_pic_url}}" wx:for-item="item" wx:key="index">
+      <block wx:for="{{goodInfo.list_pic_url}}" wx:for-item="item" wx:key="index">
         <swiper-item>
           <image   src="{{imageUrl+item}}" style="width:100%;height:100%"  bindload='imgLoaded'/>
         </swiper-item>
@@ -109,29 +317,78 @@
     </swiper>
 
     <view class='protitle'>
-      <text class='bigtil'>{{goodObj.goods_name}}</text>
-      <text class='smalltitle'>{{goodObj.goods_desc}}</text>
+      <text class='bigtil'>{{goodInfo.goods_name}}</text>
+      <text class='smalltitle'>{{goodInfo.goods_desc}}</text>
       <text class='count'></text>
-      <text class='price'>￥{{goodObj.retail_price}}
-        <!-- <text class='htit' wx:if="{{goodObj.unit_price}}">￥{{goodObj.unit_price}}</text> -->
+      <text class='price'>￥{{goodInfo.retail_price}}
+        <!-- <text class='htit' wx:if="{{goodInfo.unit_price}}">￥{{goodInfo.unit_price}}</text> -->
       </text>
     </view>
 
-    <view class='numbox'>
-      <text>购买数量:</text>
-      <view class='xm-input-number'>
-        <view class="input-sub {{detailnumber==1? 'disabled' : ''}}" bindtap='cutnumber'>-</view>
-        <input class='input-num' value='{{detailnumber}}' disabled="true"></input>
-        <view class="input-add {{detailnumber==goodObj.goods_number? 'disabled' : ''}}" bindtap='addnumber'>+</view>
+    <view class='spec' @tap="toggleSpec">
+      <view class="spec-text">购买规格:</view>
+      <view class='curSpec'>
+        <text wx:if="{{specSelected==null}}" class="value">默认属性  </text>
+        <text wx:else>
+          <text  class="value" wx:for="{{specSelected}}" wx:for-item="item">
+						<block wx:for="{{item}}" wx:for-item="childItem">{{childItem}}</block>
+				  </text>
+        </text>        
+        <text class="number">X {{number}}</text>
       </view>
+      <image  src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
     </view>
+
+    <!-- 规格-模态层弹窗 -->
+		<view 	class="popup {{specClass}}" >			
+			<view class="mask"></view>
+			<view class="layer attr-content">
+				<view class="a-t">
+					<image src="{{imageUrl+goodInfo.primary_pic_url}}"/>
+					<view class="right">
+						<text class="price">¥{{goodInfo.retail_price}}</text>
+						<text class="stock">库存：{{goodInfo.goods_number}}</text>
+						<view class="selected">已选：
+							<block wx:if="{{specSelected==null}}">
+								<text  class="selected-text">默认规格</text>
+							</block>
+							<block wx:else>													
+								<text  class="selected-text" wx:for="{{specSelected}}" wx:for-item="item">
+										<block wx:for="{{item}}" wx:for-item="childItem">{{childItem}}</block>
+								</text>
+							</block>
+						</view>
+					</view>
+				</view>
+				<view class="numberBox">
+					<view>数量</view>
+					<view class="numberRight"> 
+						<text @tap.stop="numberDown" class="yticon icon--jianhao"></text>
+						<text class="number">{{number}}</text>
+						<text @tap.stop="numberUp" class="yticon icon-jia1"></text>
+					</view>
+				</view>
+				<view wx:for="{{specInfo}}"  wx:for-item='item'  wx:for-index='index' class="attr-list">
+					<text>{{item.sp_name}}</text><!--规格名-->
+					<view class="item-list">
+						<text 
+							wx:for="{{item.items}}"  wx:for-item='childItem' wx:for-index='childIndex'
+							class="tit {{specSelected[index][childIndex]==childItem.sp_item_name?'selected':''}}"					
+							@tap.stop="selectSpec({{index}},{{childIndex}},{{childItem.sp_item_name}})"><!--规格值-->
+							{{childItem.sp_item_name}}
+						</text>
+					</view>
+				</view>
+				<button class="btn" @tap="toggleSpec">完成</button>
+			</view>
+		</view>
 
     <view class='protab'>
         <view class="swiper-tab-item" data-current="0" bindtap="swichNav">商品概述</view>
     </view>
-    <!-- <rich-text nodes="{{goodObj.html}}"></rich-text> -->
+    <!-- <rich-text nodes="{{goodInfo.html}}"></rich-text> -->
     <view > 
-      <image wx:for="{{goodObj.details_pic_url}}" style="width:100%;" src="{{imageUrl + item}}" mode="widthFix"/>
+      <image wx:for="{{goodInfo.details_pic_url}}" style="width:100%;" src="{{imageUrl + item}}" mode="widthFix"/>
     </view>
     <!-- 商品底部导航栏 -->
     <goodbar></goodbar>
@@ -154,128 +411,211 @@ export default class goodDetail extends wepy.page{
     data = {
         swiper_H:0,
         swiper_W:0,
-        buttonTop:520,//上边界
+        buttonTop:500,//上边界
         buttonLeft:0,//商家悬浮钮左边界
         offsetLeft:0,//商家悬浮钮初始边界，用来判断用户的单击动作
         offsetTop:0,//
         windowWidth:0,
         windowHeight:0,
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
-        goodObj:{},//商品对象
+        goodInfo:{},//商品对象
         shopInfo:{},//商铺对象
-        detailnumber:1,//已选商品数量
+        number:1,//已选商品数量
+        specClass: 'none',//规格选择弹窗
+        product_id:0,
+        specInfo:[
+					{
+            sp_id: "6",//规格id
+            sp_name: "套餐类型",//规格名
+            items: [    //规格值
+                    {sp_item_id: "6", sp_item_name: "乐享黄金", price: "444.00"},
+                    {sp_item_id: "7", sp_item_name: "至尊钻石", price: "888.00"}
+                  ],
+					}
+				],//商品规格列表
+        specSelected:null,//默认选择的规格,键名是sp_item_id
+												/*
+												{
+													规格名数组下标：{
+														规格值键值：规格值
+													}
+												}
+												*/	
     }
     onLoad(good){
         let systemInfo = wx.getSystemInfoSync();
         this.swiper_W = systemInfo.windowWidth;
         this.windowWidth = systemInfo.windowWidth;
         this.windowHeight = systemInfo.windowHeight;
-        // console.log(good);
-        new Promise((resolve,reject)=>{
-            http.get(api.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
-                // console.log(res)
-                this.goodObj = res.shopGoods[0];
-                this.shopInfo = res.shopInfo[0];              
-                this.$apply();
-                http.get(api.CartList,{user_id: wx.getStorageSync('userInfoInServer').id}).then(result =>{
-                  var redDot = false;
-                  var checkInCart = false;
-                  var cartId = 0;
-                  
-                  //查找当前商品是否已存在购物车中
-                  
-                  if(Object.keys(result).length != 0){
-                    for(let index in result){
-                      for(let cartItem of result[index].cartList){
-                        if(cartItem.goods_id == good.goodId){
-                          cartId = cartItem.id;
-                          checkInCart = true;
-                        }
-                      }                    
-                    }
-                    redDot = true;
-                  }
-                 this.$broadcast('init',good.shopId,good.goodId,1,redDot,checkInCart,cartId);                 
-                })
-            })
-        })      
-    }
-    methods = {
-        imgLoaded(e){
-            // console.log(e);
-            if(this.swiper_H == 0){
-              this.swiper_H = e.detail.height * (this.swiper_W/e.detail.width) +20;
-            }
-        },
-         //数量减
-      cutnumber () {
-        if (this.data.detailnumber == 1){
-          return 
-        }
-        this.detailnumber = this.detailnumber - 1;
-        this.$apply();
-        this.$broadcast('changeNum',this.detailnumber);
-      },
-      //数量加
-      addnumber () {
-        if (this.data.detailnumber == this.goodObj.goods_number){
-          return 
-        }
-          this.detailnumber = this.detailnumber + 1;
-          this.$apply();
-          this.$broadcast('changeNum',this.detailnumber);
-      },
-      //悬浮按钮移动
-      buttonStart: function (e) {
-          startPoint = e.touches[0]
-      },
-      buttonMove: function (e) {
-        var endPoint = e.touches[e.touches.length - 1]
-        var translateX = endPoint.clientX - startPoint.clientX
-        var translateY = endPoint.clientY - startPoint.clientY
-        startPoint = endPoint
-        var buttonTop = this.data.buttonTop + translateY
-        var buttonLeft = this.data.buttonLeft + translateX
-        //判断是移动否超出屏幕
-        if (buttonLeft+50 >= this.data.windowWidth){
-          buttonLeft = this.data.windowWidth-50;
-        }
-        if (buttonLeft<=0){
-          buttonLeft=0;
-        }
-        if (buttonTop<=0){
-          buttonTop=0
-        }
-        if (buttonTop + 50 >= this.data.windowHeight){
-          buttonTop = this.data.windowHeight-50;
-        }
-        
-         this.buttonTop = buttonTop;
-          this.buttonLeft = buttonLeft;
-       
-      },
-      buttonEnd: function (e) {
-        if(this.offsetLeft == e.currentTarget.offsetLeft &&
-        this.offsetTop == e.currentTarget.offsetTop){
-            var shop_id = this.shopInfo.id;
-            wx.navigateTo({
-              url: '/pages/shoper?shop_id='+shop_id,
-              success: function(res){
-                // success
-              },
-              fail: function() {
-                // fail
-              },
-              complete: function() {
-                // complete
-              }
-            })
-        }
-        this.offsetLeft = e.currentTarget.offsetLeft;
-        this.offsetTop= e.currentTarget.offsetTop;
-      }
 
+        var spValue = new Object;
+        http.get(api.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
+            console.log(res)
+            this.goodInfo = res.shopGoods;
+            this.shopInfo = res.shopInfo;              
+            this.$apply();
+            if(res.shopGoods.specInfo.length != 0){
+              this.specInfo = res.shopGoods.specInfo;//获取商品规格
+              this.specSelected = new Object();
+              //默认选择规格的首项 按键值进行访问
+              for(let index in res.shopGoods.specInfo){												//规格名列表
+                for(let childIndex in res.shopGoods.specInfo[index].items){		//规格值列表
+                  //index:规格名数组下标 childIndex：规格值键值
+                  spValue = {};
+                  spValue[childIndex] = res.shopGoods.specInfo[index].items[childIndex].sp_item_name;//存储规格名
+                  this.specSelected[index]=spValue;
+                  break;
+                }
+              }
+               //根据默认规格获取产品id
+              this.submitSpec(this.goodInfo.id);
+              this.$broadcast('init',this.goodInfo.id,this.shopInfo.id,1,this.product_id);
+            }else{
+              this.specInfo = [];
+              this.$broadcast('init',this.goodInfo.id,this.shopInfo.id,1,0);
+            }
+         
+        })     
     }
+
+	//获取当前选中规格 规格名id 规格值
+	getCurSpecId(){
+		var specNameStr = '';
+		var specValueStr = '';
+		var specSelectedIndex=0;//访问已选择规格的对象下标
+		//循环所有规格
+		for(let specIndex in this.specInfo){
+			let specItem = this.specInfo[specIndex];
+			//取到规格名id
+			specNameStr += `${specItem.sp_id}_`;
+			//循环当前规格名下的规格值
+			for(let valueIndex in specItem.items){
+				if(specItem.items[valueIndex].sp_item_name == this.specSelected[specSelectedIndex][valueIndex]){
+          specValueStr +=`${valueIndex}_`;
+          specSelectedIndex+=1;
+					break;
+				}
+			}
+    }
+		var spec = {
+			spec_ids:specNameStr.slice(0,specNameStr.length-1),//规格名id
+			spec_item_ids:specValueStr.slice(0,specValueStr.length-1)//规格值id
+		}
+		return spec;
+	}
+
+	//将规格提交到后台
+	submitSpec(goods_id){
+    //获取规格id
+    var spec = this.getCurSpecId();
+    console.log(goods_id)
+    console.log(spec);
+		http.get(api.GroupProduct,{
+							goods_id:goods_id,
+							spec_ids:spec.spec_ids,
+							spec_item_ids:spec.spec_item_ids}).then(res=>{
+        console.log(res);
+        this.product_id = res.id;
+        this.$apply();
+        this.$broadcast('init',this.goodInfo.id,this.shopInfo.id,1,res.id);
+		})
+	}
+
+    methods = {
+      imgLoaded(e){
+          if(this.swiper_H == 0){
+            this.swiper_H = e.detail.height * (this.swiper_W/e.detail.width) +20;
+          }
+      },
+      //规格弹窗开关
+		toggleSpec() {
+			if(this.specClass === 'show'){
+        this.specClass = 'hide';
+        this.submitSpec(this.goodInfo.id);
+        this.$broadcast('changeSpec',this.number,this.product_id);
+				setTimeout(() => {
+					this.specClass = 'none';
+				}, 250);
+			}else if(this.specClass === 'none'){
+				this.specClass = 'show';
+			}
+		},
+		//选择规格 规格名键值，规格值键值，规格值
+		selectSpec(spNameIndex,spValueIndex, spValue){
+			var spObj = new Object;
+			spObj[spValueIndex] = spValue;
+			//删除原来所选项
+			delete this.specSelected[spNameIndex];
+			//插入新的项
+			this.specSelected[spNameIndex] = spObj;
+		},
+		numberDown(e){
+			if(this.number==1){
+				return;
+			}else{
+				this.number = this.number-1;
+        this.$apply();
+			}
+		},
+		numberUp(e){
+      if(this.number==this.goodInfo.goods_number){
+				return;
+			}else{
+        this.number = this.number+1;
+        this.$apply();
+      }
+		},
+    //悬浮按钮移动
+    buttonStart: function (e) {
+        startPoint = e.touches[0]
+    },
+    buttonMove: function (e) {
+      var endPoint = e.touches[e.touches.length - 1]
+      var translateX = endPoint.clientX - startPoint.clientX
+      var translateY = endPoint.clientY - startPoint.clientY
+      startPoint = endPoint
+      var buttonTop = this.data.buttonTop + translateY
+      var buttonLeft = this.data.buttonLeft + translateX
+      //判断是移动否超出屏幕
+      if (buttonLeft+50 >= this.data.windowWidth){
+        buttonLeft = this.data.windowWidth-50;
+      }
+      if (buttonLeft<=0){
+        buttonLeft=0;
+      }
+      if (buttonTop<=0){
+        buttonTop=0
+      }
+      if (buttonTop + 50 >= this.data.windowHeight){
+        buttonTop = this.data.windowHeight-50;
+      }
+      
+      this.buttonTop = buttonTop;
+        this.buttonLeft = buttonLeft;
+    
+    },
+    buttonEnd: function (e) {
+      if(this.offsetLeft == e.currentTarget.offsetLeft &&
+      this.offsetTop == e.currentTarget.offsetTop){
+          var shop_id = this.shopInfo.id;
+          wx.navigateTo({
+            url: '/pages/shoper?shop_id='+shop_id,
+            success: function(res){
+              // success
+            },
+            fail: function() {
+              // fail
+            },
+            complete: function() {
+              // complete
+            }
+          })
+      }
+      this.offsetLeft = e.currentTarget.offsetLeft;
+      this.offsetTop= e.currentTarget.offsetTop;
+    }
+
+  }
   
 }
 </script>

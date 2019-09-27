@@ -26,13 +26,10 @@
         </scroll-view>
       </view>
     </view>
-    <swiper wx:if="{{showPage}}" class="orderPage" easing-funtion="easeInOutCubic" current="{{swiperCurrent}}" bindchange="swiperChange">
-        <swiper-item style="display:flex;justify-content:center;"  wx:for="{{pageList}}">
-          <view wx:if="{{item!=1}}" @tap="frontPage" class="frontPage">{{item -1 }} </view>
-          <view class="currentPage" >{{item}}</view>
-          <view wx:if="{{item!=pageList.length}}" @tap="nextPage" class="nextPage">{{item +1}}</view>
-        </swiper-item>
-    </swiper>
+
+     <Pagination wx:if="{{OrderList.length!=0}}"
+                 :curNum.sync="curNum" 
+                 :totalNum.sync="totalNum"></Pagination>
   </view>
 </view>
 
@@ -43,18 +40,17 @@ import wepy from "wepy";
 import http from '../utils/Base';
 import api from '../utils/API';
 import orderItem from '../components/orderItem';
+import Pagination from '../components/pagination';
 export default class myOrder extends wepy.page{
   components = {
     orderItem:orderItem,
+    Pagination:Pagination,
   }
   data = {
-    front:'<<',
-    next:'>>',
-    showPage:false,
-    pageList:[],
-    swiperCurrent:0,//当前页
     init:false,
     imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
+    curNum:1,//当前页
+    totalNum:1,//总页数
     activeTab: 0,
     orderStatus:10,//订单状态码
     tabs:['全部订单','待付款','待收货','已完成'],              //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
@@ -90,23 +86,40 @@ export default class myOrder extends wepy.page{
     if(this.activeTab == 1){
       this.orderStatus = 10;
       getParam['statusTab'] = 10;
-      this.refresh(getParam,false);
+      this.refresh(getParam);
     }
     else if(this.activeTab == 2){
       this.orderStatus = 32;
       getParam['statusTab'] = 32;
-      this.refresh(getParam,false);
+      this.refresh(getParam);
     }
     else if(this.activeTab == 3){
       this.orderStatus = 40;
       getParam['statusTab'] = 40;
-      this.refresh(getParam,false);
+      this.refresh(getParam);
     } 
   }
+  //离开当前页面
+  onUnload(){
+
+  }
   events = {
+    //订单组件
     'myOrder':(recve)=>{
       this.init = true;
       this.$apply();
+    },
+    //翻页器组件
+    'changeCur':(value)=>{
+        //组件已经将页数加一
+        this.curNum = value;
+        let getParam = {
+          user_id:wx.getStorageSync('userInfoInServer').id,
+          statusTab:this.orderStatus,
+          page:value
+        }
+        this.refresh(getParam);
+        this.$apply();
     }
   }
    watch = {
@@ -123,7 +136,7 @@ export default class myOrder extends wepy.page{
                 {
                   this.orderStatus = '';
                   getParam['statusTab'] = '';
-                  this.refresh(getParam,false);
+                  this.refresh(getParam);
                   break;
                 }
               
@@ -131,7 +144,7 @@ export default class myOrder extends wepy.page{
               {
                 this.orderStatus = 10;
                 getParam['statusTab'] = 10;
-                this.refresh(getParam,false);
+                this.refresh(getParam);
                 break;
               } 
               
@@ -139,7 +152,7 @@ export default class myOrder extends wepy.page{
             {
               this.orderStatus = 32;
               getParam['statusTab'] = 32;
-              this.refresh(getParam,false);
+              this.refresh(getParam);
               break;
             }  
               
@@ -147,60 +160,34 @@ export default class myOrder extends wepy.page{
             {
               this.orderStatus = 40;
               getParam['statusTab'] = 40;
-              this.refresh(getParam,false);
+              this.refresh(getParam);
               break;
             } 
           } 
       }
   }
   methods = {
-    frontPage(e){
-      if(this.swiperCurrent == 0){
-        return;
-      }else{
-        this.swiperCurrent = this.swiperCurrent-1;
-        this.$apply();
-      }
-    },
-    nextPage(e){
-      if(this.swiperCurrent == this.pageList.length){
-        return;
-      }else{
-        this.swiperCurrent = this.swiperCurrent+1;
-        this.$apply();
-      }
-    },
+ 
     handlerTabTap(e) {
           this.init = false;
           this.$apply();
           this._updateSelectedPage(e.currentTarget.dataset.index);
     },
-    swiperChange(){
-        let getParam = {
-          user_id:wx.getStorageSync('userInfoInServer').id,
-          statusTab:this.orderStatus,
-        }
-        this.refresh(getParam,true);
-    }
-  }
 
+  }
+  //想后台索取数据，参数2：true：翻页，false：切换订单状态
   refresh(param,ifPageChange){
-    if(ifPageChange){
-      param['page'] = this.swiperCurrent + 1;
-    }
     console.log(param);
     http.get(api.OrderList,{...param}).then(res=>{ 
         console.log(res);
         if(res.data.length == 0){
-          this.showPage = false;
           this.init = true;
           this.$apply();
           return ;
         }  
-        for(let i = 0; i< res.last_page; i++){
-          this.pageList[i] = i+1;
-        }
-        this.showPage = true;
+        this.curNum   = res.curremt_page;
+        this.totalNum = res.last_page;
+
         this.OrderList=res.data; 
         this.$broadcast('orderList',this.OrderList);               
         this.$apply();   
@@ -272,7 +259,7 @@ export default class myOrder extends wepy.page{
 .stv-container .scroll-view .scroll-view-wrapper {
   position: absolute;
   top: 0;
-  bottom: 30px;
+  bottom: 80px;
   display: flex;
 }
 .stv-container .scroll-view .scroll-view-wrapper .one-scene {
