@@ -108,7 +108,7 @@
 				</view>	
 			</view>
 			<!--商品评价-->
-			<view id='scroll_1' style='display:inline-block;width:100%;position:absolute;top:-20px;'>
+			<view id='scroll_1' style='display:inline-block;width:100%;position:absolute;top:-18px;'>
 				<view class="eva-section">
 					<view @tap='allComment' class="e-header">
 						<text class="tit">评价</text>
@@ -182,7 +182,7 @@
 				<text>首页</text>
 			</navigator>
 			<button open-type="share" class="share-btn" style="background-color:transparent;">
-				<image style="width:24px;height:24px;"  src="../images/icons/share.jpg"/>
+				<image style="width:21px;height:21px;"  src="../images/icons/share.jpg"/>
 				<text>分享</text>
 			</button>
 			 <view class="p-b-btn"  @tap="showQR">
@@ -275,16 +275,11 @@
 				this.getProduct(wx.getStorageSync('currentGroup').goods_id,wx.getStorageSync('currentGroup').group_id)
 			}
 
-			//检查是否已经加入团购，重新渲染商品规格和数量
-			this.checkHaveOrder(wx.getStorageSync('currentGroup').group_id).then(res=>{
-				this.specSelected = res.specSelected;
-				this.number = res.number;
-				this.haveOrder = true;
-				this.$apply();
-			})
+			
 		}
 		onShow(e){
-		
+	
+
 		}
 		getProduct(goods_id,group_id){
 			var spValue = new Object;
@@ -395,8 +390,8 @@
 			specNameStr += `${specItem.sp_id}_`;
 			//循环当前规格名下的规格值
 			for(let valueIndex in specItem.items){
-				// console.log(specItem.items[valueIndex].sp_item_name)
-				// console.log(this.specSelected[specSelectedIndex])
+				console.log(specItem.items[valueIndex].sp_item_name)
+				console.log(this.specSelected[specSelectedIndex])
 				if(specItem.items[valueIndex].sp_item_name == this.specSelected[specSelectedIndex][valueIndex]){
 					specValueStr +=`${valueIndex}_`;
 					break;
@@ -408,6 +403,7 @@
 			spec_ids:specNameStr.slice(0,specNameStr.length-1),//规格名id
 			spec_item_ids:specValueStr.slice(0,specValueStr.length-1)//规格值id
 		}
+		console.log(spec);
 		return spec;
 	}
 
@@ -415,32 +411,17 @@
 	submitSpec(goods_id){
 		var spec = this.getCurSpecId();
 		http.get(api.GroupProduct,{
+							shop_id: this.productInfo.shop_id,
 							goods_id:goods_id,
 							spec_ids:spec.spec_ids,
-							spec_item_ids:spec.spec_item_ids}).then(res=>{		
+							spec_item_ids:spec.spec_item_ids}).then(res=>{	
+								// console.log(res)	
 				this.productId = res.id;
+       			
 		})
-	}
+				console.log(spec);
 
-	//在缓存中添加团购记录，key:团购id，data:规格，数量，订单id
-	setStorageGroup(group_id,number,order_id){
-		//创建一条团购记录
-		var groupOrderInfo = {
-			specSelected:this.specSelected,
-			number:number,
-			order_id:order_id
-		}
-		if(wx.getStorageSync("groupOrderInfoList")){
-			var groupOrderInfoList = wx.getStorageSync("groupOrderInfoList") ;
-			groupOrderInfoList[group_id]=groupOrderInfo;
-		}else{
-			var groupOrderInfoList = {};
-			groupOrderInfoList[group_id]=groupOrderInfo;
-		}
-		this.haveOrder = true;
-		wx.setStorageSync("groupOrderInfoList",groupOrderInfoList)	
 	}
-
 	//检查是否有默认地址
 	checkDefaAddress(){
 			return new Promise((resolve,reject)=>{
@@ -462,34 +443,6 @@
 				}
 		})
 	}
-	//检查是否已经加入过团购
-	checkHaveOrder(group_id){
-		return new Promise((resolve,reject)=>{
-			var groupOrderInfoList = wx.getStorageSync('groupOrderInfoList');
-			for(let index in groupOrderInfoList){
-				if(index == group_id){
-					resolve(groupOrderInfoList[index]);
-				}
-			}
-			reject();
-		})
-	}
-	//用户已加入过团购，提醒用户前往付款
-	tips(){
-		wx.showModal({
-			title:'温馨提醒',
-			content:'您已成功下单！无法再修改商品参数！',
-			showCancel: false,
-			confirmText:'我知道了',
-			success: function (e) {
-				if (e.cancel) {
-					//点击取消,默认隐藏弹框
-				} else {
-				//	this.payment(orderId)
-				}
-			}
-		})
-	}
 //调起支付
 	payment(orderId) {
 		http.get(api.WechatPay, {
@@ -503,27 +456,19 @@
 						package: res.package,
 						signType: res.signType,
 						paySign: res.paySign,
-						success: function(res1) {
-								wx.showModal({
-										title: '支付成功',
-										cancelText: "返回首页",
-										confirmText: "继续拼团",
-										confirmColor: "#ff6b5d",
-										content: "您已完成支付～",
-										success: function(res2) {
-												// console.log(res2)
-												if (res2.confirm) {
-														wx.reLaunch({
-																url: '/pages/tuangou/index',
-														})
-												} else {
-														wx.reLaunch({
-																url: '/pages/index',
-														})
-												}
-										}
-								})
-						},
+						
+						success: (res1=>{
+							this.clearStorageGroup(wx.getStorageSync('currentGroup').group_id);
+							this.haveOrder = false;
+							this.$apply();
+							wx.showModal({
+									title: '支付成功',
+									cancelShow: false,
+									confirmText: "确定",
+									confirmColor: "#ff6b5d",
+									content: "您已完成支付～",
+							})
+						}),					
 						fail: function(res) {
 								console.log(res)
 								wx.showToast({
@@ -537,14 +482,11 @@
 	methods={
 		//规格弹窗开关
 		toggleSpec() {
-			if(this.haveOrder){
-				this.tips();
-				return;
-			}
+
 
 			if(this.specClass === 'show'){
 				this.specClass = 'hide';
-				this.submitSpec(wx.getStorageSync('currentGroup').goods_id);
+				
 				setTimeout(() => {
 					this.specClass = 'none';
 				}, 250);
@@ -561,6 +503,9 @@
 			delete this.specSelected[spNameIndex];
 			//插入新的项
 			this.specSelected[spNameIndex] = spObj;
+			console.log(spObj);
+			this.submitSpec(wx.getStorageSync('currentGroup').goods_id);
+
 		},
 
 		//---
@@ -607,57 +552,48 @@
 		//立即购买
 		buy(){
 			this.checkDefaAddress().then(res=>{
+				
 				wx.navigateTo({
 					url:'/pages/my-func?id=1',
 				})
 			}).catch(res=>{
-				if(this.product_id==null){
-					this.submitSpec(wx.getStorageSync('currentGroup').goods_id);
-				}
-				this.checkHaveOrder(wx.getStorageSync('currentGroup').group_id).then(res=>{
-					wx.showModal({
-						title:'支付提醒',
-						content:'好货不等人，快完成付款吧～',
-						cancelText:'取消',
-						confirmText:'确认支付',
-						success:(e)=>{
-							if (e.cancel) {
-								//点击取消,默认隐藏弹框
-							} else {
-								this.payment(res.order_id)
-							}
-						}
-					})
-				}).catch(res=>{
-					//团购提交新订单
-					http.post(api.CartAdd,{
-							product_id:this.productId,
-							goods_id:wx.getStorageSync('currentGroup').goods_id,   
-							group_id: wx.getStorageSync('currentGroup').group_id, 
-							shop_id: wx.getStorageSync('currentGroup').shop_id, 
-							number:this.number,
-							user_id:wx.getStorageSync('userInfoInServer').id,
-							address_id:wx.getStorageSync('userDefaultAddress').id,
-							type:2,//团购购买
-					}).then(res=>{
-						console.log(res)
-						this.setStorageGroup(wx.getStorageSync('currentGroup').group_id,this.number,res.id)
+				console.log(res)
+				//团购提交新订单
+				http.post(api.CartAdd,{
+						product_id:this.productId,
+						goods_id:wx.getStorageSync('currentGroup').goods_id,   
+						group_id: wx.getStorageSync('currentGroup').group_id, 
+						shop_id: wx.getStorageSync('currentGroup').shop_id, 
+						number:this.number,
+						user_id:wx.getStorageSync('userInfoInServer').id,
+						address_id:wx.getStorageSync('userDefaultAddress').id,
+						type:2,//团购购买
+				}).then(res=>{
+					console.log(res)
 						wx.showModal({
 							title:'拼团成功',
 							content:'恭喜您成功加入拼团，快去前往支付吧~',
 							confirmText:'前往支付',
+							cancelText:'取消',
 							success: function (e) {
 								if (e.cancel) {
 									//点击取消,默认隐藏弹框
+
+									var order_id = res.id;
+									http.post(api.OrderCancel,{order_id:res.id}).then(res=>{
+								 		console.log(res);	
+														
+									})
 								} else {
 										wx.navigateTo({
-											url:'../tuangou/pages/createOrder/createOrder?orderInfo=' + JSON.stringify(res),
-										})
+											 url:'../tuangou/pages/createOrder/createOrder?orderInfo=' + JSON.stringify(res),
+										 })
 								}
 							}
-						})			
-					})
+						})
+							
 				})
+				
 			})
 		}
 	}		

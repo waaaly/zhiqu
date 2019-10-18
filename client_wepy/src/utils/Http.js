@@ -54,7 +54,7 @@ export default class http {
             header: header
         };
         console.info(`[http]request url=${url}`);
-        // console.log(data);
+        //console.log(data);
 
         //异步请求
         return new Promise((resolve, reject) => {
@@ -68,7 +68,11 @@ export default class http {
                     }
                 } else {
                     console.log(res);
+                    if(wx.getStorageSync("showPopup")){
+                        return;
+                    }
                     if (res.data.message == '用户openid没有获取到') {
+                        wx.setStorageSync("showPopup",1);
                         wx.showModal({
                             title: '提示',
                             content: '您当前尚未登陆无法进行相关操作呢',
@@ -82,6 +86,7 @@ export default class http {
                                 } else {
 
                                 }
+                                wx.setStorageSync("showPopup",0);
                             }),
                         })
                     } else {

@@ -91,6 +91,8 @@ export default class orderItem extends wepy.page{
                     signType: res.signType, 
                     paySign: res.paySign, 
                     success: function(res1) { 
+                      this.methods.clearStorageGroup(this.orderList[index].id);
+                       
                         wx.showModal({
                             title: '支付成功',
                             cancelShow: "false",
@@ -98,6 +100,7 @@ export default class orderItem extends wepy.page{
                             confirmColor:"#ff6b5d",
                             content: "您已完成支付～",
                         })
+                        
                         that.orderList.splice(index,1);
                     }, 
                     fail: function(res) { 
@@ -116,15 +119,7 @@ export default class orderItem extends wepy.page{
                 title:res.msg,
                 icon:'none',
               })      
-              var groupOrderInfoList = wx.getStorageSync('groupOrderInfoList');
-              for(let index in groupOrderInfoList){
-                if(groupOrderInfoList[index].order_id == order_id){
-                  delete groupOrderInfoList[index];
-                  console.log(groupOrderInfoList);
-                  break;
-                }
-              } 
-              wx.setStorageSync('groupOrderInfoList',groupOrderInfoList);
+              this.methods.clearStorageGroup(order_id);
               this.orderList.splice(index,1);
               this.$apply();
             }
@@ -149,10 +144,21 @@ export default class orderItem extends wepy.page{
             url: '/pages/orderComment?shop_id=' + this.orderList[index].shopInfo.id +'&order_id=' + this.orderList[index].id,
           })
         }
+      },
+      //清除团购记录缓存，order_id为标志
+      clearStorageGroup(order_id){
+        var groupOrderInfoList = wx.getStorageSync('groupOrderInfoList');
+              for(let index in groupOrderInfoList){
+                if(groupOrderInfoList[index].order_id == order_id){
+                  delete groupOrderInfoList[index];
+                  break;
+                }
+              } 
+              wx.setStorageSync('groupOrderInfoList',groupOrderInfoList);
       }
     }
     watch = {
-
+      
     }
 }
 </script>

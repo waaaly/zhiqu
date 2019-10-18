@@ -258,11 +258,12 @@ export default class orderComment extends wepy.page{
       "star-on",
       "star-on",
     ],
+    
     wjxScore:5,
-    textarea:"",//评论内容
-    currentWordNumber:0,//当前字数
+    //textarea:"",//评论内容
+   // currentWordNumber:0,//当前字数
     min: 5,//最少字数
-    max: 300, //最多字数 (根据自己需求改变) 
+    max: 40, //最多字数 (根据自己需求改变) 
     pics:[],
     pisUrl:[],//oss图片存储地址
     shopId:"",//当前评价的订单属于哪个商家
@@ -340,14 +341,25 @@ export default class orderComment extends wepy.page{
         inputs: function (e) {
             // 获取输入框的内容
             var value = e.detail.value;
-            this.textarea = value;
+            //this.textarea = value;
             // 获取输入框内容的长度
             var len = parseInt(value.length);
+            //最少字数限制
+            if (len <= this.data.min)
+              this.setData({
+                texts: "陛下，评论五个字就能获得我的心哦~~"
+              })
+            else if (len > this.data.min)
+              this.setData({
+                text: " "
+              })
+
             //最多字数限制
-            if (len > this.data.max) return;
-            // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行          
-            this.currentWordNumber=len //当前字数    
-            this.drawCircle(len/300*2);         
+            if(len > this.data.max) return;
+            // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行
+                this.setData({
+                  currentWordNumber: len //当前字数 
+            });
         },
         // 图片
         choose: function (e) {//这里是选取图片的方法
@@ -499,7 +511,9 @@ export default class orderComment extends wepy.page{
  </view>
  <!--textarea-->
  <view class="conts">
-     <textarea class="areas" placeholder='更多评价请写在这里（最多300字）' minlength="{{min}}" maxlength="{{max}}" bindinput="inputs"> 
+     <textarea class="areas" placeholder="留下你的评论，最少五个字，谢谢哟~~" minlength="{{min}}" maxlength="{{max}}" bindinput="inputs"> 
+     <text class="currentWordNumber">{{currentWordNumber|0}}/{{max}}</text>
+     <text class="hint" style="margin-top:30px;">{{texts}}</text>
      </textarea>
  </view>
  <!-- <view style="position:fixed;left:23%;"> 进度条

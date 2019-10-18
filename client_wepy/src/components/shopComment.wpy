@@ -4,41 +4,42 @@
         <view wx:for="{{commentList}}" class="comment-item" wx:for-item="item" wx:for-index="index">
             <view class="item-title">
               <view class="title-userInfo">
-                <image style="width:50px;height:50px;border-radius:50%;" src="{{item.userInfo.avatar}}"/>
-                <text style="color:black;margin-left:10px;" class="text">{{item.userInfo.name}}</text>
+                <image style="width:40px;height:40px;border-radius:50%;" src="{{item.userInfo.avatar}}"/>
               </view>
+              <view class="shijian">
+                  <text style="color:black;margin-left:8px;font-size:13px;margin-top:-10px;" class="text">{{item.userInfo.name}}</text>
+                  <text style="font-size:24rpx;padding-left:8px;">{{item.created_at}}</text>
+                  
+              </view>  
               <view class="title-orderInfo">
-                <text style="font-size:24rpx">{{item.created_at}}</text>
-                <text style="font-size:24rpx">本次评分：{{item.grade}}分</text>
+                <text style="font-size:24rpx;margin-top:5px;margin-right:5px;">本次评分：{{item.grade}}分</text>
               </view>
             </view>
 
             <view class="body-good">
-              <view class="good-info" wx:for="{{item.orderInfo.order_goods}}" wx:for-item="goodItem">
-                <view style="display:flex;align-items:center;">
-                  <image style="width:50px;height:50px;border-radius:5px;" mode="widthFix" src="{{OssUrl + goodItem.list_pic_url}}"/>
-                  <text style="margin-left:20px;color:black" class="text">{{goodItem.goods_name}}</text>
-                </view>
-                <text style="color:black">X{{goodItem.number}}</text>
-              </view>
-            </view>
-              
-            <view class='item-foot'>
-              <view class="foot-title">综合评价:</view>
-              <view class="foot-body">
-                <text>{{item.content}}</text>
-              </view>
+              <text style="color:black;margin-left:5px;font-size:14px;">{{item.content}}</text>
               <view class="foot-pic" wx:if="{{item.list_pic_url.length!=0}}">
                 <image class="pic-item"  mode="widthtFix"  
                 wx:for={{item.list_pic_url}} wx:for-item="commentPicItem" wx:for-index="commentPicIndex"
                 src="{{OssUrl + commentPicItem}}" @tap="previewImg({{commentPicIndex}},{{item.list_pic_url}})"/>
               </view>
             </view>
+              
+            <view class='item-foot'>
+              <view class="good-info" wx:for="{{item.orderInfo.order_goods}}" wx:for-item="goodItem">
+                <view style="display:flex;align-items:center;margin-left:55px;">
+                  <image style="width:30px;height:30px;border-radius:5px;" mode="widthFix" src="{{OssUrl + goodItem.list_pic_url}}"/>
+                  <text style="margin-left:10px;color:black;font-size:10px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;width:100px">{{goodItem.goods_name}}</text>
+                  
+                </view>
+                
+                <text style="color:black;font-size:12px;margin-right:100px;">X{{goodItem.number}}</text>
+              </view>
+              
+              
+            </view>
         </view>
-        <Pagination wx:if="{{commentList.length!=0}}"
-                    :curNum.sync="curNum" 
-                    :totalNum.sync="totalNum">
-        </Pagination>
+        
     </scroll-view>
   </view>
   <view style="height:100%;">
@@ -120,7 +121,7 @@ export default class shopComment extends wepy.component{
 
 .comment {
   position: absolute;
-  top: 30%;
+  top: 25%;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -133,9 +134,8 @@ export default class shopComment extends wepy.component{
   display:flex;
   flex-direction:column;
   background-color:#fff;
-  border-radius:20rpx;
-  margin:15rpx;
-  padding:20rpx;
+  margin:3px 0 0 0;
+  padding:5rpx;
 }
 .item-title{
   display:flex;
@@ -159,7 +159,7 @@ export default class shopComment extends wepy.component{
 .body-good{
   display:flex;
   flex-direction:column;
-  padding: 5px 40px 20px 60px;
+  padding: 10px 40px 20px 60px;
 
 }
 
@@ -195,7 +195,20 @@ export default class shopComment extends wepy.component{
 
 .text{
   overflow: hidden;
-  white-space: nowrap;
+  word-break:break-all;
   text-overflow:ellipsis;
+
 }
+.shijian{
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-align-content: center;
+  align-content: flex-start;
+  margin-top: 15px;
+  width: 150px;
+  padding:0 100px 0 0;
+}
+
 </style>

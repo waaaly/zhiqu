@@ -12,7 +12,7 @@
             <view class="block">
               <view class="_h2 ">起送价</view>
               <view class=" content">
-                <label class=" stress">{{0}}</label>元
+                <label class=" stress">{{shopInfo.began_price}}</label>元
               </view>
             </view>
             <view class="block">
@@ -89,11 +89,10 @@ export default class shopInfo extends wepy.component{
       default:{}
     }
   }
-  data = {
-    imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
-  }
+
     data = {
-        seller:{}
+        seller:{},
+        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
     }
     onLoad(e){
 
@@ -123,11 +122,11 @@ export default class shopInfo extends wepy.component{
   line-height: 32rpx;
   font-size: 24rpx;
   image{
-    width: 100rpx;
-  height: 100rpx;
+    width: 80rpx;
+  height: 80rpx;
   position: absolute;
-  top: 0rpx;
-  left: 200rpx;
+  top: 8rpx;
+  left: 140rpx;
   }
 }
 .shopQR::after{
@@ -148,7 +147,7 @@ export default class shopInfo extends wepy.component{
 }
 .seller {
   position: absolute;
-  top: 32%;
+  top: 24%;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -157,7 +156,7 @@ export default class shopInfo extends wepy.component{
 
 .seller .overview {
   position: relative;
-  padding:0rpx 36rpx;
+  /*padding:0rpx 36rpx;*/
 }
 
 .seller .overview .title {
@@ -257,7 +256,7 @@ export default class shopInfo extends wepy.component{
 }
 
 .seller .bulletin {
-  padding: 36rpx 36rpx 0;
+  padding: 32rpx 36rpx 0;
 }
 
 .seller .bulletin .title {
@@ -375,7 +374,7 @@ export default class shopInfo extends wepy.component{
 }
 
 .seller .pics {
-  padding: 36rpx;
+  padding: 32rpx;
 }
 
 .seller .pics .title {
@@ -412,7 +411,7 @@ export default class shopInfo extends wepy.component{
 }
 
 .seller .info {
-  padding: 36rpx 36rpx 0;
+  padding: 32rpx 36rpx 0;
   color: #07111b;
 }
 

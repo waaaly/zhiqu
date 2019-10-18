@@ -129,8 +129,8 @@ export default class chooseArea extends wepy.page{
             })
         },
         skip(){
-            wx.setStorageSync('userSkip', 'user skip choose area');
             this.getDefalutArea().then(area=>{
+                wx.setStorageSync('userChooseArea', area[0]);
                 wx.reLaunch({
                     url: '/pages/index?area=' + JSON.stringify(area[0]),
                 })

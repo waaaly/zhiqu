@@ -304,7 +304,7 @@
 <view style = 'padding-bottom:100rpx;position:relative;'>
   <view class="floatBtn"  catchtouchmove="buttonMove" catchtouchstart="buttonStart" catchtouchend="buttonEnd"
         style="top:{{buttonTop}}px;left:{{buttonLeft}}px;"> 
-    <text bindtap='goShop' >{{shopInfo.shop_name}}</text>
+    <text bindtap='goShop' >进入店铺</text>
     <image  src="{{imageUrl + shopInfo.shop_icon}}"/>
   </view>
     <swiper indicator-dots="true" autoplay="true" interval="5000" 
@@ -400,6 +400,7 @@ import wepy from 'wepy';
 import http from '../utils/Base';
 import api from '../utils/API'
 import goodBar from '../components/goodBar';
+import shopInfo from '../components/shopInfo.wpy';
 var startPoint;//悬浮钮的起始
 export default class goodDetail extends wepy.page{
   config = {
@@ -411,8 +412,8 @@ export default class goodDetail extends wepy.page{
     data = {
         swiper_H:0,
         swiper_W:0,
-        buttonTop:500,//上边界
-        buttonLeft:0,//商家悬浮钮左边界
+        buttonTop:415,//上边界
+        buttonLeft:295,//商家悬浮钮左边界
         offsetLeft:0,//商家悬浮钮初始边界，用来判断用户的单击动作
         offsetTop:0,//
         windowWidth:0,
@@ -427,8 +428,9 @@ export default class goodDetail extends wepy.page{
 					{
             sp_id: "6",//规格id
             sp_name: "套餐类型",//规格名
+            
             items: [    //规格值
-                    {sp_item_id: "6", sp_item_name: "乐享黄金", price: "444.00"},
+                    {sp_item_id: "6", sp_item_name: "乐享黄金", price: "444.00"},//sp-item_price:''
                     {sp_item_id: "7", sp_item_name: "至尊钻石", price: "888.00"}
                   ],
 					}
@@ -447,7 +449,7 @@ export default class goodDetail extends wepy.page{
         this.swiper_W = systemInfo.windowWidth;
         this.windowWidth = systemInfo.windowWidth;
         this.windowHeight = systemInfo.windowHeight;
-
+        
         var spValue = new Object;
         http.get(api.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
             console.log(res)
@@ -507,15 +509,20 @@ export default class goodDetail extends wepy.page{
 	//将规格提交到后台
 	submitSpec(goods_id){
     //获取规格id
+
     var spec = this.getCurSpecId();
     console.log(goods_id)
-    console.log(spec);
+    console.log(spec)
+    //console.log(this.shopInfo)
 		http.get(api.GroupProduct,{
+              shop_id: this.shopInfo.id,
 							goods_id:goods_id,
 							spec_ids:spec.spec_ids,
 							spec_item_ids:spec.spec_item_ids}).then(res=>{
         console.log(res);
-        this.product_id = res.id;
+        this.product_id = res.product_id;
+        this.goodInfo.goods_number = res.stock;
+        this.goodInfo.retail_price = res.price;
         this.$apply();
         this.$broadcast('init',this.goodInfo.id,this.shopInfo.id,1,res.id);
 		})
@@ -547,7 +554,9 @@ export default class goodDetail extends wepy.page{
 			//删除原来所选项
 			delete this.specSelected[spNameIndex];
 			//插入新的项
-			this.specSelected[spNameIndex] = spObj;
+      this.specSelected[spNameIndex] = spObj;
+      
+       this.submitSpec(this.goodInfo.id);
 		},
 		numberDown(e){
 			if(this.number==1){

@@ -7,10 +7,13 @@ Page({
         orderInfo: {},
         goodInfo: {},
         goOrder: true, //离开当前页面是否跳转到待支付订单页
+        havePay:false,
     },
     onLoad: function(e) {
+        console.log(e)
         var data = JSON.parse(e.orderInfo);
         console.log(data)
+        wx.setStorageSync('noPayOrderId',data.id);
         var goodInfo = data.goodsList[0];
         this.setData({
             orderInfo: data,
@@ -19,7 +22,9 @@ Page({
             this.modefiyGoodInfo(index, goodInfo[index]);
         }
 
+        
     },
+
     modefiyGoodInfo(name, value) {
         var key = `goodInfo.${name}`;
         this.setData({
@@ -30,22 +35,14 @@ Page({
 
     },
     onUnload(e) {
-        // wx.showModal({
-        //     title: '温馨提醒',
-        //     cancelText: "狠心离开",
-        //     confirmText: "留下支付",
-        //     confirmColor: "#ff6b5d",
-        //     content: "好货不等人,您确认要放弃支付吗？您可在待付款订单中选择继续支付～",
-        //     success: (res => {
-        //         if (res.confirm) {
-        //             return;
-        //         } else {
-        //             wx.reLaunch({
-        //                 url: '/pages/my-order?id=1',
-        //             })
-        //         }
-        //     })
-        // })
+        if(!this.havePay){
+            http.post(api.OrderCancel,{order_id:wx.getStorageSync("noPayOrderId")}).then(res=>{
+                console.log(res);
+                wx.removeStorageSync({ key: 'noPayOrderId' });
+                    
+            })
+        }
+
     },
     toggleMask(e) {
 
@@ -79,8 +76,9 @@ Page({
                         confirmColor: "#ff6b5d",
                         content: "您已完成支付～",
                         success: function(res2) {
-                            // console.log(res2)
+                            wx.removeStorageSync({key:'noPayOrderId'})
                             if (res2.confirm) {
+                                this.havePay = true;
                                 wx.reLaunch({
                                     url: '/pages/tuangou/index',
                                 })
