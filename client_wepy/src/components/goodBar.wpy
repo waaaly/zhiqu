@@ -94,7 +94,7 @@ button{
   <!-- 底部操作菜单 -->
 		<view class="page-bottom">
 			<navigator url="/pages/index" open-type="switchTab" class="p-b-btn">
-          <image style="height:22px;width:22px;" src="/images/1-off.png"/>				
+          <image style="height:22px;width:22px;" src="/images/tabIcon/1-off.png"/>				
           <text>首页</text>
 			</navigator>
 			<view @tap='Collection'  class="p-b-btn">

@@ -36,7 +36,7 @@
 
   <view style=' align-items: center; display:flex;flex-direction:column;justify-content:space-between'>
     <text style="font-size:50rpx;color:#ffb65d;font-weight:bold;font-size:50rpx">ACTIVITY AREA</text>
-    <text style="color:block;font-size:50rpx;margin-bottom:30rpx;">- 活动专区 -</text>
+    <text style="color:block;font-size:50rpx;margin-bottom:30rpx;">- 推荐商品 -</text>
     <text style="color:#ba9b9b;font-size:20rpx;margin-bottom:30rpx;">智趣之中，总有你喜欢的一物，我们会展示越来越贴切的商品</text>
   </view> 
                   <!-- 活动专区 热门商品 -->
@@ -166,12 +166,23 @@ export default class Index extends wepy.page{
     }
 
     //用户没有选择服务区域选择跳过 或者 用户通过扫码进入到其他页面或分享进入页面
-    if(wx.getStorageSync('userSkip') || !wx.getStorageSync('userChooseArea') || !e.area){
-        http.get(api.GetShopArea,{district:'智趣社区'}).then(area=>{
-          that.area.area_id = area.area_id;
-          that.area.area_name = area.area_name;
-          that.$apply();
+    if( !e.area){
+      wx.getStorage({
+        key:'userChooseArea',
+        success:(res=>{
+            that.area.area_id = res.area_id;
+            that.area.area_name = res.area_name;
+            this.$apply();
+        }),
+        fail:(res=>{      
+            http.get(api.GetShopArea,{district:'智趣社区'}).then(area=>{
+              that.area.area_id = area.area_id;
+              that.area.area_name = area.area_name;
+              that.$apply();
+            })
         })
+      })
+
     }else{
       that.area = JSON.parse(e.area);
       that.address = that.area.area_name;
@@ -345,6 +356,7 @@ page{
 .laba{
   position: relative;
   color: #666;
+  font-size:30rpx;
   .swiperImg{
     height:40rpx;
     width:40rpx;
@@ -353,7 +365,7 @@ page{
   }
   .swiperBox{
     height:28px;
-    margin-left:30rpx;
+    margin-left:27.5rpx;
   }
   .swiperText{
     margin-left:20rpx;
@@ -371,11 +383,11 @@ page{
   -webkit-flex: auto;
   flex: auto;
   z-index:10;
-  padding-bottom:10px;
+  padding-bottom:8px;
   padding-left:10px;
   padding-right:10px;
   // background-color: #ffb65d;ffac30
-  background: linear-gradient(to bottom, #ffb65d,#f8cb88);
+  background: linear-gradient(to bottom, #ffb65d,#f9b35d);
 }
  /* 地址、扫一扫 */
 .weui-search-title{
@@ -486,7 +498,7 @@ page{
   margin-top: 25px;
 }
 .wrap-swiper{
-  padding-top:80px;
+  padding-top:78px;
 }
 .index-icon {
   display: flex;

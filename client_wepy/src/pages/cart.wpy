@@ -341,7 +341,7 @@ padding-top: 40rpx;
         
         <!-- 商家头-->
         <view  class="shop-info {{currentShop==index ? 'shop-top' : ''}} " @tap="goShoper('{{shopItem}}')" >
-            <view class=" {{shopItem.shopChecked==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}" @tap.stop="selectedShop"></view>
+            <view class=" {{shopItem.shopChecked==1?'shopCheck':'item-check'}}" data-shopindex="{{shopIndex}}"  @tap.stop="selectedShop"></view>
             <view style="margin-left: 10rpx;">
               <image style="padding-bottom:2%;width:60rpx;height:60rpx;border-radius:50%;" src="{{imageUrl + shopItem.shop_icon}}"/>
             </view>
