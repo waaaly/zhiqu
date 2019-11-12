@@ -7,7 +7,7 @@
 		"minified": false
 	},
 	"compileType": "miniprogram",
-	"appid": "wx6be14b9c1bbe7bc0",
+	"appid": "wx45614c5b70249b8b",
 	"projectname": "client_wepy",
 	"miniprogramRoot": "dist/",
 	"simulatorType": "wechat",

@@ -55,8 +55,8 @@ export default class http {
         };
         console.info(`[http]request url=${url}`);
         // console.log(data);
-
-        //异步请求
+        console.log(param)
+            //异步请求
         return new Promise((resolve, reject) => {
             wepy.request(param).then(res => {
                 //200

@@ -17,7 +17,7 @@
         <swiper-item wx:for="{{swiperList}}" wx:key="{{index}}" class="tui-banner-item">
           <image src="{{imageUrl+item.group_pic_url}}" class="tui-slide-image {{current!=index?'tui-banner-scale':''}}" 
           mode="scaleToFill" bindtap="detail" />
-        </swiper-item>
+        </swiper-item> 
       </swiper>
     </block>
     <block wx:else>

@@ -500,11 +500,12 @@ export default class Cart extends wepy.page{
     }
   }
   //提交商品数量到后台
-    changeFoodNum(cartId,goodId,number,shopId){
+    changeFoodNum(cartId,productId,goodId,number,shopId){
       var that = this;
       console.log(number)
       http.post(api.CartUpdate,{
         id:cartId,
+        product_id:productId,
         goods_id:goodId,
         number:number,
         shop_id:shopId,
@@ -586,9 +587,11 @@ export default class Cart extends wepy.page{
         return
       }
       this.changeFoodNum(e.currentTarget.dataset.currentgood.id,
+                         e.currentTarget.dataset.currentgood.product_id,
                          e.currentTarget.dataset.currentgood.goods_id,
                          e.currentTarget.dataset.currentgood.number + 1,
-                         e.currentTarget.dataset.currentshop.id);
+                         e.currentTarget.dataset.currentshop.id,
+                         );
     },
     //购物减
     subnum: function(e) {
@@ -597,6 +600,7 @@ export default class Cart extends wepy.page{
         return 
       }
       this.changeFoodNum(e.currentTarget.dataset.currentgood.id,
+                         e.currentTarget.dataset.currentgood.product_id,
                          e.currentTarget.dataset.currentgood.goods_id,
                          e.currentTarget.dataset.currentgood.number - 1,
                          e.currentTarget.dataset.currentshop.id);
