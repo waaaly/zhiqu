@@ -1,4 +1,5 @@
 <template>
+<view>
     <shopHeader :shopInfo.sync='shopInfo'></shopHeader>
     <view class="tab" >
         <view class="tab-item {{currentTab==index?'tab-item-active':''}}" wx:for="{{['商品','评论','联系商家']}}" @tap="touchTab({{index}})">
@@ -6,8 +7,6 @@
         </view>
     </view>
     <block wx:if="{{currentTab==0}}">
-        <!-- <shopGood></shopGood>
-        <shopFoot :food.sync='food'></shopFoot> -->
         <classifyGood></classifyGood>
     </block>
     <block wx:if="{{currentTab==1}}">
@@ -16,13 +15,12 @@
     <block wx:if="{{currentTab==2}}">
         <shopInfo :shopInfo.sync='shopInfo'></shopInfo>
     </block>
+</view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import shopHeader from '../components/shopHeader';
-import shopFoot from '../components/shopFoot';
-import shopGood from '../components/shopGood';
 import shopInfo from '../components/shopInfo';
 import shopComment from '../components/shopComment';
 import classifyGood from '../components/classifyGood';
@@ -40,11 +38,9 @@ export default class Shoper extends wepy.page {
     }
     components = {
         shopHeader:shopHeader,
-        shopFoot:shopFoot,
-        shopGood:shopGood,
-        shopComment:shopComment,
-        shopInfo:shopInfo,
         classifyGood:classifyGood,
+        shopComment:shopComment,
+        shopInfo:shopInfo,  
     }
     onLoad(e){
         console.log(e)

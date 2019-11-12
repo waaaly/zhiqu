@@ -94,9 +94,7 @@
   <view class='shadow'>
     <image src='../../images/icons/noTuan.jpg' mode='FixWidth'/>
     <view class="tips" wx:if='{{!isShoper}}'>
-      <text>当前没有任何团购信息呢,您可</text>
-      <text bindtap="goMyInfo" class="font">申请成为团长</text>
-      <text>发布团购哟~</text>
+      <text>当前没有任何团购信息呢~</text>
     </view>
   </view>
 </view>

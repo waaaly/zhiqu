@@ -20,16 +20,16 @@ export default class http {
         }
     }
 
-    static get(url, data, loading = true) {
-        return this.request('GET', url, data, loading);
+    static get(url, data, debug = false, loading = true) {
+        return this.request('GET', url, data, debug, loading);
     }
 
-    static post(url, data, loading = true) {
-        return this.request('POST', url, data, loading);
+    static post(url, data, debug = false, loading = true) {
+        return this.request('POST', url, data, debug, loading);
     }
 
     //封装微信request后台请求方法
-    static async request(method, url, data, loading = true) {
+    static async request(method, url, data, debug, loading) {
         var that = this;
         if (loading) {
             Tips.loading();
@@ -54,15 +54,10 @@ export default class http {
             header: header
         };
         console.info(`[http]request url=${url}`);
-<<<<<<< HEAD
-        // console.log(data);
-        console.log(param)
-            //异步请求
-=======
-        //console.log(data);
+        if (debug) {
+            console.log(data);
+        }
 
-        //异步请求
->>>>>>> 91c7588e6648be0f5b0952c843e11b7304e552d9
         return new Promise((resolve, reject) => {
             wepy.request(param).then(res => {
                 //200
@@ -74,11 +69,11 @@ export default class http {
                     }
                 } else {
                     console.log(res);
-                    if(wx.getStorageSync("showPopup")){
+                    if (wx.getStorageSync("showPopup")) {
                         return;
                     }
                     if (res.data.message == '用户openid没有获取到') {
-                        wx.setStorageSync("showPopup",1);
+                        wx.setStorageSync("showPopup", 1);
                         wx.showModal({
                             title: '提示',
                             content: '您当前尚未登陆无法进行相关操作呢',
@@ -92,7 +87,7 @@ export default class http {
                                 } else {
 
                                 }
-                                wx.setStorageSync("showPopup",0);
+                                wx.setStorageSync("showPopup", 0);
                             }),
                         })
                     } else {
