@@ -17,11 +17,11 @@
 
     <view class='protitle'>
       <text class='bigtil'>{{goodInfo.goods_name}}</text>
-      <text class='smalltitle'>{{goodInfo.goods_desc}}</text>
-      <text class='count'></text>
-      <text class='price'>￥{{goodInfo.retail_price}}
-        <!-- <text class='htit' wx:if="{{goodInfo.unit_price}}">￥{{goodInfo.unit_price}}</text> -->
-      </text>
+      <text class='smalltitle'>{{goodInfo.goods_desc}}</text>   
+      <view class='price-sell'>
+					<text class="price">￥{{goodInfo.retail_price}}</text>
+					<text class='sell'>月销{{goodInfo.sell_volume}}</text>
+			</view>	
     </view>
 
     <view class='spec' @tap="toggleSpec">
@@ -93,7 +93,7 @@
     <!-- 底部操作菜单 -->
 		<view class="page-bottom">
 			<navigator url="/pages/index" open-type="switchTab" class="p-b-btn">
-          <image style="height:22px;width:22px;" src="/images/tabIcon/1-off.png"/>				
+          <image style="height:22px;width:22px;" src="/images/icons/index.png"/>				
           <text>首页</text>
 			</navigator>
 			<view @tap='Collection'  class="p-b-btn">
@@ -101,7 +101,7 @@
 				  <text>收藏</text>
 			</view>
 			 <button  style="display: flex;flex-direction: column;font-size: 24rpx;padding-top: 10px;align-items: center;" open-type="share" role="button">
-          <image style="height:22px;width:22px;" src="../images/icons/share.jpg"/>
+          <image style="height:22px;width:22px;" src="../images/icons/share.png"/>
 				  <text style="color:#606266;margin-top:-15rpx;">分享</text>
 			</button> 
 			<view class="action-btn-group">
@@ -365,15 +365,6 @@ export default class goodDetail extends wepy.page{
           var shop_id = this.shopInfo.id;
           wx.navigateTo({
             url: '/pages/shoper?shop_id='+shop_id,
-            success: function(res){
-              // success
-            },
-            fail: function() {
-              // fail
-            },
-            complete: function() {
-              // complete
-            }
           })
       }
       this.offsetLeft = e.currentTarget.offsetLeft;
@@ -410,6 +401,8 @@ export default class goodDetail extends wepy.page{
 .protitle {
   padding: 10rpx;
   position: relative;
+	display: flex;
+	flex-direction: column;
 }
 .protitle .bigtil {
   font-size: 40rpx;
@@ -419,11 +412,9 @@ export default class goodDetail extends wepy.page{
   font-size: 30rpx;
   color: #666;
   line-height: 30rpx;
+	margin: 10rpx 0;
 }
-.count {
-  color: #ff6700;
-  font-size: 28rpx;
-}
+
 .protitle .price-sell {
     display: flex;
     align-items: center;
@@ -437,10 +428,6 @@ export default class goodDetail extends wepy.page{
     }
 }
 
-.ctil {
-  font-size: 32rpx;
-  line-height: 2.5;
-}
 
 
 

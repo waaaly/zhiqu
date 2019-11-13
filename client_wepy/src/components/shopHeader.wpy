@@ -122,7 +122,7 @@ export default class shopHeader extends wepy.component{
 
 .shopheader .content-wrapper {
   position: relative;
-  padding: 48rpx 24rpx 3rpx 48rpx;
+  padding: 20rpx;
   font-size: 0;
   vertical-align: top;
 }

@@ -15,8 +15,8 @@
                 {{item.goods_desc}}
             </view>
             <view class="titleContent">
-                <view class="title">¥{{item.retail_price}}元</view>
-                <view class="add ">月销{{item.sell_volume}}</view> 
+                <view class="price">¥{{item.retail_price}}元</view>
+                <view class="sell ">月销{{item.sell_volume}}</view> 
             </view>              
         </view>
      </view> 
@@ -45,8 +45,8 @@
                         {{item.goods_desc}}
                     </view>
                     <view class="titleContent">
-                        <view class="title">¥{{item.retail_price}}元</view>
-                        <view class="add ">月销{{item.sell_volume}}</view> 
+                        <view class="price">¥{{item.retail_price}}元</view>
+                        <view class="sell ">月销{{item.sell_volume}}</view> 
                     </view>              
                 </view>
             </view> 
@@ -319,12 +319,9 @@ export default class classifyGood extends wepy.component{
 .titleContent{
     position: absolute;
     bottom:5px;
-    display:flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    width:60%;
 }
- .title {
+ .price {
   color:coral;
   font-size: 32rpx;
   line-height: 1.5;
@@ -332,8 +329,15 @@ export default class classifyGood extends wepy.component{
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
+  float: left;
 }
-
+.sell{
+  float:right;
+  font-size: 30rpx;
+  line-height: 1.5;
+  color: #ff6b5d;
+  vertical-align:bottom;
+}
  .smalltitle {
   font-size: 28rpx;
   line-height: 1.5;
@@ -345,16 +349,7 @@ export default class classifyGood extends wepy.component{
   overflow: hidden;
   text-decoration:line-through;
 }
-.add{
-  display: inline-block;
-  padding: 12rpx;
-  font-size: 30rpx;
-  line-height: 1.5;
-  color: #ff6b5d;
-  position: absolute;
-  left:280rpx;
-  bottom:rpx;
-}
+
 .lower-shelf{
     position: absolute;
     color: #fff;
