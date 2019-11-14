@@ -178,7 +178,7 @@
 				<text>首页</text>
 			</navigator>
 			<button open-type="share" class="share-btn" style="background-color:transparent;">
-				<image style="width:21px;height:21px;"  src="../images/icons/share.jpg"/>
+				<image style="width:21px;height:21px;"  src="../images/icons/share.png"/>
 				<text>分享</text>
 			</button>
 			 <view class="p-b-btn"  @tap="showQR">
