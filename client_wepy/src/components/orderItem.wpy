@@ -78,9 +78,9 @@ export default class orderItem extends wepy.page{
         
       }
     }
+
     methods = {
       action(text,index){
-        var that = this;
         if(text == '前往支付'){
           http.get(api.WechatPay,{order_id:this.orderList[index].id,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
                 // console.log(res);
@@ -90,22 +90,14 @@ export default class orderItem extends wepy.page{
                     package: res.package, 
                     signType: res.signType, 
                     paySign: res.paySign, 
-                    success: function(res1) { 
-                      this.methods.clearStorageGroup(this.orderList[index].id);
-                       
-                        wx.showModal({
-                            title: '支付成功',
-                            cancelShow: "false",
-                            confirmText: "我知道了",
-                            confirmColor:"#ff6b5d",
-                            content: "您已完成支付～",
-                        })
-                        
-                        that.orderList.splice(index,1);
-                    }, 
+                    success: (res=>{
+                      this.methods.clearNoPayOrder(this.orderList[index].id);             
+                      wx.showToast({title:'支付完成！'})                
+                      this.orderList.splice(index,1);
+                      this.$apply();
+                    }) ,
                     fail: function(res) { 
-                        console.log('付款失败') 
-                        console.log(res) 
+                        wx.showToast({title:'支付未完成'})
                     },
                 })
             })
@@ -119,7 +111,7 @@ export default class orderItem extends wepy.page{
                 title:res.msg,
                 icon:'none',
               })      
-              this.methods.clearStorageGroup(order_id);
+              this.methods.clearNoPayOrder(order_id);
               this.orderList.splice(index,1);
               this.$apply();
             }
@@ -145,17 +137,16 @@ export default class orderItem extends wepy.page{
           })
         }
       },
-      //清除团购记录缓存，order_id为标志
-      clearStorageGroup(order_id){
-        var groupOrderInfoList = wx.getStorageSync('groupOrderInfoList');
-              for(let index in groupOrderInfoList){
-                if(groupOrderInfoList[index].order_id == order_id){
-                  delete groupOrderInfoList[index];
-                  break;
+        //清除团购订单记录
+        clearNoPayOrder(order_id){
+          var noPayOrder = wx.getStorageSync('noPayOrder');
+          for(let index in noPayOrder){
+                if(noPayOrder[index] == order_id){
+                    noPayOrder[index] = null;
                 }
-              } 
-              wx.setStorageSync('groupOrderInfoList',groupOrderInfoList);
-      }
+            }
+            wx.setStorageSync('noPayOrder',noPayOrder)
+        }
     }
     watch = {
       

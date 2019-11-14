@@ -1,7 +1,3 @@
-
-
-
-
 <template>
 	<view class="container">
 	
@@ -191,7 +187,7 @@
 				<text style="color:#606266;">联系团长</text>
 			</view> 
 			<view class="action-btn-group">
-				<button wx:if="{{haveOrder}}" type="primary" class=" action-btn no-border buy-now-btn" @tap="buy">立即支付</button>
+				<button wx:if="{{haveOrder}}" type="primary" class=" action-btn no-border buy-now-btn" @tap="payment">立即支付</button>
 				<button wx:else type="primary" class=" action-btn no-border buy-now-btn" @tap="buy">立即购买</button>
 			</view>
 		</view>
@@ -247,6 +243,8 @@
 				],//商品规格列表
 				productId:null,//根据用户选择的规格得到的产品id
 				haveOrder:false,//用户已经加入过团购
+				noPayOrder:{},//未完成支付的团购单
+				order_id:0,//未付款的订单id
 		}
 		 onLoad(e){	
 			//线下扫码进入 参数1：goodsid 参数2：groupid 参数3：shopid
@@ -274,11 +272,8 @@
 			}else{
 				this.getProduct(wx.getStorageSync('currentGroup').goods_id,wx.getStorageSync('currentGroup').group_id)
 			}
-
-			
 		}
 		onShow(e){
-	
 
 		}
 		getProduct(goods_id,group_id){
@@ -287,7 +282,7 @@
 				console.log(res)
 					if(res.remaining_time==0){
 						wx.showModal({
-							title:'该团购商品已过期！',
+							content:'该团购商品已过期！',
 							cancelShow:false,
 							success:(res)=>{
 								if(!res.cancel){
@@ -297,6 +292,7 @@
 								}
 							}
 						})
+						return;
 					}			
 					//动态设置页面标题
 					wx.setNavigationBarTitle({
@@ -305,6 +301,21 @@
 					this.productInfo = res;
 					this.specInfo = res.shopGoods.specInfo;//获取商品规格
 					this.countDown(res.remaining_time);//加载倒计时
+
+						//用户存在未付款团购单
+					this.noPayOrder = wx.getStorageSync('noPayOrder');
+					if(this.noPayOrder[res.id]){
+						this.haveOrder = true;
+						this.order_id = this.noPayOrder[res.id];
+						this.$apply();
+						wx.showModal({
+							title:'支付提醒',
+							content:'您已在本团购商品成功下单，请您确认支付！',
+							showCancel:false,
+							confirmText:'我知道了'
+						})
+					}	
+
 					if(res.shopGoods.specInfo.length != 0){
 						this.specSelected = new Object();
 					}else{
@@ -320,8 +331,10 @@
 							this.specSelected[index]=spValue;
 							break;
 						}
-					}						
+					}
+									
 			})
+		
 		}
 		onUnload(){
 			clearTimeout(this.timer);
@@ -416,11 +429,9 @@
 							spec_ids:spec.spec_ids,
 							spec_item_ids:spec.spec_item_ids}).then(res=>{	
 								// console.log(res)	
-				this.productId = res.id;
-       			
+				this.productId = res.id;   			
 		})
-				console.log(spec);
-
+		console.log(spec);
 	}
 	//检查是否有默认地址
 	checkDefaAddress(){
@@ -443,50 +454,12 @@
 				}
 		})
 	}
-//调起支付
-	payment(orderId) {
-		http.get(api.WechatPay, {
-				order_id:orderId,
-				user_id: wx.getStorageSync('userInfoInServer').id
-		}).then(res => {
-				console.log(res);
-				wx.requestPayment({
-						timeStamp: res.timeStamp,
-						nonceStr: res.nonceStr,
-						package: res.package,
-						signType: res.signType,
-						paySign: res.paySign,
-						
-						success: (res1=>{
-							this.clearStorageGroup(wx.getStorageSync('currentGroup').group_id);
-							this.haveOrder = false;
-							this.$apply();
-							wx.showModal({
-									title: '支付成功',
-									cancelShow: false,
-									confirmText: "确定",
-									confirmColor: "#ff6b5d",
-									content: "您已完成支付～",
-							})
-						}),					
-						fail: function(res) {
-								console.log(res)
-								wx.showToast({
-											icon:'none',
-											title:'支付未完成'
-									})                  
-						},
-				})
-		})
-	}
+
 	methods={
 		//规格弹窗开关
 		toggleSpec() {
-
-
 			if(this.specClass === 'show'){
-				this.specClass = 'hide';
-				
+				this.specClass = 'hide';				
 				setTimeout(() => {
 					this.specClass = 'none';
 				}, 250);
@@ -503,9 +476,8 @@
 			delete this.specSelected[spNameIndex];
 			//插入新的项
 			this.specSelected[spNameIndex] = spObj;
-			console.log(spObj);
+			// console.log(spObj);
 			this.submitSpec(wx.getStorageSync('currentGroup').goods_id);
-
 		},
 
 		//---
@@ -548,7 +520,35 @@
 				urls: [url] // 需要预览的图片http链接列表
 			})
 		},
-		
+		//调起支付
+		payment() {
+			http.get(api.WechatPay, {
+					order_id:this.order_id,
+					user_id: wx.getStorageSync('userInfoInServer').id
+			}).then(res => {
+					wx.requestPayment({
+							timeStamp: res.timeStamp,
+							nonceStr: res.nonceStr,
+							package: res.package,
+							signType: res.signType,
+							paySign: res.paySign,					
+							success: (res1=>{
+								this.noPayOrder[this.productInfo.id] = null;					
+								this.haveOrder = false;
+								this.$apply();
+								wx.setStorageSync('noPayOrder', this.noPayOrder);
+								wx.showToast({title:'支付成功！'})
+							}),					
+							fail: function(res) {
+									console.log(res)
+									wx.showToast({
+												icon:'none',
+												title:'支付未完成'
+										})                  
+							},
+					})
+			})
+		},
 		//立即购买
 		buy(){
 			this.checkDefaAddress().then(res=>{
@@ -556,8 +556,7 @@
 				wx.navigateTo({
 					url:'/pages/my-func?id=1',
 				})
-			}).catch(res=>{
-				console.log(res)
+			}).catch(address=>{
 				//团购提交新订单
 				http.post(api.CartAdd,{
 						product_id:this.productId,
@@ -568,25 +567,23 @@
 						user_id:wx.getStorageSync('userInfoInServer').id,
 						address_id:wx.getStorageSync('userDefaultAddress').id,
 						type:2,//团购购买
-				}).then(res=>{
-					console.log(res)
+				}).then(order=>{
+					//console.log(order)
 						wx.showModal({
 							title:'拼团成功',
 							content:'恭喜您成功加入拼团，快去前往支付吧~',
 							confirmText:'前往支付',
-							cancelText:'取消',
+							cancelText:'取消订单',
 							success: function (e) {
 								if (e.cancel) {
-									//点击取消,默认隐藏弹框
-
-									var order_id = res.id;
-									http.post(api.OrderCancel,{order_id:res.id}).then(res=>{
-								 		console.log(res);	
-														
+									//点击取消订单,默认隐藏弹框
+									http.post(api.OrderCancel,{order_id:order.id},true).then(res=>{
+										 console.log(res);		
+										 wx.showToast({title:res.msg});			
 									})
 								} else {
-										wx.navigateTo({
-											 url:'../tuangou/pages/createOrder/createOrder?orderInfo=' + JSON.stringify(res),
+										wx.reLaunch({
+											 url:'../tuangou/pages/createOrder/createOrder?orderInfo=' + JSON.stringify(order),
 										 })
 								}
 							}

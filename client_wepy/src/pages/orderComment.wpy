@@ -260,10 +260,9 @@ export default class orderComment extends wepy.page{
     ],
     
     wjxScore:5,
-    //textarea:"",//评论内容
-   // currentWordNumber:0,//当前字数
+    textarea:"",//评论内容
     min: 5,//最少字数
-    max: 40, //最多字数 (根据自己需求改变) 
+    max: 150, //最多字数 (根据自己需求改变) 
     pics:[],
     pisUrl:[],//oss图片存储地址
     shopId:"",//当前评价的订单属于哪个商家
@@ -282,10 +281,7 @@ export default class orderComment extends wepy.page{
   onShow(e){
     
   }
-  onReady(e){
-    this.drawProgressbg(); 
-    
-  }
+
   methods = {
       // 星星点击事件
         starTap: function (e) {
@@ -340,29 +336,24 @@ export default class orderComment extends wepy.page{
         //字数限制  
         inputs: function (e) {
             // 获取输入框的内容
-            var value = e.detail.value;
-            //this.textarea = value;
+            var value = e.detail.value;        
             // 获取输入框内容的长度
             var len = parseInt(value.length);
             //最少字数限制
-            if (len <= this.data.min)
-              this.setData({
-                texts: "陛下，评论五个字就能获得我的心哦~~"
-              })
-            else if (len > this.data.min)
-              this.setData({
-                text: " "
-              })
-
+            if (len <= this.data.min){
+              this.texts= "陛下，评论五个字就能获得我的心哦~~";
+            }else{
+              this.texts= "";
+            }
             //最多字数限制
-            if(len > this.data.max) return;
-            // 当输入框内容的长度大于最大长度限制（max)时，终止setData()的执行
-                this.setData({
-                  currentWordNumber: len //当前字数 
-            });
+            if(len > this.data.max) {
+              this.texts= `陛下，评论最多${max}字哦~~`;
+            }
+            this.textarea = value;
+            this.$apply();
         },
-        // 图片
-        choose: function (e) {//这里是选取图片的方法
+        //这里是选取图片的方法
+        choose: function (e) {
             var that = this;
             var userId = wx.getStorageSync('userInfoInServer').id
             var perfix = 'front/' + userId +'/';
@@ -384,7 +375,7 @@ export default class orderComment extends wepy.page{
                     }
                     console.log(fileName);
                     that.picUrl.push(fileName);    
-                    uploadFile(item,userId);
+                    uploadFile(item,userId);//这里触发图片上传的方法
                  }
                   that.pics = that.pics.concat(imgsrc);//连接两个或多个数组 
                   if(that.pics.length >= 3){
@@ -394,7 +385,7 @@ export default class orderComment extends wepy.page{
               }
             })
         },
-        //这里触发图片上传的方法
+        //调用接口上传参数
         comment: function () {
           var userId = wx.getStorageSync('userInfoInServer').id;
           http.post(api.UserComment,{shop_id: this.shopId,
@@ -435,35 +426,6 @@ export default class orderComment extends wepy.page{
             })
         },
   }
-  drawProgressbg(){
-    // 使用 wx.createContext 获取绘图上下文 context
-    var ctx = wx.createCanvasContext('canvasProgressbg',this)
-    ctx.setLineWidth(4);// 设置圆环的宽度
-    ctx.setStrokeStyle('#20183b'); // 设置圆环的颜色
-    ctx.setLineCap('round') // 设置圆环端点的形状
-    ctx.beginPath();//开始一个新的路径
-    ctx.arc(110, 110, 100, 0, 2 * Math.PI, false);
-    //设置一个原点(110,110)，半径为100的圆的路径到当前路径
-    ctx.stroke();//对当前路径进行描边
-    ctx.draw();
-  }
-  drawCircle (step){  
-    var context = wx.createCanvasContext('canvasProgress',this);
-      // 设置渐变
-      var gradient = context.createLinearGradient(200, 100, 100, 200);
-      gradient.addColorStop("0", "#2661DD");
-      gradient.addColorStop("0.5", "#40ED94");
-      gradient.addColorStop("1.0", "#5956CC");
-      
-      context.setLineWidth(10);
-      context.setStrokeStyle(gradient);
-      context.setLineCap('round')
-      context.beginPath(); 
-      // 参数step 为绘制的圆环周长，从0到2为一周 。 -Math.PI / 2 将起始角设在12点钟位置 ，结束角 通过改变 step 的值确定
-      context.arc(110, 110, 100, -Math.PI / 2, step * Math.PI - Math.PI / 2, false);
-      context.stroke(); 
-      context.draw() 
-  }
 }
 </script>
 
@@ -484,18 +446,6 @@ export default class orderComment extends wepy.page{
    </view>
    <!--内容-->
    <view class='content'>
-     <!-- <view class='left'>
-       内容
-     </view>
-     <view class='right'>
-       <text bindtap='label' class="{{attitude===true ? 'labelColor':''}}" data-index="{{attitude}}">服务态度好</text>
-       <text bindtap='label1' class="{{time===false? 'labelColor':''}}" data-index="{{time}}">送货时间短</text>
-       <text bindtap='label2' class="{{efficiency===false?'labelColor':''}}" data-index="{{efficiency}}">效率高</text>
-       <text bindtap='label3' class="{{environment===false?'labelColor':''}}" data-index="{{environment}}">商品很好</text>
-       <text bindtap='label4' class="{{professional===false?'labelColor':''}}" data-index="{{professional}}">很专业</text> 
-     </view>
-   </view> -->
-   <!--图片-->
    <view class='picture'>
      <view class='left'>
        图片
@@ -516,15 +466,6 @@ export default class orderComment extends wepy.page{
      <text class="hint" style="margin-top:30px;">{{texts}}</text>
      </textarea>
  </view>
- <!-- <view style="position:fixed;left:23%;"> 进度条
-     <view class='progress_box'>
-        <canvas class="progress_bg"   canvas-id="canvasProgressbg">  </canvas> 
-        <canvas class="progress_canvas"   canvas-id="canvasProgress">  </canvas> 
-        <view class="progress_text">
-            <view class="progress_dot"></view> 
-            <text class='progress_info'> {{currentWordNumber}}</text>
-        </view>     
-    </view> -->
 </view>
  <!--提交评价-->
  <button class='btn' @tap="comment">提交评价</button>
