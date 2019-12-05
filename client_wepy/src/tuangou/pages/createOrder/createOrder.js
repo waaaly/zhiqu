@@ -1,6 +1,6 @@
 import http from '../../../utils/Base';
 import api from '../../../utils/API';
-var noPayOrder;
+var noPayOrder = new Object();
 Page({
     data: {
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
@@ -8,9 +8,9 @@ Page({
         orderInfo: {},
         goodInfo: {},
         group_id: null,
+        discount: 0, //团购优惠
     },
     onLoad: function(e) {
-        console.log(e)
         var data = JSON.parse(e.orderInfo);
         console.log(data)
 
@@ -22,13 +22,18 @@ Page({
         for (let index in goodInfo) {
             this.modefiyGoodInfo(index, goodInfo[index]);
         }
-        //记录团购id订单id，团购id作为字段名，订单id作为值
-        noPayOrder = wx.getStorageSync('noPayOrder');
-        if (!noPayOrder) {
+        //计算团购优惠
+        this.setData({
+                discount: ((goodInfo.market_price - goodInfo.retail_price) * goodInfo.number).toFixed(2),
+            })
+            //记录团购id订单id，团购id作为字段名，订单id作为值
+        if (!wx.getStorageSync('noPayOrder')) {
             noPayOrder = new Object();
+        } else {
+            noPayOrder = wx.getStorageSync('noPayOrder');
+            console.log(noPayOrder);
         }
-        console.log(noPayOrder);
-        noPayOrder[this.group_id] = data.id;
+        noPayOrder[data.group_id] = data.id;
         wx.setStorageSync('noPayOrder', noPayOrder);
     },
 
@@ -49,7 +54,7 @@ Page({
         http.get(api.WechatPay, {
             order_id: e.currentTarget.dataset.id,
             user_id: wx.getStorageSync('userInfoInServer').id
-        }).then(res => {
+        }, true).then(res => {
             console.log(res);
             wx.requestPayment({
                 timeStamp: res.timeStamp,
@@ -65,7 +70,7 @@ Page({
                         confirmColor: "#ff6b5d",
                         content: "您已完成拼团支付～",
                         success: function(res2) {
-                            noPayOrder[that.group_id] = null;
+                            noPayOrder[that.data.group_id] = null;
                             wx.setStorageSync('noPayOrder', noPayOrder);
                             if (res2.confirm) {
                                 wx.reLaunch({

@@ -54,7 +54,7 @@
         </view>
         <view class="yt-list-cell b-b">
             <text class="cell-tit clamp">团购优惠</text>
-            <text class="cell-tip red">-￥{{(goodInfo.market_price - goodInfo.retail_price)*goodInfo.number}}</text>
+            <text class="cell-tip red">-￥{{discount}}</text>
         </view>
         <view class="yt-list-cell b-b">
             <text class="cell-tit clamp">运费</text>

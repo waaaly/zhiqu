@@ -3,33 +3,23 @@
 import wepy from 'wepy'
 import 'wepy-async-function'
 
-
+const checkUpdate = require("./utils/updateManager.js");
+const dowloadNewVersion = require("./utils/updateManager.js");
+const restart = require("./utils/updateManager.js");
 export default class extends wepy.app {
   config = {
         pages: [
           'pages/chooseArea',
-          'pages/my',
-          
-          'pages/submitInfo',
-          
-          'pages/myInfo',
-          
-          
-          
+          'pages/my',      
+          'pages/submitInfo',        
+          'pages/myInfo',        
           'pages/tuangou/index',
-          'pages/product',
-          
-                   
+          'pages/product',           
           'pages/authorize',
-          'pages/orderComment',
-          
-          'pages/orderUserDetail',
-          
-          
-          
+          'pages/orderComment',        
+          'pages/orderUserDetail',        
           'pages/cart',
-          'pages/orderCheck',
-          
+          'pages/orderCheck',       
           'pages/orderSubmit',
           'pages/shopOrder',
           'pages/shopHome',
@@ -45,8 +35,7 @@ export default class extends wepy.app {
           'pages/goodDetail',         
           'pages/shoper',         
           'pages/bindPhone',  
-          'pages/search',
-          'pages/scan'
+          'pages/search'
         ],
         subPackages:[{
           root:'tuangou',
@@ -114,7 +103,13 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    userInfo: null
+    userInfo: null,
+    version:'V0.2.0',
+    /**
+     * V0.2.0
+     * 1、新增我的资产、版本管理器，订单状态；2、移除扫一扫、商家购物车组件;
+     * 3、修复团购下单
+     */
   }
 
   constructor() {
@@ -124,7 +119,49 @@ export default class extends wepy.app {
   }
 
   onLaunch() {
-    this.testAsync()
+    //检查新版本更新
+    if(wx.canIUse("getUpdateManager")){
+      checkUpdate().then(()=>{
+        console.log("检测到新版本，提示用户更新");
+        wx.showModal({
+          title:'更新提示',
+          content:'检测到新版本，请您及时更新以免影响小程序的正常使用！',
+          showCancel:false,
+          confirmText:'确认更新',
+          success:(res=>{
+            if(res.confirm){
+              console.log("正在下载新版本");
+              dowloadNewVersion().then(()=>{
+                  wx.showModal({
+                      title: '下载成功',
+                      content: `新版本已下载完成，点击下方重启按钮，体验新功能吧～`,
+                      showCancel: false,
+                      comfireText: '立即重启',
+                      success: (res => {
+                          restart();
+                      })
+                  })
+              }).catch(()=>{
+                  wx.showModal({
+                      title: '下载失败',
+                      content: `由于不知名的原因，新版本下载失败了，劳烦您手动删除小程序再重新进入呢～`,
+                      showCancel: false,
+                      comfireText: '我知道啦',
+                      success: (res => {})
+                  })
+              })
+            }
+          })
+        })      
+      }).catch(()=>{
+        console.log('当前是最新版本');
+      })
+    }else{
+      wx.showModal({
+        title:'版本提示',
+        content:'当前您使用的微信版本过低，无法使用该功能，请升级到最新微信版本后重试～',
+      })
+    }
   }
 
   sleep (s) {
@@ -135,10 +172,6 @@ export default class extends wepy.app {
     })
   }
 
-  async testAsync () {
-    const data = await this.sleep(3)
-    console.log(data)
-  }
 
   getUserInfo(cb) {
     const that = this

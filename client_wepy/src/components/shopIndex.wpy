@@ -1,6 +1,6 @@
 <template>
 
-        <view class="item" @tap="goShoper({{shop.id}})">
+        <view class="item" bindtap="goShoper({{shop.id}})">
           <image style="display:block;width:100%;border-radius:10px;" src='{{imageUrl+shop.shop_icon}}' mode="widthFix"></image>
           <view style="padding:5px;border-radius:10px;border: 1px solid #fff;margin-top:8px;background:#fafafa;justify-content:space-between;display:flex;flex-direction:column;font-size:10px;color:#666;position:relative;">
           <view style="color:black;font-size:15px;">{{shop.shop_name}}

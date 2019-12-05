@@ -32,22 +32,22 @@
               <text >订单编号:{{item.order_sn}}</text> 
               <text >下单时间:{{item.add_time}}</text>
             </view> 
-            <view class="total">总计：{{item.goods_price}}元</view>
+            <view class="total">支付：{{item.goods_price}}元</view>
           </view>
         </navigator>
 
         <view wx:if="{{item.order_status != 0}}" class="thirdCol ">
             <block wx:if="{{item.order_status == 10}}" >
-              <view wx:for="{{['前往支付', '取消订单']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
+              <view wx:for="{{['取消订单', '前往支付']}}" wx:for-item="actionItem" class='forItem' catchtap='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
             <block wx:if="{{item.order_status == 22}}" >
-              <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
+              <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' catchtap='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
             <block wx:if="{{item.order_status == 32}}" >
-              <view wx:for="{{['申请退款']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
+              <!-- <view wx:for="{{}}" wx:for-item="actionItem" class='forItem' catchtap='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view> -->
             </block>
             <block wx:if="{{item.order_status == 40}}" >
-              <view wx:for="{{['前往评价']}}" wx:for-item="actionItem" class='forItem' @tap.stop='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
+              <view wx:for="{{['申请退款','前往评价']}}" wx:for-item="actionItem" class='forItem' catchtap='action({{actionItem}},{{orderIndex}})'>{{actionItem}}</view>
             </block>
         </view>
     </view>

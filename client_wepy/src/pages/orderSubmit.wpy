@@ -1,29 +1,29 @@
 <template>
-  <scroll-view scroll-y="true" class="scroll" >
-      <!-- <image src="{{imageUrl + 'zq/orderIsOk.png'}}"  style="width:100%;"/> -->
-      <image src="/images/icons/orderIsOk.jpg"  style="width:100%;height:120px"/>
-      <orderDetail></orderDetail>
-      <view class="pay_box">
-        <form report-submit bindsubmit="wePay">
-            <button form-type="submit" class="type_green">立即支付</button>
-        </form>
+    <view>
+        <scroll-view scroll-y="true" class="scroll" wx:if="{{init}}">
+            <image src="{{ossUrl+'orderIsOk.jpg'}}"  style="width:100%;height:120px"/>
+            <orderDetail></orderDetail>
+        </scroll-view>
+        <view class="pay_box">
+            <form report-submit bindsubmit="wePay">
+                <button form-type="submit" class="type_green">立即支付</button>
+            </form>
+        </view>
     </view>
-  </scroll-view>
-
 </template>
 <style>
 .scroll{
   z-index: -999;
-  height:95%; 
+  height:90vh; 
   /* display: flex;
   flex-direction:column; */
 }
+
 .pay_box{
-    padding:0 50rpx;
-    /* position:absolute; */
-    /* bottom:50rpx;
-    left: 50rpx;
-    right: 50rpx; */
+    position: fixed;
+    bottom: 30rpx;
+    left: 40rpx;
+    right: 40rpx;
 }
 .type_green{
     background-color:#09bb07;
@@ -40,26 +40,33 @@ export default class orderSubmit extends wepy.page{
         orderDetail:orderDetail,
     }
     data = {
-        imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
-        orderId:0,
+        init:false,
+        ossUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/',
+        orderData:null,
+        integral:0,
     }
     onLoad(e){
          //修改页面标题
         wx.setNavigationBarTitle({
-          title:'确认订单'
+          title:'支付订单'
         })
-        http.post(api.OrderSubmit,{address_id:e.addressId,
-                        shop_id:e.shopId,
-                        postscript:e.postscript,
-                        user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
-            console.log(res);
-            this.orderId = res.id;
-            this.$broadcast('orderSubmit',res);
-        })
+        this.orderData = JSON.parse(e.data);     
+        this.$broadcast('orderSubmit',this.orderData);
+        this.integral = parseInt(this.orderData.actual_price);
+        this.init = true;
+        // http.post(api.OrderSubmit,{address_id:e.addressId,
+        //                 shop_id:e.shopId,
+        //                 postscript:e.postscript,
+        //                 coupon_id:0,
+        //                 user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+        //     this.orderId = res.id;
+        //     this.init = true;
+        //     this.$apply();    
+        // })
     }
     methods = {
         wePay(e){
-             http.get(api.WechatPay,{order_id:this.orderId,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
+             http.get(api.WechatPay,{order_id:this.orderData.id,user_id:wx.getStorageSync('userInfoInServer').id}).then(res=>{
                 // console.log(res);
                 wx.requestPayment({ 
                     timeStamp: res.timeStamp, 
@@ -67,18 +74,17 @@ export default class orderSubmit extends wepy.page{
                     package: res.package, 
                     signType: res.signType, 
                     paySign: res.paySign, 
-                    success: function(res1) { 
-                        wx.showModal({
+                    success: (pay=>{
+                         wx.showModal({
                             title: '支付成功',
                             cancelText: "算了没钱",
                             confirmText: "继续剁手",
                             confirmColor:"#ff6b5d",
-                            content: "您已完成支付～",
-                            success:function(res2){ 
-                                // console.log(res2)
-                                if(res2.confirm){
+                            content: `恭喜您已完成支付～本次消费累计获得 ${this.integral} 积分!`,
+                            success:function(res){ 
+                                if(res.confirm){
                                     wx.reLaunch({
-                                        url: '/pages/cart',
+                                        url: '/pages/index',
                                     }) 
                                 } else{
                                     wx.reLaunch({
@@ -87,7 +93,7 @@ export default class orderSubmit extends wepy.page{
                                 }                                                         
                             }
                         })
-                    }, 
+                    }), 
                     fail: function(res) { 
                         console.log('付款失败') 
                         console.log(res) 

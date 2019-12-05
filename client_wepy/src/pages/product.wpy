@@ -568,7 +568,15 @@
 						address_id:wx.getStorageSync('userDefaultAddress').id,
 						type:2,//团购购买
 				}).then(order=>{
-					//console.log(order)
+					console.log(order)
+					if(order.msg){
+						wx.showToast({
+							title:order.msg,
+							icon:'none'
+						})
+						return;
+					}
+					let order_id = order.id;
 						wx.showModal({
 							title:'拼团成功',
 							content:'恭喜您成功加入拼团，快去前往支付吧~',
@@ -577,7 +585,7 @@
 							success: function (e) {
 								if (e.cancel) {
 									//点击取消订单,默认隐藏弹框
-									http.post(api.OrderCancel,{order_id:order.id},true).then(res=>{
+									http.post(api.OrderCancel,{order_id:order_id},true).then(res=>{
 										 console.log(res);		
 										 wx.showToast({title:res.msg});			
 									})

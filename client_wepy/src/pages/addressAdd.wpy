@@ -276,13 +276,21 @@ export default class addressAdd extends wepy.page{
                     user_id:wx.getStorageSync('userInfoInServer').id
                 }
                 http.post(api.AddressSave,{...obj}).then(res=>{
-                    // console.log(res);
-                    wx.showToast({
-                        title: "添加成功",
-                    })
-                    wx.setStorageSync('userDefaultAddress', obj);
-                    wx.navigateBack({
-                    })
+                     if(res.id){
+                        wx.showToast({
+                            title:'新增地址成功',
+                        });
+                        if(res.is_default){
+                            wx.setStorageSync('userDefaultAddress',res);
+                        }
+                        setTimeout(()=>{
+                            wx.navigateBack();
+                        },500)
+                    }else{
+                        wx.showToast({
+                            title:'保存地址失败！',
+                        })
+                    } 
                 })                             
             }       
             /*修改并保存地址*/

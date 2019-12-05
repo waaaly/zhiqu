@@ -160,10 +160,10 @@ export default class shopOrder extends wepy.page{
                 <text wx:if="{{item.order_status==19}}" style="margin-bottom:10rpx;" class="muted">用户申请退款请您确认！</text>
             </view>
             <view style="display:flex;justify-content:flex-end;border-top:1px solid #eee;">
-                <view wx:if="{{item.order_status==22}}" class="actionBtn" @tap.stop="refundOrder({{item.actual_price}},{{item.order_sn}},{{refund_desc}},true,{{orderIndex}})">无法接单</view>
-                <view wx:if="{{item.order_status==22}}" class="actionBtn" @tap.stop="receOrder({{item.id}},{{orderIndex}})">确认接单</view>
-                <view wx:if="{{item.order_status==32}}" class="actionBtn" @tap.stop="completeOrder({{item.id}},{{orderIndex}})">确认送达</view>
-                <view wx:if="{{item.order_status==19}}" class="actionBtn" @tap.stop="refundOrder({{item.actual_price}},{{item.order_sn}},{{refund_desc}},false,{{orderIndex}})">确认退款</view>
+                <view wx:if="{{item.order_status==22}}" class="actionBtn" catchtap="refundOrder({{item.actual_price}},{{item.order_sn}},'无法接单',true,{{orderIndex}})">无法接单</view>
+                <view wx:if="{{item.order_status==22}}" class="actionBtn" catchtap="receOrder({{item.id}},{{orderIndex}})">确认接单</view>
+                <view wx:if="{{item.order_status==32}}" class="actionBtn" catchtap="completeOrder({{item.id}},{{orderIndex}})">确认送达</view>
+                <view wx:if="{{item.order_status==19}}" class="actionBtn" catchtap="refundOrder({{item.actual_price}},{{item.order_sn}},'无法接单',false,{{orderIndex}})">确认退款</view>
             </view>
         </navigator>
     </block>

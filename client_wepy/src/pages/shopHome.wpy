@@ -122,7 +122,7 @@ export default class shopHome extends wepy.page{
       interval = setInterval(()=>{
         console.log(isEnable);
         if(!isEnable) return;
-        http.get(api.NotifyOrder,{shop_id:this.myShop.id},false).then(res=>{
+        http.get(api.NotifyOrder,{shop_id:this.myShop.id},false,false).then(res=>{
            console.log(res)
           if(res){
            

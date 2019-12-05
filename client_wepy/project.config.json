@@ -1,44 +1,42 @@
 {
-	"description": "A WePY project",
-	"setting": {
-		"urlCheck": true,
-		"es6": false,
-		"postcss": false,
-		"minified": false
-	},
-	"compileType": "miniprogram",
-	"appid": "wx45614c5b70249b8b",
-	"projectname": "client_wepy",
-	"miniprogramRoot": "dist/",
-	"simulatorType": "wechat",
-	"simulatorPluginLibVersion": {},
-	"condition": {
-		"search": {
-			"current": -1,
-			"list": []
-		},
-		"conversation": {
-			"current": -1,
-			"list": []
-		},
-		"plugin": {
-			"current": -1,
-			"list": []
-		},
-		"game": {
-			"list": []
-		},
-		"miniprogram": {
-			"current": 0,
-			"list": [
-				{
-					"id": -1,
-					"name": "pages/product",
-					"pathName": "pages/product",
-					"query": "goods_id=48&group_id=38&shop_id=18",
-					"scene": 1011
-				}
-			]
-		}
-	}
+    "description": "A WePY project",
+    "setting": {
+        "urlCheck": true,
+        "es6": false,
+        "postcss": false,
+        "minified": false
+    },
+    "compileType": "miniprogram",
+    "appid": "wx45614c5b70249b8b",
+    "projectname": "智趣小区",
+    "miniprogramRoot": "dist/",
+    "simulatorType": "wechat",
+    "simulatorPluginLibVersion": {},
+    "condition": {
+        "search": {
+            "current": -1,
+            "list": []
+        },
+        "conversation": {
+            "current": -1,
+            "list": []
+        },
+        "plugin": {
+            "current": -1,
+            "list": []
+        },
+        "game": {
+            "list": []
+        },
+        "miniprogram": {
+            "current": 0,
+            "list": [{
+                "id": -1,
+                "name": "pages/product",
+                "pathName": "pages/product",
+                "query": "goods_id=48&group_id=38&shop_id=18",
+                "scene": 1011
+            }]
+        }
+    }
 }

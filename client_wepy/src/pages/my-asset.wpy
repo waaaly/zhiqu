@@ -1,148 +1,679 @@
 <template>
-<view class="stv-container">
-  <view class="tab-bar">
-    <view wx:for="{{tabs}}" wx:key="unique" data-index=
-    "{{index}}" bindtap="handlerTabTap" class="tab {{activeTab==index?'tab-active':''}}" style="width: {{stv.windowWidth/tabs.length}}px">
-      <text>{{item}}</text>
-    </view>
-    <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
+<view>
+  <view class="swiper-tab">
+    <view class="swiper-tab-list {{currentTab==0? 'on' : ''}}" data-current="0" bindtap="swichTab" data-index="{{index}}">我的积分</view>
+    <view class="swiper-tab-list {{currentTab==1? 'on' : ''}}" data-current="1" bindtap="swichTab" data-index="{{index}}">领券中心</view>
+    <view class="swiper-tab-list {{currentTab==2? 'on' : ''}}" data-current="2" bindtap="swichTab" data-index="{{index}}">我的卡卷</view>
   </view>
-  <view class="scroll-view">
-    <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
-      <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"  class="one-scene">
-        <scroll-view style="height:100%" scroll-y>
-            <image src="{{StaticImgUrl+'noneMsg.png'}}" mode="widtgFix" style="width:100%;height:400px;"/>                  
-        </scroll-view>
+  <swiper current="{{currentTab}}" class="swiper-box" duration="300" style="height:{{winHeight}}px;padding-top: 40px;" bindchange="changeTab">
+    <swiper-item>
+      <view class="rulebtn" bindtap="showRule">
+        <text class="rule-text">积分规则</text>
+        <image class="rule-img" src="{{ossUrl+'rule.png'}}" />
       </view>
-    </view>
-  </view>
-</view>
+      <view class="rule" bindtap="closeRule" hidden="{{!hasRule}}">
+        <view class="rule-box">
+          <view class="rule-title">
+            <view class="line"></view>
+            <view class="rule-title-text">积分获取</view>
+            <view class="line"></view>
+          </view>
+          <view class="rule-content">消费1元可获得1积分，10元10积分，100元100积分，上不封顶，不足1元不计</view>
+          <view class="rule-title" style="margin-top:-196px;">
+            <view class="line"></view>
+            <view class="rule-title-text" >积分兑换</view>
+            <view class="line"></view>
+          </view>
+          <view class="rule-duihuan">积分可用于兑换卡劵，详细兑换规则可在“领券中心”查看</view>
+        </view>
+      </view>
+      <view class="integral-list" >
+        <view class="top">
+          <view class="top-title">当前积分</view>
+          <image src="{{ossUrl+'yuan.png'}}" style="width:90px;height:90px;position:absolute;top:48rpx;left:290rpx;" />
+          <view class="top-num"><text>{{integral.user_points}}</text></view>
+        </view>
+        <view class="bottom">
+          <view class="bottom-title">累计积分：{{integral.user_pay_points}}</view>
+          <view class="bottom-title">累计消费：{{integral.user_get_points}}</view>
+        </view>
+      </view> 
+      <view wx:if="{{integral.user_point_record.length!=0}}" class="recode-list">
+        <view class="recode-title">积分收支明细</view>
+        <scroll-view scroll-y="true" class="recode-box">
+          <view wx:for="{{integral.user_point_record}}" wx:for-item="pointItem" class="recode-item">
+            <view class="item-left">
+              <view class="action">{{pointItem.action}}</view>
+              <view class="add_time">{{pointItem.add_time}}</view>
+            </view>
+            <view class="item-right">
+              <view wx:if="{{pointItem.type=='获得'}}" class="type_add">+</view>
+              <view wx:else class="type_sub">-</view>
+              <view class="point" style="{{pointItem.type=='获得'?'color:#108ee9':'color:#eb3c2b'}}">{{pointItem.points}}</view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>  
+      <view wx:else class='no-point'>暂无收支记录～</view>
+    </swiper-item>
 
+    <swiper-item>
+      <view wx:if="{{cardList==''}}" style="justify-content:center;margin-top:30%;display:flex;color:#ff6b5d;">暂无可兑换的卡券~</view>
+        <view wx:else>
+          <view class="card" wx:for="{{cardList}}" wx:for-item="item">
+                <view class="content">
+                  <view class="left">
+                    <view class="title" style="margin-bottom:10rpx;">
+                      {{item.name}}                   
+                    </view>
+                    <view class="limit-num">最大可持有数:{{item.limit_num}}张</view>        
+                    <view class="time" >
+                      领取时间:{{item.use_start_date}} ~ {{item.use_end_date}}
+                    </view>
+                    <view class="time" >
+                      使用期限:{{item.use_start_date}} ~ {{item.use_end_date}}
+                    </view>
+                    <view class="gap-top"></view>
+                    <view class="gap-bottom"></view>
+                  </view>
+                  <view class="right">
+                    <view class="ticket">
+                      <view class="unit">消耗</view>
+                      <view class="num">
+                        {{item.pay_points}}
+                      </view>
+                      <view class="unit">积分</view>
+                    </view>
+                    <view class="criteria">
+                      满{{item.min_amount}}可用
+                    </view>
+                    <view class="use" bindtap="exChange({{item}},{{index}})">兑换</view>
+                  </view>
+                </view>
+            </view>
+        </view>
+    </swiper-item>
+
+    <swiper-item>
+      <view wx:if="{{couponList==''}}" style="justify-content:center;margin-top:30%;display:flex;color:#ff6b5d;">
+        {{isUse==1?'暂无可使用的卡卷呢~':'暂无已拥有的卡卷~'}}</view>
+      <view wx:else>
+        <view class="card-list" wx:for="{{couponList}}" wx:for-item="row" wx:for-index="couponIndex" 
+             data-index="{{couponIndex}}">
+            <view class="card">
+              <view class="content">
+                <view class="left" style="padding:0rpx;justify-content: space-around;align-items: center;">
+                  <view class="title">
+                    {{row.name}}
+                  </view>
+                  <view class="time" >
+                    使用期限:{{row.start_time}} ~ {{row.end_time}}
+                  </view>
+                  <view class="gap-top"></view>
+                  <view class="gap-bottom"></view>
+                  <view class="gap-top" style="right:-210rpx;"></view>
+                  <view class="gap-bottom" style="right:-210rpx;"></view>
+                </view>
+                <view class="right">
+                  <view class="ticket">
+                    <view class="unit_yuan">抵扣</view>
+                    <view class="num">
+                      {{row.type_money}}
+                    </view>
+                    <view class="unit_yuan">元</view>
+                  </view>
+                  <view class="criteria">
+                    满{{row.min_amount}}可用
+                  </view>
+                  <view wx:if="{{isUse==1}}">
+                    <view wx:if="{{curCouponId == couponIndex}}" class="use" >正在使用</view>
+                    <view wx:else class="use" bindtap="useCoupon({{couponIndex}})">可使用</view>
+                  </view>
+                  <view wx:else>
+                    <navigator class="use" url="/pages/index" open-type="switchTab">去使用</navigator>
+                  </view>
+                </view>
+              </view>
+            </view>
+        </view>
+        <view  wx:if="{{isUse==1}}" class="clear-coupon" catchtap="clearCoupon">不使用优惠券，直接返回</view>
+      </view>
+    </swiper-item>
+  </swiper>
+</view>
 </template>
 
 <script>
 import wepy from "wepy";
-export default class myOrder extends wepy.page{
+import http from '../utils/Http';
+import api from '../utils/API'
+export default class myAsset extends wepy.page{
   data = {
-    StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
-    stv: {
-      windowWidth: 0,
-      lineWidth: 0,
-      offset: 0,
-      tStart: false
-    },
-    activeTab: 0,
-    tabs:['我的积分','我的卡券'],
+    ossUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/',
+    winHeight: 0,
+    winWidth: 0,
+    currentTab: null,
+
+    isUse: null,
+    order_price:0,//订单金额
+    curCouponId:null,//当前我使用优惠券的id
+    hasRule: false,
+    cardList:[], //领卷中心
+    integral:[], //我的积分
+    couponList: [], //我的卡卷
   }
+  
   onLoad(e){
-    try {
-          var res = wx.getSystemInfoSync()
-          this.windowWidth = res.windowWidth;
-          this.data.stv.lineWidth = this.windowWidth / this.data.tabs.length;
-          this.data.stv.windowWidth = res.windowWidth;
-          this.$apply();
-        } catch (e) {
+      var that = this;
+      wx.getSystemInfo({
+        success: function(res){
+          that.winWidth = res.windowWidth,
+          that.winHeight = res.windowHeight,
+          that.$apply();
         }
-      //切换顶部tabs
-      this._updateSelectedPage(e.id);
+      })
       //修改页面标题
       wx.setNavigationBarTitle({
         title:'我的资产'
       })
+      //切换tab
+      that.currentTab = (e.id);
+      if(e.isUse){
+        that.isUse = e.isUse;
+      }
+      if(e.order_price){
+        that.order_price = e.order_price;
+      }
+      that.accessInterface(e.id);
+    
+  }
+  onShow(){
+    if(this.isUse){
+      this.curCouponId = wx.getStorageSync('useCoupon').coupon_id;
+      this.$apply();
+    }
+  }
+  accessInterface(tab){
+    const tab_int = parseInt(tab);
+    switch(tab_int){
+        //获取积分
+      case 0:
+          http.get(api.UserPoints,{user_id:wx.getStorageSync('userInfoInServer').id},true).then(res =>{      
+            this.integral = res;
+            this.$apply();
+          })
+        break;
+      case 1:
+        //获取可领取的优惠劵
+        http.get(api.CouponCenter,{},true).then(res =>{
+          this.cardList = res;
+          this.$apply();
+        })
+        break;
+      case 2:
+        if(this.isUse){
+          //获取可用卡券
+          http.get(api.ChooseCoupon,{user_id:wx.getStorageSync('userInfoInServer').id,
+          order_total_price:this.order_price},true).then(res =>{
+            this.couponList = res;
+            this.$apply();
+          })
+        }else{
+          //获取我的卡卷
+          http.get(api.UserCouponList,{user_id:wx.getStorageSync('userInfoInServer').id},true).then(res =>{
+            this.couponList = res;
+            this.$apply();
+          })
+        }       
+        break;
+      default:break;
+    }
   }
   methods = {
-      handlerTabTap(e) {
-          this._updateSelectedPage(e.currentTarget.dataset.index);
+      // 滑动切换tab
+      changeTab: function(e){
+        this.currentTab = e.detail.current;
+        this.accessInterface(e.detail.current);
+        this.$apply();
       },
-  }
-  _updateSelectedPage(page) {
-      let {tabs, stv, activeTab} = this.data;
+      // 点击tab进行切换
+      swichTab: function(e){
+        var that = this;
+        if(this.data.currentTab === e.currentTarget.dataset.current){
+          return false;    
+        }else{
+          that.currentTab = e.currentTarget.dataset.current;
+          that.accessInterface(e.currentTarget.dataset.current);
+          that.$apply();
+        }
+      },      
       
-      this.activeTab = page;
-      this.stv.offset = stv.windowWidth*page;
+      //控制积分规则
+      showRule(e){
+        this.hasRule = true;
+        this.$apply();
+      },
+      closeRule(e){
+        this.hasRule = false;
+        this.$apply();
+      },
+      
+      //兑换卡卷
+      exChange: function(item,index){
+        http.post(api.GetCoupon,{
+          user_id: wx.getStorageSync('userInfoInServer').id,
+          coupon_id: this.cardList[index].id,
+        },true).then(res =>{      
+          if(res.msg){
+            wx.showModal({
+              title: '领券提示',
+              content: res.msg,
+              showCancel:false,
+            })
+          }else{
+            wx.showToast({
+              icon:'none',
+              title: res.msg,
+            })
+          }
+        })
+      },
+
+      //当从订单页跳转过来使用
+      useCoupon: function(index){
+        var that = this;
+        wx.showModal({
+          title: '提示',
+          content: '确定使用此张卡券吗?',
+          success: function(res){
+            if(res.confirm){
+              wx.setStorageSync('useCoupon',that.couponList[index]);
+              wx.navigateBack({});        
+            }
+          }
+        })     
+      },
+      //放弃使用优惠券
+      clearCoupon(e){
+        if(this.curCouponId!=null){
+          wx.showModal({
+            title:'放弃使用',
+            content:'您确定放弃当前正在使用的卡券吗？',
+            success:(res=>{
+              if(res.confirm){
+                wx.removeStorageSync('useCoupon');
+                this.curCouponId = null;
+                this.$apply();
+                wx.navigateBack({});
+              }
+            })
+          })
+        }else{
+          wx.navigateBack({});
+        }
+      }
   }
+
+      
+
 }
 </script>
 
-<style>
-.stv-container {
+<style lang='scss'>
+page{
+  background-color: #fafafa;
+}
+.swiper-tab{
+  width: 100%;
+  background-color: #fff;
+  text-align: center;
+  line-height: 80rpx;
+  max-height: 80rpx;
+  display: flex;
   position: fixed;
+  z-index:10;
+}
+.swiper-tab-list{
+  font-size: 30rpx;
+  display: inline-block;
+  width: 50%;
+  color: #777777;
+}
+.on{
+  color: #ff6b5d;
+  border-bottom: 5rpx solid #ff6b5d;
+}
+
+.rule{
+  position: fixed;
+  z-index: 80;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 20rpx;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(7, 17, 27, 0.8);
+  backdrop-filter: blur(20rpx);
 }
-.withAnimate {
-  transition: all 100ms ease;
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
-  -ms-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  backface-visibility: hidden;
-  -webkit-perspective: 1000;
-  -moz-perspective: 1000;
-  -ms-perspective: 1000;
-  perspective: 1000;
-}
-.stv-container .tab-bar {
-  background-color: #fff;
-  position: relative;
+.rule-box{
+  width: 100%;
+  min-height: 100%;
   display: flex;
-  font-size: 30rpx;
-  color: #666666;
+  flex-wrap: wrap;
 }
-.stv-container .tab-bar .tab-active {
-  color: #ff6b5d;
-  border-bottom: 6rpx solid #ff6b5d;
+.rule-title{
+  color: coral;
+  font-size: 32rpx;
+  line-height: 1.5;
+  overflow: hidden;
+  display: flex;
+  padding: 0;
+  height: 68rpx;
+  width: 610rpx;
+  margin: 56rpx auto 48rpx;
+  position: relative;
 }
-.stv-container .tab-bar .tab {
+.line{
+  flex: 1;
+  position: relative;
+  top: -12rpx;
+  border-bottom: 2rpx solid hsla(0, 0%, 100%, 0.2);
+}
+.rule-title-text{
+  padding: 0 24rpx;
+  font-weight: 700;
+  margin-top: 13px;
+}
+.rule-content{
+  position: absolute;
+  top: 12%;
+  text-align: center;
+  color: white;
+  line-height: 30px;
+  padding: 0 40rpx;
+  font-size: 28rpx;
+}
+.rule-duihuan{
+  position: absolute;
+  top: 32%;
+  text-align: center;
+  color: white;
+  line-height: 30px;
+  padding: 0 40rpx;
+  font-size: 28rpx;
+}
+
+.rulebtn{
+  display: flex;
+  position:fixed;
+  z-index: 10;
+  background-color: #bbb;
+  opacity: 0.7;
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+  align-items: center;
+  left: 600rpx;
+  top: 30rpx;
+  width: 20%;
+  height: 33rpx;
+}
+.rule-text{
+  color: #ffedeb;
+  font-size: 25rpx;
+  margin-left: 7px;
+}
+.rule-img{
+  width: 25rpx;
+  height: 25rpx;
+  margin-left: 2px;
+}
+.integral-list{
+  width: 100%;
+  height: 340rpx;
+  background-color: #eb3c2b;
+  flex-direction: column;
+  position: relative;
+}
+.top{
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+  width: 100%
+}
+.top-title{
+  margin-top: 13rpx;
+  font-size: 34rpx;
+  color: #ffedeb;
+  z-index: 10;
+}
+.top-num{
+  font-size: 50rpx;
+  color: white;
+  z-index: 10;
+  padding-top: 5rpx;
+}
+.no-point{
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 16rpx;
-  padding-bottom: 20rpx;
+  color:#ff6b5d;
 }
-.stv-container .tab-bar .under-line {
+.recode-list{
+  .recode-title{
+    font-size: 34rpx;
+    widows: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1rpx solid #eee;
+    padding:20rpx 0rpx;
+    color:#ff6b5d;
+  }
+  .recode-box{
+    height:780rpx;
+    .recode-item{
+      padding:10rpx 20rpx;
+      display: flex;
+      align-items: center;
+      border-bottom:1rpx #eee solid;
+      .item-left{
+        display: flex;
+        flex-direction: column;
+        flex:1;
+        .action{
+          color:#262626;
+          font-size: 30rpx;
+        }
+        .add_time{
+          margin-top:10rpx;
+          font-size: 26rpx;
+          color:#999;
+        }
+      }
+      .item-right{
+        display: flex;
+        align-items: center;
+        .type_add{
+          font-size: 60rpx;
+          color:#108ee9;
+        }
+        .type_sub{
+          font-size: 60rpx;
+          color:#eb3c2b;
+        }
+        .point{
+          font-size: 50rpx;
+        }
+      }
+    }
+  }
+}
+.middel-num{
+  font-size: 34rpx;
+  color: #ffedeb;
+  margin-top: 135rpx;
+  /* border-bottom: 1px solid white; */
+}
+.bottom{
+  flex-wrap: nowrap;
   position: absolute;
-  bottom: 0;
-  height: 6rpx;
-  background-color: #ff6b5d;
-}
-.stv-container .scroll-view {
-  position: relative;
+  top: 280rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
   width: 100%;
-  height: 100%;
-  background: #f4f4f4;
 }
-.stv-container .scroll-view .scroll-view-wrapper {
-  position: absolute;
-  top: 0;
-  bottom: 30px;
-  display: flex;
+.bottom-title{
+  font-size: 30rpx;
+  color: #ffedeb;
 }
-.stv-container .scroll-view .scroll-view-wrapper .one-scene {
-  height: 100%;
-}
-.one-scene text {
-  display: flex;
+.exchange{
+  padding-top: 5rpx;
   justify-content: center;
-  /* padding-top: 200rpx; */
+  background-color: #a09e11;
+  height: 55rpx;
+  font-size: 36rpx;
+  color: #e5cfcf;
+  font-weight: 555;
 }
 
-.emptynone {
-  font-size:32rpx;
-  text-align:center;
-  color:#999;
-  margin-top:250rpx;
-  width:100%;
-  padding-top:250rpx;
-  background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQoAAAEKAgMAAACXpfNaAAAAA3NCSVQICAjb4U/gAAAADFBMVEX///8AAAAAAAAAAAD4jAJNAAAABHRSTlMAESIzthWI6wAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNui8sowAAAPiSURBVHic7ZxNdtQwDMdjeH5ddMEq5yFH6KI5B1fhRnAUjsCCBQvANJOmkw9Lf0nz75Ap8aLvdUb+WZY9/pTcNGpK/VN61GX0lPsphRH9LD2ECKlfpEiFVogQZI0IVGdhyxyCtKdMnfi/IW27hb+jVDIkZ21yrczkqk2qqy18XE+t0LmzXZEkitoVaUVJmV4RlL7LRkVarQltimhqWBXJek8yjUdACBRhkzEo0iKRDK2asKrQqhlrCkUMTYdUTZYu1OrlGKoChWwjlSplqgqoTLb9KpNWGeugq8ip/HlS9DVWRS2sNc8fsu3t04dYWrLPHqJodkyFkkFax7wuyXpWboLODnOIwh5zSEp7zCFJ+xayVa1d5hDEfeaoq+0zR13eu66v6O00RzWD1xw1xbPTHINB8CcobUv1by3SuvZuk1aybKCGtGb4Tbo1od+k23Iju7V1/QmMiEnXBUdMujYigxFplnXJsaOFpRUJjFizLItOIZM+mXHGiDXLsilizbIsuw2ZdGmD6KnRvC2CzTLPGG3aeQWiTTs3ZLRp5w2aw0do55xq9/hUPmuMbmIoTfuulJ/yt2dLat3jrpTfGmNqUa1p70v5I3/7klXtHh9KKRrjcWJ0YcZkSrV7IMbLaaAiBBiZyFBHD8CYbPnqDNA/JoY6egDGlJnA0EcgxBgNsReGPoohxph7Nwx1kkOMdGLoky1mdFdh3JkY+mSrj+tT9jfEAAsHyBia5G0xVBHIGH5uYBGEGf3NMN6X8us6DH2tDhlDu4I9g4HRHYzXYOj7H8hodsQAezl973FiPByMg3EwxpQ4jB8H4x8wwHhqYMAx+bYY+lwJGYb5lsFoSvn+XzHA2tLAwAefiGFYJ++G8aV8u5jxsXyFDLAXa+7V7f64Z4gfjI/JsK+8KUb8wmJMhnOH22JEL5LGZDmXuh4DDWSIMfyN3+Ccc++FcdkPxnKefD0G6OzqvZjtnB+t158zqx0VnCkx7z0Y9y97uY9i3K0x7vgYd42MO0/K3SvjDphxF824E2fczTN8BBi+CgyfCYrvBsOHhOHLwvCpYfj2MHyM9uIvRfH92osfG8Mnby/+hRRfSYbPJsN3lOHDyvClpfj0MnyLGT7ODF9rhs83xfec4QPP8MVnxARQYhMYMRKMWA1GzAgldoURQ8OI5WHEFFFimxgxVoxYL0bMGSX2jRGDx4gFpMQkMmIjGTGalFhRRswqI3aWEsPLiCWmxDQzYqsZMd6UWHNGzLsiKdNrope+AUB5i+CkyEba9yYC5W2GhvFGBOOtCsqbGZS3OxrGGyJrSPCY5bKKPCfC2y6NsVv8BU5kqDEIDlCOAAAAAElFTkSuQmCC) no-repeat 50% 0;
-  background-size:200rpx 200rpx;
 
-}
-
+.card-list{
+		width:100%;
+	}
+.card{
+		width:92%;
+		height: 24vw;
+		margin: 20rpx auto 20rpx auto;
+		border-radius: 8rpx;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+		align-items: center;
+		position: relative;
+		overflow: hidden;
+		z-index: 4;
+		border: 0;
+	}
+	.content{
+		background-color: #fff;
+		position: absolute;
+    display: flex;
+		width: 100%;
+		padding: 0 0;
+		height: 100%;
+		z-index: 3;
+    -webkit-flex-wrap: nowrap;
+    -ms-flex-wrap: nowrap;
+		flex-wrap: nowrap;
+	}
+	.left{
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px dashed #bbb;
+    padding: 10rpx;
+	}
+	.title{
+		font-size: 36rpx;
+    color:#ff6b5d; 
+	}
+  .limit-num{
+    font-size:26rpx;
+    color:#999;
+  }
+	.time{
+		font-size: 26rpx;
+		color:#999;
+	}
+	.gap-top,.gap-bottom{
+		position: absolute;
+		width: 30rpx;
+		height: 30rpx;
+		right: -15rpx;
+    top: 167rpx;
+		border-radius: 100%;
+		background-color: #fff;
+	}
+	.gap-top{
+		top: -15rpx;
+	}
+	.gap-bottom{
+		bottom: -10rpx;
+	}
+	.right{
+    width: 28%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10rpx 0rpx;
+    align-items: center;
+    color: #fff;
+    background: linear-gradient(to right, #ec625c, #ee827f);
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center; 
+    margin-left:2px;  
+  }
+  .ticket{
+    padding-top: 1vw;
+    justify-content: center;
+    align-items: center;
+    height: 6vw;
+    display: flex;
+  }
+  .num{
+    font-size: 42rpx;
+    font-weight: 600;
+  }
+  .unit{
+    font-size:20rpx;
+  }
+  .unit_yuan{
+    font-size: 24rpx;
+    margin-top: 5rpx;
+  }
+  .criteria{
+    width: 100%;
+    display: flex;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 28rpx;
+    margin:10rpx 0;
+  }
+  .use{
+    height: 40rpx;
+    display: flex;
+		flex-wrap: wrap;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    font-size: 24rpx;
+    background-color: #fff;
+    color: #ee827f;
+    border-radius: 40rpx;
+    padding: 0 10rpx;
+  }
+  .clear-coupon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10% 20%;
+    background-color:  #ec625c;
+    color: #fff;
+    padding: 20rpx 0rpx;
+    border-radius: 5px;
+  }
 </style>
 

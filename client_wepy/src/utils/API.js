@@ -73,4 +73,11 @@ module.exports = {
     UserCollect: ApiRootUrl + 'user-collect', //用户提交申请资料
     UserCollectResult: ApiRootUrl + 'user-collect-result', //用户查看申请结果
 
+    /**我的资产相关接口 **/
+    UserPoints: ApiRootUrl + "user-points", //我的积分
+    CouponCenter: ApiRootUrl + "coupon-center", //优惠劵中心
+    UserCouponList: ApiRootUrl + "user-coupon-list", //我的卡卷
+    GetCoupon: ApiRootUrl + "get-coupon", //兑换卡卷
+    ChooseCoupon: ApiRootUrl + "choose-coupon", //筛选可用卡券
+
 }

@@ -94,33 +94,32 @@ export default class my extends wepy.page{
         shop_name:'',
         shop_id:'',
         userRole:0,//用户身份：0消费者，1：商家
-        order: {
+        order: {         
             text: '我的订单',
-                tabs: ['全部订单', '待付款', '待收货', '已完成'],
-                touch:true,
-                icon: StaticImgUrl + '我的订单/hear.png',
-                tips: '全部订单',
-                items: [
-                    { text: '待付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'我的订单/待付款.png' },
-                    // { text: '待送货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待审核.png' },
-                    { text: '待收货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待收货.png' },
-                    { text: '已完成', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
-                ]
+            tabs: ['全部订单', '待付款', '待收货', '已送达','已完成'],
+            touch:true,
+            icon: StaticImgUrl + '我的订单/hear.png',
+            tips: '全部订单',
+            items: [
+                { text: '待付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'我的订单/待付款.png' },
+                { text: '待收货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待收货.png' },
+                { text: '已送达', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
+                { text: '已完成', url: '/pages/my-order?id=4', icon: StaticImgUrl +'我的订单/已完成.png' },
+            ]
         },
         userInfoInServer: {},
         menuItems: {
-            order: {
-                
+           order: {         
                 text: '我的订单',
-                tabs: ['全部订单', '待付款', '待收货', '已完成'],
+                tabs: ['全部订单', '待付款', '待收货', '已送达','已完成'],
                 touch:true,
                 icon: StaticImgUrl + '我的订单/hear.png',
                 tips: '全部订单',
                 items: [
                     { text: '待付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'我的订单/待付款.png' },
-                    // { text: '待送货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待审核.png' },
                     { text: '待收货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待收货.png' },
-                    { text: '已完成', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
+                    { text: '已送达', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
+                    { text: '已完成', url: '/pages/my-order?id=4', icon: StaticImgUrl +'我的订单/已完成.png' },
                 ]
             },
             funcs: {
@@ -139,14 +138,14 @@ export default class my extends wepy.page{
             property: {
                 
                 text: '我的资产',
-                tabs: ['我的积分', '我的卡券'],
+                tabs: ['我的积分','领券中心', '我的卡券'],
                 touch:true,
                 icon: StaticImgUrl +'我的资产/hear.png',
                 tips: '所有资产',
                 items: [
                     { text: '我的积分', url: '/pages/my-asset?id=0', icon: StaticImgUrl +'我的资产/我的积分.png' },
-                    // { text: '信用体系', url: '/pages/my-asset?id=1', icon: StaticImgUrl +'wodezuji.png' },
-                    { text: '我的卡券', url: '/pages/my-asset?id=1', icon: StaticImgUrl +'我的资产/我的卡券.png' },
+                    { text: '领券中心', url: '/pages/my-asset?id=1', icon: StaticImgUrl +'我的资产/领券中心.png' },
+                    { text: '我的卡券', url: '/pages/my-asset?id=2', icon: StaticImgUrl +'我的资产/我的卡券.png' },
                 ]
             },
             setting: {
@@ -288,7 +287,10 @@ export default class my extends wepy.page{
                             showCancel: false,
                             confirmText: "知道了",
                             confirmColor: "#ff6b5d",
-                            content: "V0.0.0.0",
+                            content: this.$parent.globalData.version,
+                            fail:(err=>{
+                                console.log(err)
+                            })
                         })
                         break;
                 }
@@ -442,18 +444,19 @@ color: transparent;
 
 .orderItem::after{
     content: "";
-    position:absolute;
-    top:25%;
-    left:80px;
-    width:2px ;
-    height:50%;
+    position: absolute;
+    top: 5%;
+    left: 60px;
+    width: 1px;
+    height: 50%;
     background-color:#eee;
 }
 
-.orderItem:last-child{
+.orderItem:last-child::after{
     border: none;
     outline: medium;
     border-radius: 0;
+    background-color:#fff;
 }
 
 .myShop{

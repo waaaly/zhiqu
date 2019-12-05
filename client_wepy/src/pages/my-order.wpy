@@ -53,8 +53,8 @@ export default class myOrder extends wepy.page{
     totalNum:1,//总页数
     activeTab: 0,
     orderStatus:10,//订单状态码
-    tabs:['全部订单','待付款','待收货','已完成'],              //order_status 10-待支付 22-支付完成 32-代收货 40-订单完成) 空是全部
-                                                          //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
+    tabs:['全部订单','待付款','待收货','已送达','已完成'],
+    //order_status 10-待支付 22-支付完成 32-待收货 40-订单送达 42-已完成) 0是全部                                                      //10 确认支付 取消订单 22：申请退款 32：确认收货 申请退款 40：前往评价
     OrderList:[],
     stv: {
       windowWidth: 0,
@@ -93,9 +93,16 @@ export default class myOrder extends wepy.page{
       getParam['statusTab'] = 32;
       this.refresh(getParam);
     }
+    //已送达
     else if(this.activeTab == 3){
       this.orderStatus = 40;
       getParam['statusTab'] = 40;
+      this.refresh(getParam);
+    } 
+    //已完成
+    else if(this.activeTab == 4){
+      this.orderStatus = 42;
+      getParam['statusTab'] = 42;
       this.refresh(getParam);
     } 
   }
@@ -156,10 +163,17 @@ export default class myOrder extends wepy.page{
               break;
             }  
               
-            case 3://订单完成，待评价
+            case 3://订单送达，待评价
             {
               this.orderStatus = 40;
               getParam['statusTab'] = 40;
+              this.refresh(getParam);
+              break;
+            } 
+            case 4://订单完成，
+            {
+              this.orderStatus = 42;
+              getParam['statusTab'] = 42;
               this.refresh(getParam);
               break;
             } 
