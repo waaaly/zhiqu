@@ -133,11 +133,23 @@ export default class orderCheck extends wepy.page{
             if(this.coupon_id==0){
               this.integral = parseInt(res.cartListInfo.TotalPrice);
             }else{
-              this.integral = parseInt(res.cartListInfo.TotalPrice - this.coupon);
+              this.integral = parseInt(res.cartListInfo.TotalPrice) - parseInt(this.coupon*-1);
             }         
             this.init = true;  
             this.$apply();        
         })
+    }
+    onUnload(){
+
+      //离开页面前把优惠券清除
+      if(wx.getStorageSync('useCoupon')){
+        try {
+            wx.removeStorageSync('useCoupon')
+          } catch (err) {
+            console.log(err);
+            console.log(wx.getStorageSync('useCoupon'));
+          }
+      }
     }
     methods = {
       //修改收货地址
@@ -181,7 +193,7 @@ export default class orderCheck extends wepy.page{
       //前往选择优惠券
       goCoupon(){
         wx.navigateTo({
-            url: `/pages/my-asset?id=2&isUse=1&order_price=${this.totalPrice}`,
+            url: `/pages/my-asset?id=2&isUse=1&order_price=${this.totalPrice}&shopId=${this.shopInfo.id}`,
         })
       }
     }
@@ -397,11 +409,11 @@ color:#fff;
 }
 
 .order_info .block .jf_color {
-  color: #108ee9;
+  color: #ff6b5d;
 }
 .order_info .block .total_jf {
   font-size: 32rpx;
-  color: #108ee9;
+  color: #ff6b5d;
 }
 
 .list_box {

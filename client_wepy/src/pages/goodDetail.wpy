@@ -40,7 +40,7 @@
 
     <!-- 规格-模态层弹窗 -->
 		<view 	class="popup {{specClass}}" >			
-			<view class="mask"></view>
+			<view class="mask"  @tap="toggleSpec"></view>
 			<view class="layer attr-content">
 				<view class="a-t">
 					<image src="{{imageUrl+goodInfo.primary_pic_url}}"/>
@@ -62,9 +62,9 @@
 				<view class="numberBox">
 					<view>数量</view>
 					<view class="numberRight"> 
-						<text @tap.stop="numberDown" class="yticon icon--jianhao"></text>
+						<text catchtap="numberDown" class="yticon icon--jianhao"></text>
 						<text class="number">{{number}}</text>
-						<text @tap.stop="numberUp" class="yticon icon-jia1"></text>
+						<text catchtap="numberUp" class="yticon icon-jia1"></text>
 					</view>
 				</view>
 				<view wx:for="{{specInfo}}"  wx:for-item='item'  wx:for-index='index' class="attr-list">
@@ -73,12 +73,12 @@
 						<text 
 							wx:for="{{item.items}}"  wx:for-item='childItem' wx:for-index='childIndex'
 							class="tit {{specSelected[index][childIndex]==childItem.sp_item_name?'selected':''}}"					
-							@tap.stop="selectSpec({{index}},{{childIndex}},{{childItem.sp_item_name}})"><!--规格值-->
+							catchtap="selectSpec({{index}},{{childIndex}},{{childItem.sp_item_name}})"><!--规格值-->
 							{{childItem.sp_item_name}}
 						</text>
 					</view>
 				</view>
-				<button class="btn" @tap="toggleSpec">完成</button>
+				<button class="btn" @tap="specAdd">加入购物车</button>
 			</view>
 		</view>
 
@@ -86,26 +86,26 @@
         <view class="swiper-tab-item" data-current="0" bindtap="swichNav">商品概述</view>
     </view>
     <!-- <rich-text nodes="{{goodInfo.html}}"></rich-text> -->
-    <view > 
+    <view style="display: flex;flex-direction: column;"> 
       <image wx:for="{{goodInfo.details_pic_url}}" style="width:100%;" src="{{imageUrl + item}}" mode="widthFix"/>
     </view>
     <!-- 商品底部导航栏 -->
     <!-- 底部操作菜单 -->
 		<view class="page-bottom">
 			<navigator url="/pages/index" open-type="switchTab" class="p-b-btn">
-          <image style="height:22px;width:22px;" src="/images/icons/index.png"/>				
+          <image style="height:22px;width:22px;" src="{{ossUrl+'index.png'}}"/>				
           <text>首页</text>
 			</navigator>
 			<view @tap='Collection'  class="p-b-btn">
-          <image style="height:22px;width:22px;" src="/images/icons/shoucang.png"/>
+          <image style="height:22px;width:22px;" src="{{ossUrl+'shoucang.png'}}"/>
 				  <text>收藏</text>
 			</view>
 			 <button  style="display: flex;flex-direction: column;font-size: 24rpx;padding-top: 10px;align-items: center;" open-type="share" role="button">
-          <image style="height:22px;width:22px;" src="../images/icons/share.png"/>
+          <image style="height:22px;width:22px;" src="{{ossUrl+'share.png'}}"/>
 				  <text style="color:#606266;margin-top:-15rpx;">分享</text>
 			</button> 
 			<view class="action-btn-group">
-				  <button @tap='addcart' type="primary" class=" action-btn no-border buy-now-btn" >加入购物车</button>
+				  <button @tap='addCart' type="primary" class=" action-btn no-border buy-now-btn" >加入购物车</button>
 				  <button @tap='toCart' type="primary" class=" action-btn no-border add-cart-btn">前往购物车</button>
 			</view>
 		</view>
@@ -125,6 +125,7 @@ export default class goodDetail extends wepy.page{
     components = {
     }
     data = {
+				ossUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/',
         swiper_H:0,
         swiper_W:0,
         buttonTop:415,//上边界
@@ -159,34 +160,35 @@ export default class goodDetail extends wepy.page{
         this.windowHeight = systemInfo.windowHeight;
         
         var spValue = new Object;
-        http.get(api.GoodsDetail,{gid:good.goodId,shop_id:good.shopId}).then(res=>{
-            console.log(res)
-            this.goodInfo = res.shopGoods;
-            this.shopInfo = res.shopInfo;              
-            this.$apply();
-            if(res.shopGoods.specInfo.length != 0){
-              this.specInfo = res.shopGoods.specInfo;//获取商品规格
-              this.specSelected = new Object();
-              //默认选择规格的首项 按键值进行访问
-              for(let index in res.shopGoods.specInfo){												//规格名列表
-                for(let childIndex in res.shopGoods.specInfo[index].items){		//规格值列表
-                  //index:规格名数组下标 childIndex：规格值键值
-                  spValue = {};
-                  spValue[childIndex] = res.shopGoods.specInfo[index].items[childIndex].sp_item_name;//存储规格名
-                  this.specSelected[index]=spValue;
-                  break;
-                }
-              }
-               //根据默认规格获取产品id
-              this.submitSpec(this.goodInfo.id);
-            }else{
-              this.specInfo = [];
-            }
-         
+	http.get(api.GoodsDetail,{gid:good.goodId,shop_id:good.shopId,
+		user_id:wx.getStorageSync('userInfoInServer')?wx.getStorageSync('userInfoInServer').id:null},true).then(res=>{
+		this.goodInfo = res.shopGoods;
+		this.shopInfo = res.shopInfo;              
+		this.$apply();
+		if(res.shopGoods.specInfo.length != 0){
+		this.specInfo = res.shopGoods.specInfo;//获取商品规格
+		this.specSelected = new Object();
+		//默认选择规格的首项 按键值进行访问
+		for(let index in res.shopGoods.specInfo){												//规格名列表
+			for(let childIndex in res.shopGoods.specInfo[index].items){		//规格值列表
+			//index:规格名数组下标 childIndex：规格值键值
+			spValue = {};
+			spValue[childIndex] = res.shopGoods.specInfo[index].items[childIndex].sp_item_name;//存储规格名
+			this.specSelected[index]=spValue;
+			break;
+			}
+		}
+		//根据默认规格获取产品id
+		this.submitSpec(this.goodInfo.id);
+		}else{
+		this.specInfo = [];
+		}         
         })     
     }
+	/**
+	 * 	//获取当前选中规格 规格名id 规格值
+	 */
 
-	//获取当前选中规格 规格名id 规格值
 	getCurSpecId(){
 		var specNameStr = '';
 		var specValueStr = '';
@@ -207,32 +209,78 @@ export default class goodDetail extends wepy.page{
     }
 		var spec = {
 			spec_ids:specNameStr.slice(0,specNameStr.length-1),//规格名id
-			spec_item_ids:specValueStr.slice(0,specValueStr.length-1)//规格值id
+		    	spec_item_ids:specValueStr.slice(0,specValueStr.length-1)//规格值id
 		}
 		return spec;
 	}
+	/**
+	 * 	//将规格提交到后台
+	 */
 
-	//将规格提交到后台
 	submitSpec(goods_id){
     //获取规格id
 
     var spec = this.getCurSpecId();
-    console.log(goods_id)
-    console.log(spec)
-    //console.log(this.shopInfo)
+//     console.log(goods_id)
+//     console.log(spec)
+//     console.log(this.shopInfo)
 		http.get(api.GroupProduct,{
-              shop_id: this.shopInfo.id,
-							goods_id:goods_id,
-							spec_ids:spec.spec_ids,
-							spec_item_ids:spec.spec_item_ids}).then(res=>{
-        console.log(res);
-        this.product_id = res.product_id;
-        this.goodInfo.goods_number = res.stock;
-        this.goodInfo.retail_price = res.price;
-        this.$apply();
+			shop_id: this.shopInfo.id,
+			goods_id:goods_id,
+			spec_ids:spec.spec_ids,
+			spec_item_ids:spec.spec_item_ids},true,false).then(res=>{
+			this.product_id = res.product_id;
+			this.goodInfo.goods_number = res.stock;
+			this.goodInfo.retail_price = res.price;
+			this.$apply();
 		})
 	}
-		//设置分享副标题、路径
+	/**
+	 * 	//规格弹窗开关
+	 */
+
+	$toggleSpec() {
+		if(this.specClass === 'show'){
+			this.specClass = 'hide';
+			this.submitSpec(this.goodInfo.id);
+			setTimeout(() => {
+				this.specClass = 'none';
+			}, 250);
+		}else if(this.specClass === 'none'){
+			this.specClass = 'show';
+		}
+	}
+
+	/**
+	 * 加入购物车
+	 */
+	$addCart(e){
+      new Promise((resolve,reject)=>{
+          http.post(api.CartAdd,{
+              product_id:this.product_id,
+              goods_id:this.goodInfo.id,   
+              shop_id:this.shopInfo.id,  
+              number:this.number,
+              type:1,//平台购买
+              user_id:wx.getStorageSync('userInfoInServer').id,
+          },true,false).then(res =>{
+              if(res.msg){
+                wx.showToast({
+                  title: res.msg,
+                  icon: 'none'
+                })
+              }else{
+                  wx.showToast({
+                  title: '添加成功！',
+                })
+              }              
+          })
+      })
+    }
+	/**
+	 * 		//设置分享副标题、路径
+	 */
+
 	onShareAppMessage (res) {
 		var goods_id = this.goodInfo.id;
 		var shop_id = this.shopInfo.id;
@@ -241,23 +289,21 @@ export default class goodDetail extends wepy.page{
 			path:`/pages/goodDetail?goodId=${goods_id}&shopId=${shop_id}`,
     }
   }
-    methods = {
+  methods = {
       imgLoaded(e){
           if(this.swiper_H == 0){
             this.swiper_H = e.detail.height * (this.swiper_W/e.detail.width) +20;
           }
       },
-      //规格弹窗开关
-		toggleSpec() {
-			if(this.specClass === 'show'){
-        this.specClass = 'hide';
-        this.submitSpec(this.goodInfo.id);
-				setTimeout(() => {
-					this.specClass = 'none';
-				}, 250);
-			}else if(this.specClass === 'none'){
-				this.specClass = 'show';
-			}
+		 //规格视窗
+		 toggleSpec(){
+			 this.$toggleSpec();
+		 }, 
+		 
+		//选完规格直接加入购物车
+		specAdd(){
+			this.$toggleSpec();
+			this.$addCart();
 		},
 		//选择规格 规格名键值，规格值键值，规格值
 		selectSpec(spNameIndex,spValueIndex, spValue){
@@ -301,30 +347,9 @@ export default class goodDetail extends wepy.page{
           })
       }) 
     },
-    addcart(e){
-      new Promise((resolve,reject)=>{
-          http.post(api.CartAdd,{
-              product_id:this.product_id,
-              goods_id:this.goodInfo.id,   
-              shop_id:this.shopInfo.id,  
-              number:this.number,
-              type:1,//平台购买
-              user_id:wx.getStorageSync('userInfoInServer').id,
-          },true).then(res =>{
-              console.log(res)
-              if(res.msg){
-                wx.showToast({
-                  title: res.msg,
-                  icon: 'none'
-                })
-              }else{
-                  wx.showToast({
-                  title: '添加成功！',
-                })
-              }              
-          })
-      })
-    },
+    addCart(){
+			this.$addCart();
+		},
     toCart(e){
       wepy.reLaunch({
         url: '/pages/cart',

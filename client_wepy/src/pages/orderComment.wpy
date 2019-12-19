@@ -395,13 +395,14 @@ export default class orderComment extends wepy.page{
                     grade: this.wjxScore,
                     list_pic_url: this.picUrl,
           }).then(res=>{
+            console.log(res)
             if(res.msg =="评论成功"){
               wx.showToast({
                 title:'评价成功',
               })
-              wx.navigateBack({
-
-              })
+              setTimeout(() => {
+                wx.navigateBack({})
+              },1000);         
             }
           })
         },
@@ -462,7 +463,7 @@ export default class orderComment extends wepy.page{
  <!--textarea-->
  <view class="conts">
      <textarea class="areas" placeholder="留下你的评论，最少五个字，谢谢哟~~" minlength="{{min}}" maxlength="{{max}}" bindinput="inputs"> 
-     <text class="currentWordNumber">{{currentWordNumber|0}}/{{max}}</text>
+     <text class="currentWordNumber">{{textarea.length}}/{{max}}</text>
      <text class="hint" style="margin-top:30px;">{{texts}}</text>
      </textarea>
  </view>

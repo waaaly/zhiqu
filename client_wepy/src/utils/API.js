@@ -79,5 +79,5 @@ module.exports = {
     UserCouponList: ApiRootUrl + "user-coupon-list", //我的卡卷
     GetCoupon: ApiRootUrl + "get-coupon", //兑换卡卷
     ChooseCoupon: ApiRootUrl + "choose-coupon", //筛选可用卡券
-
+    FeedbackHandle: ApiRootUrl + "feedback-handle", //用户反馈
 }

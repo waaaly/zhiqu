@@ -337,13 +337,7 @@ export default class Index extends wepy.page{
     onTapTag(e){
       console.log(e);
       this.selectedSort = e.currentTarget.dataset.index;
-    },
-    scan(e){
-      wx.navigateTo({
-        url: '/pages/scan',
-      })
-    },
-    
+    },   
 
   }
 }

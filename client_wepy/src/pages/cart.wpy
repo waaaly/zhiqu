@@ -509,7 +509,7 @@ export default class Cart extends wepy.page{
         number:number,
         shop_id:shopId,
         user_id:wx.getStorageSync('userInfoInServer').id
-      }).then(res=>{
+      },true).then(res=>{
         console.log(res);
         if(res.code == 201){
           wx.showModal({
@@ -537,7 +537,7 @@ export default class Cart extends wepy.page{
       
       http.post(api.CartChechedAll,{shop_id:currentShop.id,
       user_id:wx.getStorageSync('userInfoInServer').id,
-      checked_all:currentShop.shopChecked}).then(res=>{
+      checked_all:currentShop.shopChecked},false,false).then(res=>{
         console.log(res)
         this.allList = res;   
         this.$apply() ;  
@@ -574,7 +574,7 @@ export default class Cart extends wepy.page{
           goods_id: goods_id,
           id: id,
           user_id:wx.getStorageSync('userInfoInServer').id,
-          checked: checked}).then(res=>{
+          checked: checked},true,true).then(res=>{
             console.log(res);
             this.allList = res;
             this.$apply();
@@ -618,7 +618,7 @@ export default class Cart extends wepy.page{
             http.post(api.CartDelete,{
               id: currentGood.id,
               user_id:wx.getStorageSync('userInfoInServer').id
-            }).then(res=>{
+            },false,false).then(res=>{
               // console.log(res);
               that.allList = res;
               that.$apply();
@@ -639,7 +639,7 @@ export default class Cart extends wepy.page{
               http.post(api.CartDelete,{
                 id: e.id,
                 user_id:wx.getStorageSync('userInfoInServer').id
-              }).then(res=>{
+              },false,false).then(res=>{
                 that.allList = res;
                 that.$apply();
               })

@@ -19,6 +19,7 @@
                 <view class="sell ">月销{{item.sell_volume}}</view> 
             </view>              
         </view>
+        <image class="shoukong" wx:if="{{item.stock_total_num==0}}" src="{{oosUrl+'shoukong.png'}}"/>
      </view> 
     </block>
     <!-- 收藏商品 -->
@@ -33,12 +34,13 @@
                 <image style="border-radius:20rpx;width:30%;height:{{image_H}}px;" mode="widthFix" src="{{imageUrl+item.primary_pic_url}}"/>             
                 <view @tap.stop="lowerShelf({{item}})" 
                     style="{{item.is_on_sale==0?'opacity:0.8;z-index:10;':''}}" 
-                    class="lower-shelf">
+                    class="lower-shelf">s
                     <view class= "text-box">已下架</view>
                 </view>
                 <view style="margin-left:5%;width:70%;">
                     <view class="itemName">{{item.goods_name}}
                         <view  class="shoucang" @tap.stop="delInCollect({{item}})">
+                            <image style="width:25px;height:25px;" src="{{StaticImgUrl+'delInCar.jpg'}} " mode='widthFix'/>
                         </view>
                     </view>
                     <view class="goodText">
@@ -49,6 +51,7 @@
                         <view class="sell ">月销{{item.sell_volume}}</view> 
                     </view>              
                 </view>
+                <image class="shoukong" wx:if="{{item.stock_total_num==0}}" src="{{oosUrl+'shoukong.png'}}"/>
             </view> 
         </view>
     </block>
@@ -194,6 +197,7 @@ export default class classifyGood extends wepy.component{
             for(let item of shoper.shop_goods_list){             
                 goodItem["good_id"]         = item.id;
                 goodItem['sell_volume']     = item.sell_volume;
+                goodItem["stock_total_num"] = item.stock_total_num;
                 goodItem["primary_pic_url"] = item.primary_pic_url;          
                 goodItem["goods_name"]      = item.goods_name;
                 goodItem["goods_desc"]      = item.goods_desc;
@@ -221,6 +225,7 @@ export default class classifyGood extends wepy.component{
                 for(let goodIndex in List[shopIndex]){
                     good["is_on_sale"]      = List[shopIndex][goodIndex].is_on_sale;
                     good['sell_volume']     = List[shopIndex][goodIndex].sell_volume;
+                    good['stock_total_num'] = List[shopIndex][goodIndex].stock_total_num;
                     good["collectId"]       = List[shopIndex][goodIndex].collectionId;
                     good["good_id"]         = List[shopIndex][goodIndex].id;
                     good["primary_pic_url"] = List[shopIndex][goodIndex].primary_pic_url;          
@@ -371,5 +376,12 @@ export default class classifyGood extends wepy.component{
     font-size:50rpx;
     text-align: center;
   }
+}
+.shoukong{
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    z-index:10;
+    top:0rpx;
 }
 </style>

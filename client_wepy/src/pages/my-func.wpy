@@ -1,4 +1,306 @@
 
+
+<script>
+import wepy from "wepy";
+import http from '../utils/Base';
+import api from '../utils/API';
+import classifyGood from '../components/classifyGood';
+const uploadFile = require("../utils/Upload.js");
+export default class myFunc extends wepy.page {
+  components = {
+    classifyGood:classifyGood,
+  }
+  data = {
+    init:false,
+    ossUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/',
+    stv: {
+      windowWidth: 0,
+      lineWidth: 0,
+      offset: 0,
+      tStart: false
+    },
+    activeTab: 0,
+    tabs:['我的收藏','我的地址','意见反馈'],
+    CollectList:null,//
+    userAddress:[],//地址列表
+    opinionList://意见列表
+    [
+        { value: '功能异常：功能故障或不可用', checked: false },
+        { value: '产品建议：用的不爽，我有建议', checked: false },
+        { value: '安全问题：密码，隐私、欺诈等', checked: false },
+        { value: '其他问题意见', checked: false }
+    ],
+    problemStr:'',
+    opinionTextarea:"",//用户输入的反馈信息
+    textareaNum:0,//用户当前输入的字符
+    uploadTime:null,//反馈的时间
+    imgArr: [],//用户选择上传的图片
+    chooseViewShow: true,//是否可以添加图片
+  }
+  onLoad(e){
+    this.ossUrl=this.$parent.globalData.ossUrl;
+    try {
+        var res = wx.getSystemInfoSync();
+        this.windowWidth = res.windowWidth;
+        this.data.stv.lineWidth = this.windowWidth / this.data.tabs.length;
+        this.data.stv.windowWidth = res.windowWidth;
+        this.$apply();
+      } catch (e) {
+      }
+    //切换顶部tabs
+    this._updateSelectedPage(e.id);
+    //修改页面标题
+    wx.setNavigationBarTitle({
+      title:'常用功能'
+    })    
+  }
+  onShow(){
+    http.get(api.AddressList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{     
+        // console.log(res);
+        this.userAddress = res;
+        this.$apply();  
+      })
+      
+    http.get(api.CollectList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{ 
+        console.log(res);  
+        if(res.length != 0){
+            let shop = []; 
+            let good = [];
+            for(let index in res){
+              let item = res[index];
+              shop.push(item.shopInfo.shop_name);
+              good.push(item.goodsInfo);
+            }
+            //插入商家信息
+            for(let i = 0;i<good.length;i++){
+              good[i]['collectionId'] = res[i].collectionId;
+              good[i]['shop_name']=res[i].shopInfo.shop_name;
+              good[i]['shop_id']=res[i].shopInfo.id;
+              good[i]['shop_icon']=res[i].shopInfo.shop_icon;
+            }
+            //去重复
+            for(var i=0; i<shop.length; i++){
+                for(var j=i+1; j<shop.length; j++){
+                    if(shop[i]==shop[j]){         //第一个等同于第二个，splice方法删除第二个
+                        shop.splice(j,1);
+                        j--;
+                    }
+                }
+            }
+            
+            var collectList={};//最终要构造的对象
+            var tempObj={};//第二层的对象
+            
+            for(let i=0;i<shop.length;i++){
+              for(let j=0;j<good.length;j++){
+                if(good[j].shop_name == shop[i]){
+                  tempObj[j] = good[j];
+                }           
+              }
+              collectList[shop[i]]= tempObj;
+              tempObj = {};
+            }
+            this.$broadcast('collectGoodList', collectList); 
+            this.init = true;
+            this.CollectList = collectList;
+        }else{
+            this.init = true;
+            this.CollectList = null;
+        } 
+        this.$apply();  
+      })
+  }
+  _updateSelectedPage(page) {
+    let {tabs, stv, activeTab} = this.data; 
+    this.activeTab = page;
+    this.stv.offset = stv.windowWidth*page;
+  }
+  //上传图片
+  uploadImage(imgPathList){
+    var userId = wx.getStorageSync('userInfoInServer').id;
+    var perfix = 'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/front/' + userId +'/';
+    var img_oss_url = [];
+    for(let item of imgPathList){
+      uploadFile(item,userId);//上传图片到oss
+
+      if(item.indexOf('http://tmp')!=-1){
+        img_oss_url.push(item.replace('http://tmp/', perfix));//模拟器
+      }else{
+        img_oss_url.push(item.replace('wxfile://tmp_', perfix));//真机
+      }
+    }
+    return img_oss_url;
+  }
+  //提交接口
+  feedback(opinionImgOssList){
+    http.post(api.FeedbackHandle,{
+        user_id:wx.getStorageSync('userInfoInServer').id,
+        msg_content:this.opinionTextarea,
+        problem:this.problemStr,
+        message_img:opinionImgOssList,
+      },true).then(res=>{
+        if(res.code == 200){
+          wx.showToast({title:res.message});     
+          setTimeout(()=>{
+            wx.navigateBack({});
+          },1000)
+        }else{
+          wx.showModal({
+            title:'提交失败',
+            showCancel:false,
+            content:res.message,
+          })
+        }
+      })
+  }
+  
+  methods = {
+    gotoAddress(e){
+      wx.navigateTo({
+        url: '/pages/addressAdd',
+      })
+    },
+    //修改地址
+    editAddress:function(e){
+      var currentAddress = e.currentTarget.dataset.item;
+      wx.navigateTo({
+        url: '/pages/addressAdd?address='+
+          JSON.stringify(currentAddress) + '&title=编辑地址',
+      })
+    },
+    delAddress:function(e){
+      var currentAddress = e.currentTarget.dataset.item;
+      var that =this;
+      wx.showModal({
+        title: '提示',
+        content: "确定删除该地址吗？",
+        cancelText: "下次再说",
+        confirmText: "确定删除",
+        confirmColor: "#ff6b5d",
+        success: function (e) {
+          if (e.cancel) {
+            //点击取消,默认隐藏弹框
+          } else {
+            http.post(api.AddressDelete,{id:currentAddress.id,user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{
+                console.log(res)
+                that.onShow();
+                wx.showToast({
+                  title: '删除成功！',
+                  duration: 500
+                })
+            })
+          }
+        }
+      })
+    },
+    setDefaultAddress:function(e){
+      var currentAddress = e.currentTarget.dataset.item;
+      var that = this;
+      wx.showModal({
+        title: '提示',
+        content: "确定将当前地址设为默认地址？",
+        cancelText: "下次再说",
+        confirmText: "确定",
+        confirmColor: "#ff6b5d",
+        success: function (e) {
+          if (e.cancel) {
+            //点击取消,默认隐藏弹框
+          } else {
+            if (currentAddress.is_default){
+              wx.showModal({
+                title: '提示',
+                content: '当前项为默认地址！',
+                showCancel:false,
+                confirmText:'知道了',
+                confirmColor: "#ff6b5d",
+              })
+              return;
+            }else{
+              http.post(api.AddressSetDefault,{id:currentAddress.id}).then(res=>{  
+                  wx.showToast({
+                    title: "设置成功",
+                    duration: 1000
+                  })
+                  currentAddress.is_default = 1;
+                  wx.setStorageSync('userDefaultAddress', currentAddress);
+                  that.onShow();
+              })
+            }
+          }
+        }
+      })
+    },
+    //切换顶部tab
+    handlerTabTap(e) {
+        this._updateSelectedPage(e.currentTarget.dataset.index);
+    },
+    //反馈分类
+    checkboxChange(e){
+      this.problemStr = e.detail.value;
+      this.$apply();
+    },
+    //反馈内容文本
+    getInput(e){
+      this.opinionTextarea = e.detail.value;
+      this.textareaNum = e.detail.value.length;
+      this.$apply();
+    },
+    //选择图片
+    chooseImage: function(){
+			wx.chooseImage({
+				count: 4-this.imgArr.length, 
+				sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+		    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+				success: (res=>{
+          this.imgArr = this.imgArr.concat(res.tempFilePaths);//连接两个或多个数组 
+					this.imgArr.length==4?this.chooseViewShow=0:this.chooseViewShow=1;
+					this.$apply();
+        })
+			})
+    },
+    //预览图片
+    showImage(index){
+      wx.previewImage({
+				//当前显示图片
+				current: this.imgArr[index],
+				//全部图片
+				urls: this.imgArr
+			})
+    },
+    //删除图片
+    deleteImg(index){
+      this.imgArr.splice(index,1);
+      this.$apply();
+    },
+    //提交反馈前校验
+    submit(){
+      let tipsStr = '';
+      if(this.problemStr.length==0){
+        tipsStr = "反馈的问题点不能为空哟～";
+      }else if(this.opinionTextarea.length==0){
+        tipsStr = "反馈的详细内容不能为空哟～";
+      }else if(this.opinionTextarea.length<15){
+        tipsStr = "反馈的详细内容不能少于15字哟～";
+      }
+
+      if(tipsStr.length!=0){
+        wx.showModal({
+          title:'提交失败',
+          showCancel:false,
+          content:tipsStr,
+        })
+      }else{
+        if(this.imgArr.length!=0){
+          this.feedback(this.uploadImage(this.imgArr));
+        }else{
+          this.feedback('');
+        } 
+      }
+    }
+  } 
+}
+</script>
+
 <style>
 /*隐藏滚动栏*/
 ::-webkit-scrollbar{
@@ -100,6 +402,12 @@ background-size:200rpx 200rpx;
   margin:30rpx auto 0 auto;
 
 }
+.no-address{
+  align-items: center;margin:30rpx 20rpx;display:flex;flex-direction:colunm;justify-content:center;color:#666;
+}
+.scroll-address{
+  display:flex;flex-direction:column;height:90%
+}
 /*地址卡片*/
 .addressCard{
   display: flex;
@@ -162,335 +470,160 @@ color:#fff;
   justify-content:center;
 
 }
-/*选择图片*/
-.chooseView{
-    width: 160rpx;
-    height: 160rpx;
-    background-color: #ffffff;
-    border: 1px solid lightgray;
-    text-align: center;
-    line-height: 180rpx;
-    padding: 0rpx 7rpx;
+.opinion{
+  position:relative; height:100%;
 }
- .upFile{
+.opinion-title{
+  color:#666;font-size:28rpx;padding:20rpx;
+}
+
+.opinion-checkbox{
+  background:#fff;padding:10rpx;font-size:35rpx
+}
+.opinion-checkbox-item{
+  margin-bottom:15rpx;
+}
+
+.opinion-textarea{
+  height:200rpx;background:#fff;font-size:30rpx;padding-left:15rpx;padding-top:10rpx;color:#000;
+}
+
+.opinion-pic{
+  position:relative;padding: 20rpx 20rpx;background-color: #fff;display: flex;flex-wrap: wrap;align-items: center;
+}
+.pic{
     width: 160rpx;
     height:160rpx;
     position: relative;
     padding: 0rpx 7rpx;
+    border-radius: 5px
 }
- .itemImv{
+ .item-img{
     width: 160rpx;
     height: 160rpx;
     padding: 0rpx 7rpx;
     margin-right: 15rpx;
 }
- .closeImv{
+ .delete-img{
     position: absolute;
     right: 0rpx;
     top: 0rpx;
     width: 50rpx;
     height:50rpx;
 }
+.opinion-btn{
+width:80%;margin-top:60rpx;
+}
+/*选择图片*/
+.chooseView{
+    width: 160rpx;
+    height: 160rpx;
+    background-color: #ffffff;
+    text-align: center;
+    line-height: 180rpx;
+    padding: 0rpx 7rpx;
+    border-radius: 5px;
+}
+ 
 </style>
 
-<script>
-import wepy from "wepy";
-import http from '../utils/Base';
-import api from '../utils/API';
-import classifyGood from '../components/classifyGood';
-export default class myFunc extends wepy.page {
-  components = {
-    classifyGood:classifyGood,
-  }
-  data = {
-    init:false,
-    StaticImgUrl: "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/",
-    stv: {
-      windowWidth: 0,
-      lineWidth: 0,
-      offset: 0,
-      tStart: false
-    },
-    activeTab: 0,
-    tabs:['我的收藏','我的地址','意见反馈'],
-    CollectList:null,//
-    userAddress:[],//地址列表
-    yijianList://意见列表
-    [
-        { value: '功能异常：功能故障或不可用', checked: false },
-        { value: '产品建议：用的不爽，我有建议', checked: false },
-        { value: '安全问题：密码，隐私、欺诈等', checked: false },
-        { value: '其他问题意见', checked: false }
-    ],
-    textareaMes:"",//用户输入的反馈信息
-    textareaNum:0,//用户当前输入的字符
-    imgArr: [],//用户选择上传的图片
-    chooseViewShow: true,//是否可以添加图片
-  }
-  onLoad(e){
-    try {
-        var res = wx.getSystemInfoSync();
-        this.windowWidth = res.windowWidth;
-        this.data.stv.lineWidth = this.windowWidth / this.data.tabs.length;
-        this.data.stv.windowWidth = res.windowWidth;
-        this.$apply();
-      } catch (e) {
-      }
-    //切换顶部tabs
-    this._updateSelectedPage(e.id);
-    //修改页面标题
-    wx.setNavigationBarTitle({
-      title:'常用功能'
-    })    
-  }
-  onShow(){
-    http.get(api.AddressList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{     
-        // console.log(res);
-        this.userAddress = res;
-        this.$apply();  
-      })
-      
-    http.get(api.CollectList,{user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{ 
-        console.log(res);  
-        if(res.length != 0){
-            let shop = []; 
-            let good = [];
-            for(let index in res){
-              let item = res[index];
-              shop.push(item.shopInfo.shop_name);
-              good.push(item.goodsInfo);
-            }
-            //插入商家信息
-            for(let i = 0;i<good.length;i++){
-              good[i]['collectionId'] = res[i].collectionId;
-              good[i]['shop_name']=res[i].shopInfo.shop_name;
-              good[i]['shop_id']=res[i].shopInfo.id;
-              good[i]['shop_icon']=res[i].shopInfo.shop_icon;
-            }
-            //去重复
-            for(var i=0; i<shop.length; i++){
-                for(var j=i+1; j<shop.length; j++){
-                    if(shop[i]==shop[j]){         //第一个等同于第二个，splice方法删除第二个
-                        shop.splice(j,1);
-                        j--;
-                    }
-                }
-            }
-            
-            var collectList={};//最终要构造的对象
-            var tempObj={};//第二层的对象
-            
-            for(let i=0;i<shop.length;i++){
-              for(let j=0;j<good.length;j++){
-                if(good[j].shop_name == shop[i]){
-                  tempObj[j] = good[j];
-                }           
-              }
-              collectList[shop[i]]= tempObj;
-              tempObj = {};
-            }
-            this.$broadcast('collectGoodList', collectList); 
-            this.init = true;
-            this.CollectList = collectList;
-        }else{
-            this.init = true;
-            this.CollectList = null;
-        } 
-        this.$apply();  
-      })
-  }
-  _updateSelectedPage(page) {
-    let {tabs, stv, activeTab} = this.data; 
-    this.activeTab = page;
-    this.stv.offset = stv.windowWidth*page;
-  }
-  methods = {
-    gotoAddress(e){
-      wx.navigateTo({
-        url: '/pages/addressAdd',
-      })
-    },
-    //修改地址
-    editAddress:function(e){
-      var currentAddress = e.currentTarget.dataset.item;
-      wx.navigateTo({
-        url: '/pages/addressAdd?address='+
-          JSON.stringify(currentAddress) + '&title=编辑地址',
-      })
-    },
-    delAddress:function(e){
-      var currentAddress = e.currentTarget.dataset.item;
-      var that = this;
-
-      wx.showModal({
-        title: '提示',
-        content: "确定删除该地址吗？",
-        cancelText: "下次再说",
-        confirmText: "确定删除",
-        confirmColor: "#ff6b5d",
-        success: function (e) {
-          if (e.cancel) {
-            //点击取消,默认隐藏弹框
-          } else {
-            http.post(api.AddressDelete,{id:currentAddress.id,user_id: wx.getStorageSync("userInfoInServer").id}).then(res=>{
-                console.log(res)
-                that.onShow();
-                wx.showToast({
-                  title: '删除成功！',
-                  duration: 500
-                })
-            })
-          }
-        }
-      })
-    },
-    setDefaultAddress:function(e){
-      var currentAddress = e.currentTarget.dataset.item;
-      var that = this;
-
-      wx.showModal({
-        title: '提示',
-        content: "确定将当前地址设为默认地址？",
-        cancelText: "下次再说",
-        confirmText: "确定",
-        confirmColor: "#ff6b5d",
-        success: function (e) {
-          if (e.cancel) {
-            //点击取消,默认隐藏弹框
-          } else {
-            if (currentAddress.is_default){
-              wx.showModal({
-                title: '提示',
-                content: '当前项为默认地址！',
-                showCancel:false,
-                confirmText:'知道了',
-                confirmColor: "#ff6b5d",
-              })
-              return;
-            }else{
-              http.post(api.AddressSetDefault,{id:currentAddress.id}).then(res=>{  
-                  wx.showToast({
-                    title: "设置成功",
-                    duration: 1000
-                  })
-                  currentAddress.is_default = 1;
-                  wx.setStorageSync('userDefaultAddress', currentAddress);
-                  that.onShow();
-              })
-            }
-          }
-        }
-      })
-    },
-    handlerTabTap(e) {
-        // this.init = false;
-        this._updateSelectedPage(e.currentTarget.dataset.index);
-    },
-  } 
-}
-</script>
-
 <template>
-<view class="stv-container">
-  <view class="tab-bar">
-    <view wx:for="{{tabs}}" wx:key="unique" data-index=
-    "{{index}}" bindtap="handlerTabTap" class="tab {{activeTab==index?'tab-active':''}}" style="width: {{stv.windowWidth/tabs.length}}px">
-      <text>{{item}}</text>
+  <view class="stv-container">
+    <view class="tab-bar">
+      <view wx:for="{{tabs}}" wx:key="unique" data-index=
+      "{{index}}" bindtap="handlerTabTap" class="tab {{activeTab==index?'tab-active':''}}" style="width: {{stv.windowWidth/tabs.length}}px">
+        <text>{{item}}</text>
+      </view>
+      <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
     </view>
-    <view style="width: {{stv.lineWidth}}px; left: {{stv.offset/tabs.length}}px" class="under-line {{!stv.tStart? 'withAnimate': ''}}"></view>
-  </view>
-  <view class="scroll-view">
-    <view bindtouchstart="handlerStart" catchtouchmove="handlerMove" bindtouchcancel="handlerCancel" bindtouchend="handlerEnd"  class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
-      <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}" wx:for-item="item" class="one-scene">
-        <scroll-view style="height:100%" scroll-y>
-          <view wx:if="{{item=='我的收藏'}}">
-            <view wx:if="{{CollectList==null&&init}}" >
-                <image style="width:100%;"  mode="widthFix" src="{{StaticImgUrl+'noneCollect.png'}}"/>
-                <navigator open-type="switchTab" 
-                          class='goindex' 
-                          url="/pages/index">去发现更多好货~
-                </navigator>
-            </view>
-            <view wx:else>
-                <classifyGood></classifyGood>
-            </view>
-          </view>
-          <view wx:if="{{item=='意见反馈'}}"  style='position:relative; height:100%;'>
-            <view style="color:#666;font-size:28rpx">（必选）请选择您想反馈的问题点</view>
-            <view style='background:#fff;padding:10rpx;font-size:35rpx'>
-                <checkbox-group bindchange="checkboxChange">
-                <label style='margin-bottom:15rpx;' wx:for="{{yijianList}}">
-                  <view style='margin-bottom:15rpx;'>
-                  <checkbox value="{{item.value}}" 
-                            checked="{{item.checked}}"/>{{item.value}}</view>
-                </label>
-                </checkbox-group>
-            </view>
-            <view style='padding:20rpx;font-size:30rpx;'>请补充详细问题和意见（{{textareaNum}}/250）
-            </view>
-              <view style='height:200rpx;background:#fff;font-size:30rpx;padding-left:15rpx;padding-top:10rpx;color:#000;'>
-              <textarea style='height:200rpx' maxlength="250" placeholder="请用不少于15个字描述您的意见吧，程序员小哥会努力去修复哦～" value="{{fankuixiangqing}}" bindinput="getInput"/>
-              </view>
-            <view style="color:#666;font-size:28rpx">（可选）请提供相关问题的截图或照片（{{imgArr.length}}/4）</view>
-            <view style='position:relative;padding: 20rpx 20rpx;background-color: #fff;display: flex;flex-wrap: wrap;align-items: center;'>
-           
-              <!--显示已经选择的图片-->
-              <view wx:for="{{imgArr}}" wx:key="key">
-                <view class="upFile" bindtap="showImage" style="border-radius: 5px" data-id="{{index}}">
-                    <image class="itemImv" src="{{item}}"></image>
-                    <image class="closeImv" src="https://raw.githubusercontent.com/dt8888/moreImgaes/master/pages/images/delect.png" mode="scaleToFill" catchtap="deleteImv"  data-id="{{index}}"></image>
-                </view>
-              </view>
-               <!--添加图片按钮-->
-              <view class="chooseView" bindtap="chooseImage" style="border-radius: 5px" wx:if="{{chooseViewShow}}">
-                <image class="chooseImv" style="width:50rpx;height:50rpx;" 
-                        src="https://raw.githubusercontent.com/dt8888/moreImgaes/master/pages/images/add.png"/>
-              </view>
-            </view>
-            <button bindtap="submit" type="primary" style='width:80%;position:absulote;bottom:-50rpx;margin-top:80rpx;background-color:#ff6b5d;'>提交</button>
-          </view>
 
-          <view wx:if="{{item=='我的地址'}}">
-            <view wx:if="{{userAddress.length==0}}" style='align-items: center;margin:30rpx 20rpx;display:flex;flex-direction:colunm;justify-content:center;color:#666;' >
-              <text >当前没有默认地址
-              去添加一个详细的收货地址
-              让小趣更好的服务你吧～</text>
-            </view>
-            <scroll-view  scroll-y wx:else style="display:flex;flex-direction:column;height:90%">      
-                <view  wx:for="{{userAddress}}">
-                  <view class='addressCard'>
-                    <view style="margin-left:12rpx;color:blue;font-size:28rpx;color:#ff6b5d" wx:if="{{item.is_default}}">[默认地址]</view>
-                    <view style='margin-left:15rpx;display:flex;flex-direction:row'>
-                      <view style='display: flex;flex-direction: column;width:75%;border-right: 2rpx solid #eee;'>
-                        <view style="display:flex;justify-content:space-between;padding-right:10rpx;">
-                          <text>{{item.name}}</text>
-                          <text style='color:#ff6b5d;font-size:30rpx;'>{{item.area_name}}</text>
-                        </view>
-                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.mobile}}</view>
-                        <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.full_region}} {{item.area_name}} {{item.address}}</view>   
-                      </view>
-                    <view class="addressDel">
-                      <view data-item="{{item}}" 
-                            bindtap='delAddress'
-                            style='color:red;'>删除</view>
-                      <view data-item="{{item}}" 
-                            bindtap='editAddress'>修改</view>
-                      <view data-item="{{item}}" 
-                            bindtap='setDefaultAddress'>设为默认</view>
-                      </view> 
-                    </view>                                 
+    <view class="scroll-view">
+      <view class="scroll-view-wrapper {{!stv.tStart? 'withAnimate': ''}}" style="left: -{{stv.offset}}px">
+          <view style="width: {{stv.windowWidth}}px;" wx:for="{{tabs}}"   wx:for-item="item" class="one-scene">
+              <scroll-view style="height:100%" scroll-y>
+                <view wx:if="{{item=='我的收藏'}}">
+                  <view wx:if="{{CollectList==null&&init}}" >
+                      <image style="width:100%;"  mode="widthFix" src="{{ossUrl+'noneCollect.png'}}"/>
+                      <navigator open-type="switchTab" 
+                                class='goindex' 
+                                url="/pages/index">去发现更多好货~
+                      </navigator>
+                  </view>
+                  <view wx:else>
+                      <classifyGood></classifyGood>
                   </view>
                 </view>
-            </scroll-view>  
-            <!-- <view class="add_wrap">
-              <view class="button type_red" style="position:" bindtap="gotoAddress">新增地址</view>
-            </view> -->
-            <view class="addBotton" style="{{userAddress.length==0?'opacity:1':'opacity:0.6'}}" bindtap="gotoAddress">+</view>
-          <view>
-        </scroll-view>
+
+                <view wx:if="{{item=='意见反馈'}}"  class='opinion'>
+                      <view class="opinion-title">（必选）请选择您想反馈的问题点</view>
+                      <view class='opinion-checkbox'>
+                          <radio-group bindchange="checkboxChange">
+                          <label class='margin-bottom:15rpx;' wx:for="{{opinionList}}">
+                            <view class='opinion-checkbox-item'>
+                            <checkbox value="{{item.value}}" 
+                                      checked="{{item.checked}}"/>{{item.value}}</view>
+                          </label>
+                          </radio-group>
+                      </view>
+                      <view class="opinion-title">请补充详细问题和意见（{{textareaNum}}/250）
+                      </view>
+                        <view class='opinion-textarea'>
+                        <textarea  maxlength="250" placeholder="请用不少于15个字描述您的意见吧，程序员小哥会努力去修复哦～" value="{{opinionTextarea}}" bindinput="getInput"/>
+                        </view>
+                      <view  class="opinion-title">（可选）请提供相关问题的截图或照片（{{imgArr.length}}/4）</view>
+                      <view class='opinion-pic'>
+                        <view wx:for="{{imgArr}}" wx:key="key">
+                          <view class="pic" bindtap="showImage(index)" >
+                              <image class="item-img" src="{{item}}"/>
+                              <image class="delete-img" src="{{ossUrl+'delete.png'}}" mode="scaleToFill" catchtap="deleteImg(index)" />
+                          </view>
+                        </view>
+                        <!--添加图片按钮-->
+                        <view class="chooseView" bindtap="chooseImage"  wx:if="{{chooseViewShow}}">
+                          <image  style="width:150rpx;height:150rpx;" 
+                                  src="{{ossUrl+'addPic.jpg'}}"/>
+                        </view>
+                      </view>
+                      <button bindtap="submit" type="primary" class='opinion-btn'>提交</button>
+                </view>
+
+                <view wx:if="{{item=='我的地址'}}">
+                  <view wx:if="{{userAddress.length==0}}" class="no-addres" >
+                    <text >当前没有任何地址信息呢～</text>
+                  </view>
+                  <scroll-view  scroll-y wx:else class="scroll-address">      
+                      <view  wx:for="{{userAddress}}">
+                        <view class='addressCard'>
+                          <view style="margin-left:12rpx;color:blue;font-size:28rpx;color:#ff6b5d" wx:if="{{item.is_default}}">[默认地址]</view>
+                          <view style='margin-left:15rpx;display:flex;flex-direction:row'>
+                            <view style='display: flex;flex-direction: column;width:75%;border-right: 2rpx solid #eee;'>
+                              <view style="display:flex;justify-content:space-between;padding-right:10rpx;">
+                                <text>{{item.name}}</text>
+                                <text style='color:#ff6b5d;font-size:30rpx;'>{{item.area_name}}</text>
+                              </view>
+                              <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.mobile}}</view>
+                              <view style="margin-left:50rpx;font-size:30rpx;margin-right:10rpx;">{{item.tabs_name}} {{item.area_name}} {{item.address}}</view>   
+                            </view>
+                          <view class="addressDel">
+                            <view data-item="{{item}}" 
+                                  bindtap='delAddress'
+                                  style='color:red;'>删除</view>
+                            <view data-item="{{item}}" 
+                                  bindtap='editAddress'>修改</view>
+                            <view data-item="{{item}}" 
+                                  bindtap='setDefaultAddress'>设为默认</view>
+                            </view> 
+                          </view>                                 
+                        </view>
+                      </view>
+                  </scroll-view>  
+                  <view class="addBotton" style="{{userAddress.length==0?'opacity:1':'opacity:0.6'}}" bindtap="gotoAddress">+</view>
+                <view>
+              </scroll-view>
+          </view>
       </view>
     </view>
   </view>
-</view>
 </template>
+
 

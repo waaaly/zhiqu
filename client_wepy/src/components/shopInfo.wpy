@@ -35,9 +35,9 @@
         </view>
         
         <view class=" bulletin">
-          <view class=" title border-1px">公告与活动</view>
+          <view class=" title border-1px">商家公告</view>
           <view class=" content-wrapper border-1px">
-            <view class=" content">目前暂无相关公告</view>
+            <view class=" content">{{shopInfo.shop_summary}}</view>
           </view>
           <view wx:if="{{seller.supports}}" class=" supports">
             <view class="support-item border-1px" wx:key="item.index" key="{{item.index}}" wx:for="{{seller.supports}}" wx:for-index="index" wx:for-item="item">
@@ -47,7 +47,7 @@
           </view>
         </view>
        
-        <view class=" pics">
+        <!-- <view class=" pics">
           <view class=" title border-1px">商家实景</view>
           <view class=" pic-wrapper" ref="picWrapper">
             <scroll-view scroll-x class="_scroll-view ">
@@ -58,18 +58,22 @@
               </view>
             </scroll-view>
           </view>
-        </view>
+        </view> -->
         
         <view class=" info">
-          <view class=" title border-1px">商家信息</view>
-          <view class="">
-            <view class="info-item" >商家地址：{{shopInfo.shop_address}}</view>
-            <view class="info-item" @tap="tel({{shopInfo.phone}})">联系方式：{{shopInfo.phone}}</view>
-            <view class="shopQR" @tap="previewQR">
-              <text>商家微信：</text>
-              <image src="{{imageUrl+shopInfo.code_pic}}"/>
+          <view class=" title border-1px" style="color: #07111b;">商家信息</view>
+          <view class="">   
+            <view class="shopQR" bindtap="previewQR({{shopInfo.qrcode}})">
+              <text>商家码：</text>
+              <image src="{{shopInfo.qrcode}}"/>
             </view>
+            <view class="shopQR" bindtap="previewQR({{shopInfo.code_pic}})">
+              <text>商家微信：</text>
+              <image src="{{shopInfo.code_pic}}"/>
+            </view>
+            <view class="info-item" bindtap="tel({{shopInfo.phone}})">联系方式：{{shopInfo.phone}}</view>
             <view class="info-item" >营业时间：{{shopInfo.business_start_time}}-{{shopInfo.business_end_time}}</view>
+            <view class="info-item" >商家地址：{{shopInfo.shop_address}}</view>       
           </view>
         </view>
       </view>
@@ -104,8 +108,7 @@ export default class shopInfo extends wepy.component{
         })
       },
 		//预览二维码
-		  previewQR(e){
-        var url = this.imageUrl + this.shopInfo.code_pic;
+		  previewQR(url){
         wx.previewImage({
           current: url, // 当前显示图片的http链接
           urls: [url] // 需要预览的图片http链接列表
@@ -147,7 +150,7 @@ export default class shopInfo extends wepy.component{
 }
 .seller {
   position: absolute;
-  top: 24%;
+  top: 25%;
   bottom: 0;
   left: 0;
   width: 100%;

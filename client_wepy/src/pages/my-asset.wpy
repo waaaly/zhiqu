@@ -430,7 +430,7 @@ page{
 .integral-list{
   width: 100%;
   height: 340rpx;
-  background-color: #eb3c2b;
+  background-color:#ff6b5d;
   flex-direction: column;
   position: relative;
 }
@@ -454,7 +454,7 @@ page{
 }
 .no-point{
   width: 100%;
-  height: 100%;
+  height: 50%;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -42,10 +42,21 @@ export default class Shoper extends wepy.page {
         shopComment:shopComment,
         shopInfo:shopInfo,  
     }
-    onLoad(e){
-        console.log(e)
+    onLoad(query){
+        console.log(query);
+        let shopId = null;
+        //扫码进入
+        if(query.scene){
+            //shop_id=31
+            let scene =  decodeURIComponent(query.scene);
+            let sceneArr = scene.split('=');//得到数组[shop_id,31]
+            shopId = sceneArr[1];
+        }else{
+            shopId = query.shop_id;
+        }
         //获取商品
-        http.get(api.ShopDetail,{shop_id:e.shop_id}).then(res =>{
+        http.get(api.ShopDetail,{shop_id:query.shop_id,
+            user_id:wx.getStorageSync('userInfoInServer')?wx.getStorageSync('userInfoInServer').id:null}).then(res =>{
             console.log(res);   
             this.shopInfo = res.shop_info;
             this.$broadcast('shoperGoodList', res);    

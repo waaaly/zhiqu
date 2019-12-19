@@ -262,9 +262,9 @@ export default class orderUserDetail extends wepy.page{
         <view class="info-box " style="width:100%;">
             <view class="user">
                 <view>联系人：{{order.consignee}}</view>
-                <view class="phone">
-                    <!-- <image src="/images/icons/call.png"/> @tap="tel(order.mobile)" -->
-                    <text>{{order.mobile}}</text>
+                <view catchtap="tel({{order.mobile}})" class="phone">
+                    <image src="/images/icons/call.png"/> 
+                    <text style="color:#ff6200;"  >{{order.mobile}}</text>
                 </view>
             </view>
             <view>地址：{{order.address}} </view>
@@ -278,11 +278,11 @@ export default class orderUserDetail extends wepy.page{
         <text >{{order.order_status_text}}</text>
     </view>
 
-    <view class="shop-info" @tap="goShoper">
+    <view class="shop-info" bindtap="goShoper">
         <image class="shop-icon" src="{{imageUrl+shopInfo.shop_icon}}"/>
         <view class="shop-name">{{shopInfo.shop_name}}</view>
         <image src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
-        <view class="callShoper"  @tap.stop="tel(shopInfo.bind_phone)">
+        <view class="callShoper"  catchtap="tel({{shopInfo.bind_phone}})">
             <image src="/images/icons/call.png"/> 
             <text>{{shopInfo.bind_phone}}</text>
         </view>

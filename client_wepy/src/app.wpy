@@ -104,11 +104,13 @@ export default class extends wepy.app {
 
   globalData = {
     userInfo: null,
-    version:'V0.2.0',
+    version:'V0.2.1',
     /**
      * V0.2.0
      * 1、新增我的资产、版本管理器，订单状态；2、移除扫一扫、商家购物车组件;
      * 3、修复团购下单
+     * V0.2.1
+     * 1、根据错误文档进行修复许多bug；
      */
   }
 

@@ -92,8 +92,8 @@
   <!--暂无团购-->
 <view wx:if="{{noInfo}}">
   <view class='shadow'>
-    <image src='../../images/icons/noTuan.jpg' mode='FixWidth'/>
-    <view class="tips" wx:if='{{!isShoper}}'>
+    <image src='https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/noTuanGou.png' mode='FixWidth'/>
+    <view class="tips" >
       <text>当前没有任何团购信息呢~</text>
     </view>
   </view>

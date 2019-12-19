@@ -212,7 +212,7 @@ export default class addressAdd extends wepy.page{
             })
             return false;
             }
-            var myreg = /^(((13[0-9]{1})|(14[0-9]{1})|(15[0-9]{1})|(19[0-9]{1})|(18[0-9]{1})|(17[0-9]{1}))+\d{8})$/;
+            var myreg = /^((1[0-9]{2})+\d{8})$/ ;
             if (!myreg.test(mobile)) {
             wx.showModal({
                 title: '手机号格式有误！',

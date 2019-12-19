@@ -28,38 +28,38 @@
                 <image style="border-radius:50%;height:60px;width:60px;" src="{{userInfoInServer.avatar}}"/>
             </view>
             <view bindtap="goMyShop" class="shopIcon">
-                <image style="width:50rpx;height:50rpx;" src="../images/icons/shop.png"/>
+                <image style="width:50rpx;height:50rpx;" src="{{ossUrl+'shop.png'}}"/>
                 <view wx:if="{{haveOrder}}" class="newOrderTip">
-                    <image style="width:28rpx;height:28rpx;" src="../images/icons/playing.png"/>
+                    <image style="width:28rpx;height:28rpx;" src="{{ossUrl+'playing.png'}}"/>
                     <text>来咯，来咯，新单它来咯～</text>
                 </view>              
             </view>
             <text style="margin:10px;color:#fff;">{{userInfoInServer.name}}</text>
         </view>    
         <view style="position: absolute;top: 10rpx;right: 10rpx;">
-            <image bindtap="goMyInfo" style="width:50rpx;height:50rpx;" src="../images/icons/userInfo.png"/>
+            <image bindtap="goMyInfo" style="width:50rpx;height:50rpx;" src="{{ossUrl+'userInfo.png'}}"/>
         </view>
         
     </block>
     
     <view wx:else class="gradual" >
-        <view style="display:flex;justify-content:center;width:70px;height:70px;border-radius:50%;border:2px solid #ffb65d;background-color:#fff;z-index:1024;padding:2px;">
+        <view style="display:flex;justify-content:center;width:70px;height:70px;border-radius:50%;border:2px solid #ff6b5d;background-color:#fff;z-index:1024;padding:2px;">
             <image style="height:60px;width:60px;" src="/images/icons/yonghu.png"/>
         </view>
         <text style="margin:10px;color:#fff;">游客,您好!</text>
         <navigator @tap="login" url="/pages/authorize" style="z-index:1;padding:5px;color:#fff;border:1px solid #fff;border-radius:5px;">登陆/注册</navigator> 
     </view>
   
-    <block  wx:for="{{menuItems}}" wx:for-index="itemIndex">
+    <block  wx:for="{{menuItems}}" wx:for-index="index">
         <view class="wrapperItem" >
-            <view bindtap="naviTo" data-itemname="{{itemIndex}}" class="weui-cell weui-cell_access" >
+            <view bindtap="naviTo({{index}})"  class="weui-cell weui-cell_access" >
                 <view class="itemtext">
                     <image src="{{item.icon}}" class="image"/>
                     {{item.text}}
                 </view>
                 <view class="tips">{{item.touch==false?'展开':'收起'}}{{item.tips}}
-                    <image wx:if="{{item.touch}}" style="transform: rotate(90deg);" src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
-                    <image wx:else src="http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/xiangyou.png"/>
+                    <image wx:if="{{item.touch}}" style="transform: rotate(90deg);" src="{{ossUrl+'xiangyou.png'}}"/>
+                    <image wx:else src="{{ossUrl+'xiangyou.png'}}"/>
                 </view>
             </view>
             <view class="weui-flex" style="{{item.touch==false?'display:none':''}}">
@@ -68,49 +68,37 @@
                         <view class="weui-cell_hd" style="text-align:center;">
                             <image src="{{childItems.icon}}" class="image"/>
                         </view>
-                        <view style="font-size:25rpx;text-align: center;">{{childItems.text}}</view>
+                        <view style="color:#707070;font-size:25rpx;text-align: center;">{{childItems.text}}</view>
                     </view>
                 </block>
             </view>
         </view>
     </block>
-
+    
 </view>
 </template>
 <script>
 import wepy from 'wepy';
 import http from '../utils/Base';
 import api from '../utils/API';
+
 const StaticImgUrl = "http://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/";
 export default class my extends wepy.page{
     config = {
         "navigationBarTitleText": "我的"
     };
+    
     data = {
+        ossUrl:'https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/zq/',
         login:false,
         init:false,
         haveOrder:false,
         imageUrl: "https://mingrui-static.oss-cn-shenzhen.aliyuncs.com/",
         shop_name:'',
         shop_id:'',
-        userRole:0,//用户身份：0消费者，1：商家
-        order: {         
+        //用于用户
+        order: {
             text: '我的订单',
-            tabs: ['全部订单', '待付款', '待收货', '已送达','已完成'],
-            touch:true,
-            icon: StaticImgUrl + '我的订单/hear.png',
-            tips: '全部订单',
-            items: [
-                { text: '待付款', url: '/pages/my-order?id=1', icon: StaticImgUrl +'我的订单/待付款.png' },
-                { text: '待收货', url: '/pages/my-order?id=2', icon: StaticImgUrl +'我的订单/待收货.png' },
-                { text: '已送达', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
-                { text: '已完成', url: '/pages/my-order?id=4', icon: StaticImgUrl +'我的订单/已完成.png' },
-            ]
-        },
-        userInfoInServer: {},
-        menuItems: {
-           order: {         
-                text: '我的订单',
                 tabs: ['全部订单', '待付款', '待收货', '已送达','已完成'],
                 touch:true,
                 icon: StaticImgUrl + '我的订单/hear.png',
@@ -121,8 +109,10 @@ export default class my extends wepy.page{
                     { text: '已送达', url: '/pages/my-order?id=3', icon: StaticImgUrl +'我的订单/待评价.png' },
                     { text: '已完成', url: '/pages/my-order?id=4', icon: StaticImgUrl +'我的订单/已完成.png' },
                 ]
-            },
-            funcs: {
+        },
+        userInfoInServer: {},
+        menuItems:[
+            {
                 
                 text: '常用功能',
                 tabs: ['我的收藏', "我的地址",  "意见反馈"],
@@ -135,10 +125,10 @@ export default class my extends wepy.page{
                     { text: '意见反馈', url: '/pages/my-func?id=2', icon: StaticImgUrl +'常用功能/问题反馈.png' },
                 ]
             },
-            property: {
+            {
                 
                 text: '我的资产',
-                tabs: ['我的积分','领券中心', '我的卡券'],
+                tabs: ['我的积分', '领券中心','我的卡券'],
                 touch:true,
                 icon: StaticImgUrl +'我的资产/hear.png',
                 tips: '所有资产',
@@ -148,7 +138,7 @@ export default class my extends wepy.page{
                     { text: '我的卡券', url: '/pages/my-asset?id=2', icon: StaticImgUrl +'我的资产/我的卡券.png' },
                 ]
             },
-            setting: {
+            {
                 
                 text: '系统设置',
                 tabs: ['使用指引', '清除缓存', '版本信息'],
@@ -162,7 +152,7 @@ export default class my extends wepy.page{
                 ]
             },
             
-        },
+        ],
     }
     onLoad(){
         //显示转发按钮
@@ -187,13 +177,14 @@ export default class my extends wepy.page{
             })
         })
     }
-    onShow(e){
-        //读取本地用户信息查看是否已经登录授权
+    onShow(){
+        //读取本地用户信息查看是否已经登录授权 
         this.getUserInfo().then(res=>{
             var userInfo = wx.getStorageSync("userInfoInServer");
-             //判断用户是否商家，获取商家信息
+             //判断用户是商家，获取商家信息
             if(userInfo.role){
-                 this.menuItems['order'] = this.order;
+                this.menuItems.length==3?this.menuItems.unshift( this.order):'';
+                 
                  http.get(api.MyShop,{bind_phone:userInfo.phone}).then(result =>{ 
                     this.shop_name = result.shop_name;
                     userInfo['shop_name'] = result.shop_name;
@@ -202,7 +193,7 @@ export default class my extends wepy.page{
                     this.init = true;
                     this.$apply();
                     //查看是否有新的订单
-                    http.get(api.NotifyOrder,{shop_id:result.id},false).then(res=>{
+                    http.get(api.NotifyOrder,{shop_id:result.id},false,false).then(res=>{
                         if(res){
                             this.haveOrder = true;
                             wepy.playBackgroundAudio({
@@ -216,15 +207,16 @@ export default class my extends wepy.page{
                     })   
                  })
             }else{
-                delete this.menuItems.order;
+               this.menuItems.length==4?this.menuItems.splice(0,1):'';
             }
             this.$apply();
         }).catch(res=>{
+            this.menuItems.length==3?this.menuItems.unshift( this.order):'';
             this.init = true;
             this.$apply();
         })
     } 
-    
+
     methods = {
         //管理我的商铺
         goMyShop(e){
@@ -235,13 +227,14 @@ export default class my extends wepy.page{
         //个人信息
         goMyInfo(e){
             wx.navigateTo({
-                url: '/pages/myInfo?newOrder='+this.haveOrder,
+                url: '/pages/myInfo?newOrder='+this.haveOrder+'&user_id='+wx.getStorageSync('userInfoInServer').id,
             })  
         },
         //展开子列表
-       naviTo: function(e) {
-            var name = e.currentTarget.dataset.itemname;
-            this.menuItems[name].touch = !this.menuItems[name].touch ; 
+       naviTo: function(index) {
+           console.log(this.menuItems[index]);
+           console.log(this.menuItems[index]['touch']);
+            this.menuItems[index]['touch'] = !this.menuItems[index]['touch'] ; 
             this.$apply();
         },
 
@@ -258,28 +251,41 @@ export default class my extends wepy.page{
                         })
                         break;
                     case 2:
+                        if(!this.login){
+                            wx.showToast({
+                                title:'当前尚未登录！',
+                                icon:'none',
+                            })
+                            return;
+                        }
                         wx.showModal({
                             title: '提示',
-                            content: "确定清除系统全部缓存？",
+                            content: "确定清除系统全部缓存？清除完成之后您需要重新登录小程序，才可正常使用！",
                             cancelText: "下次再说",
                             confirmText: "确定清除",
                             confirmColor: "#ff6b5d",
-                            success: function(e) {
-                                if (e.cancel) {
-
-                                } else {
-                                    wx.showToast({
-                                        title: '清除成功', //提示文字
-                                        duration: 2000, //显示时长
-                                        mask: true, //是否显示透明蒙层，防止触摸穿透，默认：false  
-                                        icon: 'success', //图标，支持"success"、"loading"  
-                                        success: function() {}, //接口调用成功
-                                        fail: function() {}, //接口调用失败的回调函数  
-                                        complete: function() {} //接口调用结束的回调函数  
-                                    })
+                            success:(modal=>{
+                                if (modal.confirm) {
+                                    wx.clearStorage({
+                                        success:(res=>{
+                                            if(this.userInfoInServer.role){
+                                                // this.menuItems.length==4?this.menuItems.splice(0,1):'';
+                                            }else{
+                                                this.menuItems.length==3?this.menuItems.unshift( this.order):'';
+                                            }                          
+                                            this.login = false;
+                                            this.$apply();
+                                            wx.showToast({
+                                                title: '清除成功', //提示文字
+                                                duration: 2000, //显示时长
+                                                mask: true, //是否显示透明蒙层，防止触摸穿透，默认：false  
+                                                icon: 'success', //图标，支持"success"、"loading"  
+                                            })
+                                        })
+                                    });                             
                                 }
-                            }
-                        });
+                            })
+                        })       
                         break;
                     case 3:
                         wx.showModal({
@@ -301,21 +307,8 @@ export default class my extends wepy.page{
             })
             }
         },
-        //预览二维码
-        previewImg(e){
-            wx.previewImage({
-                urls:["https://tse4-mm.cn.bing.net/th?id=OIP.TwdA5X1c0ShqBqcGudgjTwHaHa&w=200&h=200&c=7&o=5&dpr=1.5&pid=1.7"],
-                current: "https://tse4-mm.cn.bing.net/th?id=OIP.TwdA5X1c0ShqBqcGudgjTwHaHa&w=200&h=200&c=7&o=5&dpr=1.5&pid=1.7",     //当前图片地址
-                success: function(res) {},
-                fail: function(res) {},
-                complete: function(res) {},
-            })
-        },
-        cerateCode(e){
-            http.get(api.QRcode,{}).then(res=>{
-                console.log(res);
-            })
-        }
+
+
     }
   
 }
@@ -338,7 +331,8 @@ color: transparent;
     position: relative;
     height:180px;
     /* z-index:-1024; */
-    background: linear-gradient(#ffb65d, #ff6b5d); 
+    // background: linear-gradient(#ff6b5d, #ffb65d); 
+    background:#ff6b5d;
     margin-bottom:10px;
 }
 .gradualShop{
@@ -347,7 +341,7 @@ color: transparent;
     align-items: center;
     position: relative;
     height: 180px;
-    background: linear-gradient(#ffb65d, #ff6b5d);
+   background:#ff6b5d;
     margin-bottom: 10px;
 
 }
@@ -395,7 +389,7 @@ color: transparent;
     width:60px;
     height:60px;
     border-radius:50%;
-    border:2px solid #ffb65d;
+    border:2px solid #9cd1f7;
     background-color:#fff;
     z-index:1024;
     padding:2px;
@@ -584,25 +578,12 @@ color: transparent;
   height: 20px;
 }
 
-/* .weui-cells{
-    position:relative;
+/*隐藏滚动栏*/
+::-webkit-scrollbar{
+width: 0;
+height: 0;
+color: transparent;
 }
-
-.weui-cells::after{
-    content: "";
-    position:absolute;
-    top:20%;
-    left:140px;
-    width:2px;
-    height:50%;
-    background-color:#eee;
-}
-
-.weui-cells:last-child{
-    border: none;
-    outline: medium;
-    border-radius: 0;
-} */
 
 
 </style>

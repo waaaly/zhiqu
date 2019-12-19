@@ -158,7 +158,7 @@ export default class myInfo extends wepy.page {
             this.defaultAddress =
                                 //   wx.getStorageSync('userDefaultAddress').province+
                                 //   wx.getStorageSync('userDefaultAddress').city+
-                                  wx.getStorageSync('userDefaultAddress').district_name+
+                                //   wx.getStorageSync('userDefaultAddress').district_name+
                                   wx.getStorageSync('userDefaultAddress').area_name+
                                   wx.getStorageSync('userDefaultAddress').address;
         }
