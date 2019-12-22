@@ -190,6 +190,8 @@ export default class extends wepy.app {
 }
 </script>
 <style lang="less">
+@import "/style/base64-icons.scss";
+
 .container {
   height: 100%;
   display: flex;

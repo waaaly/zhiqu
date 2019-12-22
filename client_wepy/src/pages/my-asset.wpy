@@ -9,7 +9,7 @@
     <swiper-item>
       <view class="rulebtn" bindtap="showRule">
         <text class="rule-text">积分规则</text>
-        <image class="rule-img" src="{{ossUrl+'rule.png'}}" />
+        <image class="rule-img rule-icon1"  />
       </view>
       <view class="rule" bindtap="closeRule" hidden="{{!hasRule}}">
         <view class="rule-box">
@@ -30,7 +30,7 @@
       <view class="integral-list" >
         <view class="top">
           <view class="top-title">当前积分</view>
-          <image src="{{ossUrl+'yuan.png'}}" style="width:90px;height:90px;position:absolute;top:48rpx;left:290rpx;" />
+          <image class="rule-icon" style="width:90px;height:90px;position:absolute;top:48rpx;left:290rpx;" />
           <view class="top-num"><text>{{integral.user_points}}</text></view>
         </view>
         <view class="bottom">
@@ -320,6 +320,7 @@ export default class myAsset extends wepy.page{
 </script>
 
 <style lang='scss'>
+
 page{
   background-color: #fafafa;
 }
