@@ -104,13 +104,15 @@ export default class extends wepy.app {
 
   globalData = {
     userInfo: null,
-    version:'V0.2.1',
+    version:'V0.2.2',
     /**
      * V0.2.0
      * 1、新增我的资产、版本管理器，订单状态；2、移除扫一扫、商家购物车组件;
      * 3、修复团购下单
      * V0.2.1
      * 1、根据错误文档进行修复许多bug；
+     * V0.2.2
+     * 1、修改子域名,2、优化订单提交地址及提交按钮显示，
      */
   }
 
@@ -126,7 +128,7 @@ export default class extends wepy.app {
       checkUpdate().then(()=>{
         console.log("检测到新版本，提示用户更新");
         wx.showModal({
-          title:'更新提示',
+          title:'更新提示', 
           content:'检测到新版本，请您及时更新以免影响小程序的正常使用！',
           showCancel:false,
           confirmText:'确认更新',

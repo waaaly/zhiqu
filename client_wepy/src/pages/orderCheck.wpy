@@ -2,18 +2,18 @@
 
   <view class="comfire_order" wx:if="{{init}}">
     <view class="address" @tap="goAddress">
+      <text class="defult" wx:if="{{address.is_default==1}}">[默认]</text>
       <view class="address_info">
-        <text class="defult" wx:if="{{address.is_default==1}}">[默认]</text>
         <view class="title">
           <view class="user_info">
             <text class="name">{{address.name}}</text>
             <text class="mobile">{{address.mobile}}</text>
-            <text class="area_name">{{address.area_name}}</text>
           </view>
           <view class="active_address">
             {{address.tabs_name}}{{address.area_name}}{{address.address}}
           </view>
         </view>
+        <view class="area_name">{{address.area_name}}</view>
         <view style="color:#ff6b5d;" >></view>
       </view>
     </view>
@@ -216,7 +216,7 @@ page{
   background: #fff;
 }
 
- .address .address_info {
+ .address_info {
   display: flex;
   justify-content: space-between;
   height: 103rpx;
@@ -225,51 +225,51 @@ page{
   padding-left:5rpx;
 }
 
-.address .address_info .title {
+ .title {
   color: #000;
+margin-left: 20rpx;
 }
 
-.address .address_info .arrow {
+ .arrow {
   color: #ff6b5d;
 }
 
- .address .address_info .user_info {
+ .user_info {
    display:flex;
    justify-content: space-between;
    color: #1a1a1a;
 }
 
- .address .address_info .user_info .name{
-  color: #1a1a1a;
-  font-size:30rpx;
-  padding:5rpx;
+ .name{
+color: #1a1a1a;
+font-size: 34rpx;
+padding: 5rpx;
 }
 
-.address .address_info .user_info .mobile{
-  color: #1a1a1a;
-  padding:5rpx;
+ .mobile{
+ color: #999;
+padding: 5px;
+font-size: 26rpx;
+
 }
 
-.address .address_info .user_info .area_name{
+ .area_name{
   color: #ff6b5d;
   padding:5rpx;
 }
 
-.address .address_info .active_address {
-  margin-top: 20rpx;
-  color:#666;
-  text-align:center;
+ .active_address {
   font-size:25rpx;
 }
 
-.address .address_info .defult {
+ .defult {
   font-size:35rpx;
   color: #ff6b5d;
   margin-bottom:100rpx;
 }
 
-.address .address_info {
-  height: 150rpx;
+ .address_info {
+  max-height: 51px;
 }
 
 .spacing {
@@ -526,11 +526,7 @@ color:#fff;
 }
 
 .pay_box {
-    position:absolute;
-    bottom:50rpx;
-    left: 50rpx;
-    right: 50rpx;
-
+  margin:20rpx 50rpx;
 }
 
 .dk-jf {

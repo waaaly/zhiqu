@@ -1,4 +1,4 @@
-const ApiRootUrl = 'https://test.mingrui-gz.com/api/';
+const ApiRootUrl = 'https://community.mingrui-gz.com/api/';
 
 module.exports = {
     AuthLoginByWeixin: ApiRootUrl + 'login', //登录接口
